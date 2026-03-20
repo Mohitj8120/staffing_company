@@ -28,7 +28,7 @@ className="absolute bottom-0 right-0 w-100 h-100 bg-blue-500 opacity-30 rounded-
 initial={{opacity:0,y:50}}
 animate={{opacity:1,y:0}}
 transition={{duration:1}}
-className="text-6xl font-bold leading-tight">
+className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
 
 Launch Your Career  
 <br/>
@@ -54,13 +54,13 @@ LinkedIn optimization and job placement support.
 initial={{opacity:0,y:30}}
 animate={{opacity:1,y:0}}
 transition={{delay:0.8}}
-className="mt-8 flex gap-4">
+className="mt-8 flex flex-col sm:flex-row gap-4">
 
-<button className="bg-white text-black px-6 py-3 rounded-xl font-semibold hover:scale-105 transition">
+<button className="bg-white text-black px-6 py-3.5 rounded-xl font-bold text-lg hover:shadow-xl hover:scale-105 transition-all text-center">
 See Plans
 </button>
 
-<button className="border border-white px-6 py-3 rounded-xl hover:bg-white hover:text-black transition">
+<button className="border border-white/50 bg-white/5 backdrop-blur-sm px-6 py-3.5 rounded-xl font-bold text-lg hover:bg-white/20 transition-all text-center">
 Book Call
 </button>
 

@@ -60,7 +60,7 @@ function CostComparisonTable() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-8 w-full"
         >
-            <div className="overflow-hidden rounded-2xl border border-white/20 bg-black/30 backdrop-blur-md">
+            <div className="overflow-x-auto rounded-2xl border border-white/20 bg-black/30 backdrop-blur-md">
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="border-b border-white/10">
@@ -104,7 +104,7 @@ export default function WhyUsPremium() {
 
     return (
 
-        <section className="py-32 bg-[#0b1730] m-4 md:m-8 rounded-[40px] border border-white/10 shadow-sm overflow-hidden">
+        <section className="py-20 md:py-32 bg-[#0b1730] m-4 md:m-8 rounded-[30px] md:rounded-[40px] border border-white/10 shadow-sm overflow-hidden">
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
 
@@ -188,7 +188,7 @@ group-hover:-translate-y-2 rounded-3xl`}
                             {/* VIDEO BOX */}
                             <motion.div
                                 variants={cardVariants}
-                                className="shrink-0 w-full md:w-[40%] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl flex items-center justify-center text-white/50 text-sm overflow-hidden transition-all duration-500 group-hover:shadow-[0_0_60px_rgba(255,255,255,0.05)] group-hover:-translate-y-1 relative"
+                                className="shrink-0 w-full min-h-[250px] md:min-h-0 md:w-[40%] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl flex items-center justify-center text-white/50 text-sm overflow-hidden transition-all duration-500 group-hover:shadow-[0_0_60px_rgba(255,255,255,0.05)] group-hover:-translate-y-1 relative"
                             >
                                 {/* Pulse Effect for Video Placeholder */}
                                 <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/5 to-transparent group-hover:animate-pulse" />

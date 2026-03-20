@@ -37,7 +37,7 @@ export default function ServicesSection() {
 
     return (
 
-        <section id="services" className="py-36 bg-[#0b1730] relative m-4 md:m-8 rounded-[40px] overflow-hidden shadow-sm">
+        <section id="services" className="py-20 md:py-36 bg-[#0b1730] relative m-4 md:m-8 rounded-[40px] overflow-hidden shadow-sm">
 
             {/* grid background */}
 
@@ -49,7 +49,7 @@ bg-size-[70px_70px]"></div>
 
                 {/* heading */}
 
-                <h2 className="text-center text-5xl text-white font-semibold">
+                <h2 className="text-center text-4xl md:text-5xl text-white font-semibold px-4">
                     Why We Lead in Placements
                 </h2>
 

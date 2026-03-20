@@ -2,7 +2,12 @@
 
 html {
   scroll-behavior: smooth;
-  zoom: 0.85;
+}
+
+@media (min-width: 768px) {
+  html {
+    zoom: 0.85; /* Keep zoom for desktop/tablet but reset for mobile */
+  }
 }
 
 :root {

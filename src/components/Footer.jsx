@@ -10,7 +10,7 @@ export default function Footer() {
         <footer className="relative overflow-hidden">
 
             {/* CTA Section */}
-            <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-700 py-24 px-6">
+            <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-700 py-16 md:py-24 px-6">
                 {/* Decorative blurred circles */}
                 <div className="absolute top-0 left-1/4 w-72 h-72 bg-purple-400/20 rounded-full blur-3xl" />
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-400/15 rounded-full blur-3xl" />
@@ -39,8 +39,8 @@ export default function Footer() {
 
             {/* Multi-Column Footer Content */}
             <div className="bg-gray-900 text-gray-300">
-                <div className="max-w-7xl mx-auto px-8 pt-16 pb-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <div className="max-w-7xl mx-auto px-6 md:px-8 pt-12 md:pt-16 pb-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12">
 
                         {/* Brand Column */}
                         <div>
@@ -75,7 +75,6 @@ export default function Footer() {
                                 <li><Link href="/visa-pathways" className="hover:text-purple-400 transition-colors">Visa Pathways</Link></li>
                                 <li><Link href="/#services" className="hover:text-purple-400 transition-colors">Guaranteed Placement</Link></li>
                                 <li><Link href="/#integrations" className="hover:text-purple-400 transition-colors">AI Interview Support</Link></li>
-                                <li><Link href="/#faq" className="hover:text-purple-400 transition-colors">1:1 Career Guidance</Link></li>
                             </ul>
                         </div>
 
