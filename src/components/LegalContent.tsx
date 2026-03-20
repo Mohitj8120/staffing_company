@@ -2,18 +2,15 @@
 
 import { motion } from "framer-motion"
 import { FiFileText, FiClock, FiShield } from "react-icons/fi"
+import React from "react"
 
-type LegalContentProps = {
-  title: string
-  lastUpdated: string
-  children: React.ReactNode
+interface LegalContentProps {
+    title: string;
+    lastUpdated: string;
+    children: React.ReactNode;
 }
 
-export default function LegalContent({
-  title,
-  lastUpdated,
-  children,
-}: LegalContentProps) {
+export default function LegalContent({ title, lastUpdated, children }: LegalContentProps) {
     return (
         <div className="w-full bg-slate-50 min-h-screen font-sans pt-32 pb-24">
             <div className="max-w-4xl mx-auto px-6">
