@@ -19,7 +19,7 @@ function Pill({ x, y, w, text, outlined }) {
 
 export default function CreatorWorkflows() {
     return (
-        <section id="workflows" className="py-24 bg-gradient-to-br from-[#d9e5ff] via-[#e6efff] to-[#f4f7ff] rounded-[40px] m-4 md:m-8 overflow-hidden font-sans border border-white/50 shadow-sm relative">
+        <section id="workflows" className="py-16 md:py-24 bg-gradient-to-br from-[#d9e5ff] via-[#e6efff] to-[#f4f7ff] rounded-3xl md:rounded-[40px] m-4 md:m-8 overflow-hidden font-sans border border-white/50 shadow-sm relative">
 
             {/* Decorative top glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-white/40 blur-[100px] rounded-full pointer-events-none" />
@@ -28,8 +28,8 @@ export default function CreatorWorkflows() {
 
                 {/* Title */}
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold text-[#0f172a] tracking-tight">
-                        Guaranteed <span className="font-serif italic text-blue-900 font-medium">Placement Workflows</span>
+                    <h2 className="text-3xl md:text-5xl font-bold text-[#0f172a] tracking-tight">
+                        Guaranteed <span className="font-serif italic text-blue-900 font-medium whitespace-nowrap md:whitespace-normal">Placement Workflows</span>
                     </h2>
                 </div>
 

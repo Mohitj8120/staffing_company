@@ -6,15 +6,15 @@ export default function PlacementGraph() {
 
     return (
 
-        <section className="py-32 bg-white m-4 md:m-8 rounded-[40px] shadow-sm border border-gray-100">
+        <section className="py-16 md:py-32 bg-white m-4 md:m-8 rounded-[30px] md:rounded-[40px] shadow-sm border border-gray-100">
 
             <div className="max-w-4xl mx-auto text-center">
 
-                <h2 className="text-4xl font-semibold mb-16">
+                <h2 className="text-3xl md:text-4xl font-semibold mb-10 md:mb-16 px-4">
                     Our Placement Conversion Rate
                 </h2>
 
-                <div className="bg-gray-100 p-10 rounded-3xl">
+                <div className="bg-gray-100 p-6 md:p-10 rounded-3xl mx-4 md:mx-0">
 
                     <div className="h-8 bg-gray-300 rounded-full overflow-hidden">
 

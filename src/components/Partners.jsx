@@ -17,7 +17,7 @@ export default function Partners() {
 
     return (
 
-        <section className="py-24 bg-white m-4 md:m-8 rounded-[40px] shadow-sm border border-gray-100">
+        <section className="py-12 md:py-24 bg-white m-4 md:m-8 rounded-[30px] md:rounded-[40px] shadow-sm border border-gray-100">
 
             <div className="max-w-6xl mx-auto px-6 text-center">
 
@@ -29,10 +29,10 @@ export default function Partners() {
 
                 <div className="mt-12 overflow-hidden">
 
-                    <div className="flex gap-16 animate-marquee whitespace-nowrap">
+                    <div className="flex gap-8 md:gap-16 animate-marquee whitespace-nowrap">
 
                         {companies.concat(companies).map((c, i) => (
-                            <h3 key={i} className="text-2xl font-semibold text-black">
+                            <h3 key={i} className="text-xl md:text-2xl font-semibold text-black">
                                 {c}
                             </h3>
                         ))}

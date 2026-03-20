@@ -24,7 +24,7 @@ export default function Integrations() {
     const orbitRadius = 220  // px – distance from center to icon center
 
     return (
-        <section id="integrations" className="py-28 bg-gradient-to-b from-[#f0f0ff] via-white to-[#f0eeff] m-4 md:m-8 rounded-[40px] shadow-sm border border-white/60 relative overflow-hidden flex flex-col items-center">
+        <section id="integrations" className="py-16 md:py-28 bg-gradient-to-b from-[#f0f0ff] via-white to-[#f0eeff] m-4 md:m-8 rounded-3xl md:rounded-[40px] shadow-sm border border-white/60 relative overflow-hidden flex flex-col items-center">
 
             {/* ───── Large soft radial glow behind orbit ───── */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[15%] w-[700px] h-[700px] rounded-full pointer-events-none"
@@ -73,7 +73,7 @@ export default function Integrations() {
             </div>
 
             {/* ───── Orbit Arena ───── */}
-            <div className="relative flex items-center justify-center" style={{ width: 520, height: 520 }}>
+            <div className="relative flex items-center justify-center transform scale-[0.6] sm:scale-75 md:scale-90 lg:scale-100 origin-center -my-10 md:my-0" style={{ width: 520, height: 520 }}>
 
                 {/* Outermost decorative ring */}
                 <div className="absolute rounded-full border border-gray-200/60" style={{ width: 500, height: 500, top: 10, left: 10 }} />

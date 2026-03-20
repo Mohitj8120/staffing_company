@@ -29,8 +29,8 @@ const previewVisas = [
 
 export default function VisaPathwaysPreview() {
   return (
-    <section id="visa-pathways" className="py-24 bg-white relative overflow-hidden">
-      <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
+    <section id="visa-pathways" className="py-16 md:py-24 px-4 bg-white relative overflow-hidden">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-8 md:gap-6">
         <div className="max-w-2xl">
           <motion.h2 
             initial={{ opacity: 0, x: -20 }}
@@ -45,7 +45,7 @@ export default function VisaPathwaysPreview() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-gray-600"
+            className="text-base md:text-lg text-gray-600 mt-2 md:mt-0"
           >
             Whether you are on OPT, STEM OPT, H1B, CPT, H4 EAD/EAD, we have a clear, actionable plan to get you hired securely and quickly.
           </motion.p>
@@ -72,9 +72,9 @@ export default function VisaPathwaysPreview() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.15 }}
-            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-300 group"
+            className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-300 group"
           >
-            <div className="bg-gray-50 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border border-gray-100 group-hover:bg-white group-hover:scale-110 transition-all duration-300">
+            <div className="bg-gray-50 w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center mb-6 border border-gray-100 group-hover:bg-white group-hover:scale-110 transition-all duration-300">
               {visa.icon}
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">{visa.title}</h3>
