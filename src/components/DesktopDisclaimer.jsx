@@ -1,22 +1,42 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function DesktopDisclaimer() {
   const [showPrompt, setShowPrompt] = useState(false);
 
+  const pathname = usePathname();
+
   useEffect(() => {
     // Detect mobile device
     const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    if (isMobileDevice && !sessionStorage.getItem("desktopModeEnforced")) {
-      setShowPrompt(true);
-      
-      // Prevent scrolling when popup is open
-      document.body.style.overflow = "hidden";
+    if (isMobileDevice) {
+      if (!sessionStorage.getItem("desktopModeEnforced")) {
+        setShowPrompt(true);
+        // Prevent scrolling when popup is open
+        document.body.style.overflow = "hidden";
+      } else {
+        // If already enforced and user navigates, we must re-apply the viewport 
+        // because Next.js re-renders the head tag on page transitions.
+        applyViewportOverride();
+      }
     }
-  }, []);
+  }, [pathname]);
+
+  const applyViewportOverride = () => {
+    let viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (!viewportMeta) {
+      viewportMeta = document.createElement('meta');
+      viewportMeta.name = "viewport";
+      document.head.appendChild(viewportMeta);
+    }
+    // Force a 900px width which triggers the desktop/tablet layout but remains legible
+    viewportMeta.setAttribute('content', 'width=900, initial-scale=0.1, maximum-scale=5.0, user-scalable=yes');
+    console.log("Desktop mode override re-applied on route change.");
+  };
 
   const enforceDesktopMode = () => {
     setShowPrompt(false);
@@ -25,17 +45,7 @@ export default function DesktopDisclaimer() {
     // Restore scrolling
     document.body.style.overflow = "auto";
 
-    // Update the viewport meta tag dynamically to enforce desktop scaling
-    let viewportMeta = document.querySelector('meta[name="viewport"]');
-    if (!viewportMeta) {
-      viewportMeta = document.createElement('meta');
-      viewportMeta.name = "viewport";
-      document.head.appendChild(viewportMeta);
-    }
-    // Force a 1200px width which effectively forces the mobile browser into desktop layout mode
-    viewportMeta.setAttribute('content', 'width=1250, initial-scale=0.1, maximum-scale=5.0, user-scalable=yes');
-    
-    console.log("Desktop mode enforced for mobile device.");
+    applyViewportOverride();
   };
 
   return (
