@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import MobileToDesktopPrompt from "../src/components/MobileToDesktopPrompt";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} bg-slate-50`}>
+        <MobileToDesktopPrompt />
         {children}
       </body>
     </html>
