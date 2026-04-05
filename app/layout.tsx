@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import MobileToDesktopPrompt from "../src/components/MobileToDesktopPrompt";
+import LeadCapturePopup from "../src/components/LeadCapturePopup";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -9,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "CareerLaunch | Premium Support",
-  description: "CareerLaunch Staffing Solutions",
+  title: "Talentra | Premium Support",
+  description: "Talentra Staffing Solutions",
 };
 
 export const viewport: Viewport = {
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} bg-slate-50`}>
+        <LeadCapturePopup />
         <MobileToDesktopPrompt />
         {children}
       </body>

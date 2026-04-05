@@ -3,8 +3,8 @@ import Footer from "@/src/components/Footer"
 import CookiesContent from "@/src/components/CookiesContent"
 
 export const metadata = {
-  title: "Cookies Policy | CareerLaunch",
-  description: "Details on how CareerLaunch uses cookies and tracking technologies."
+  title: "Cookies Policy | Talentra",
+  description: "Details on how Talentra uses cookies and tracking technologies."
 }
 
 export default function CookiesPage() {

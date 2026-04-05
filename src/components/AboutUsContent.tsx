@@ -70,7 +70,7 @@ export default function AboutUsContent() {
                 >
                     <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission is <span className="text-purple-600 italic font-serif">Absolute</span>.</h2>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                        CareerLaunch was founded on a simple realization: the traditional job application process is broken for international candidates. Between ATS filters and the high bar of technical interviews, brilliant talent often goes overlooked.
+                        Talentra was founded on a simple realization: the traditional job application process is broken for international candidates. Between ATS filters and the high bar of technical interviews, brilliant talent often goes overlooked.
                     </p>
                     <p className="text-lg text-gray-600 leading-relaxed">
                         We built a system that bypasses these hurdles. From direct HR tie-ups to our invisible AI Proxy Tool, we give you the tools to command the outcome you deserve.
@@ -99,7 +99,7 @@ export default function AboutUsContent() {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">What Sets Us Apart</h2>
-                        <p className="text-lg text-gray-500 max-w-2xl mx-auto">The core pillars that make CareerLaunch the #1 choice for placement success.</p>
+                        <p className="text-lg text-gray-500 max-w-2xl mx-auto">The core pillars that make Talentra the #1 choice for placement success.</p>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

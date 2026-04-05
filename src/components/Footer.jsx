@@ -23,13 +23,13 @@ export default function Footer() {
                     className="relative text-center"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-3">
-                        Try <span className="text-yellow-300">CareerLaunch</span> today
+                        Try <span className="text-yellow-300">Talentra</span> today
                     </h2>
                     <p className="text-purple-200 mb-8 text-base italic">
-                        Free to start . No commitments.
+                        Transparent pricing. No hidden fees.
                     </p>
                     <Link
-                        href="#"
+                        href="/pricing"
                         className="inline-block bg-white text-purple-700 font-bold px-10 py-3.5 rounded-full hover:scale-105 hover:shadow-xl transition-all duration-300 shadow-lg"
                     >
                         Get Started Now
@@ -45,7 +45,7 @@ export default function Footer() {
                         {/* Brand Column */}
                         <div>
                             <h3 className="text-2xl font-bold text-white mb-4">
-                                Career<span className="text-purple-400">Launch</span>
+                                Talen<span className="text-purple-400">tra</span>
                             </h3>
                             <p className="text-gray-400 text-sm leading-relaxed mb-6">
                                 Empowering careers and connecting top talent with leading companies. Your dream job is just one launch away.
@@ -110,7 +110,7 @@ export default function Footer() {
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-600/20 text-purple-400 shrink-0">
                                         <HiOutlineMail size={16} />
                                     </span>
-                                    <a href="mailto:hello@careerlaunch.io" className="hover:text-purple-400 transition-colors">hello@careerlaunch.io</a>
+                                    <a href="mailto:hello@talentra.io" className="hover:text-purple-400 transition-colors">hello@talentra.io</a>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-600/20 text-red-400 shrink-0 mt-0.5">
@@ -128,10 +128,10 @@ export default function Footer() {
                 <div className="border-t border-gray-800">
                     <div className="max-w-7xl mx-auto px-8 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-xs text-gray-500">
-                            © 2026 CareerLaunch by <span className="font-medium text-gray-400">CareerLaunch Technologies Pvt Ltd.</span> All rights reserved.
+                            © 2026 Talentra by <span className="font-medium text-gray-400">Talentra Technologies Pvt Ltd.</span> All rights reserved.
                         </p>
                         <nav className="flex flex-wrap justify-center gap-5 text-xs text-gray-500">
-                            <Link href="#" className="hover:text-purple-400 transition-colors">Pricing</Link>
+                            <Link href="/pricing" className="hover:text-purple-400 transition-colors">Pricing</Link>
                             <Link href="#" className="hover:text-purple-400 transition-colors">Help</Link>
                             <Link href="#" className="hover:text-purple-400 transition-colors">Changelog</Link>
                             <Link href="#" className="hover:text-purple-400 transition-colors">Sitemap</Link>

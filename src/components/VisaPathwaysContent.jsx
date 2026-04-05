@@ -59,18 +59,6 @@ const visaTypes = [
     goal: "Help you re-enter workforce smoothly",
     colorFrom: "from-pink-500",
     colorTo: "to-rose-500"
-  },
-  {
-    id: "cpt",
-    title: "CPT",
-    icon: <FiTarget className="text-4xl text-amber-400" />,
-    features: [
-      "Internship & part-time opportunities",
-      "Guidance on compliant roles"
-    ],
-    goal: "Safe experience while studying",
-    colorFrom: "from-amber-500",
-    colorTo: "to-orange-500"
   }
 ]
 
@@ -271,7 +259,7 @@ export default function VisaPathwaysContent() {
             <div className="mt-8 flex items-center gap-3 text-gray-400 bg-gray-50/50 p-4 rounded-xl border border-gray-100 italic">
               <FiTarget className="text-blue-500 shrink-0" />
               <p className="text-sm">
-                <b>Note:</b> We specialize in job placement for your current visa status. CareerLaunch does not provide visa sponsorship directly.
+                <b>Note:</b> We specialize in job placement for your current visa status. Talentra does not provide visa sponsorship directly.
               </p>
             </div>
           </div>

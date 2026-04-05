@@ -79,13 +79,6 @@ export default function MobileToDesktopPrompt() {
 
                         {/* Content Body */}
                         <div className="px-6 pt-8 pb-10 text-center relative">
-                            {/* Close Button X */}
-                            <button 
-                                onClick={handleDismiss}
-                                className="absolute top-4 right-4 bg-gray-100 text-gray-500 hover:text-gray-900 p-2 rounded-full transition-colors"
-                            >
-                                <FiX className="text-xl" />
-                            </button>
 
                             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">
                                 Switch to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Desktop Mode</span>

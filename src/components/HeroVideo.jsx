@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 export default function HeroVideo() {
 
@@ -48,12 +49,11 @@ export default function HeroVideo() {
                 </p>
 
                 {/* button */}
-
-                <button className="mt-8 bg-white text-black px-6 py-3 rounded-full flex items-center gap-2 mx-auto shadow-lg hover:scale-105 transition">
-
-                    → Get Started
-
-                </button>
+                <Link href="/pricing" className="mt-8 inline-block">
+                    <button className="bg-white text-black px-6 py-3 rounded-full flex items-center gap-2 mx-auto shadow-lg hover:scale-105 transition">
+                        → Get Started
+                    </button>
+                </Link>
 
                 {/* video label */}
 

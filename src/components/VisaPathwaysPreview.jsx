@@ -47,7 +47,7 @@ export default function VisaPathwaysPreview() {
             transition={{ delay: 0.1 }}
             className="text-base md:text-lg text-gray-600 mt-2 md:mt-0"
           >
-            Whether you are on OPT, STEM OPT, H1B, CPT, H4 EAD/EAD, we have a clear, actionable plan to get you hired securely and quickly.
+            Whether you are on OPT, STEM OPT, H1B, H4 EAD/EAD, we have a clear, actionable plan to get you hired securely and quickly.
           </motion.p>
         </div>
         

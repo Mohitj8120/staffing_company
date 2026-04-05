@@ -21,7 +21,7 @@ const blocks = [
     },
     {
         title: "Interview Questions — Straight from the Company",
-        desc: "We don't give you generic 'Top 50 Interview Questions' from the internet. Once you receive a company call, inform us immediately. We connect with the company and extract the latest question sheet for the exact position you're interviewing for. The questions in your interview will come from this sheet. You'll walk in already knowing what they're going to ask — that's the CareerLaunch advantage.",
+        desc: "We don't give you generic 'Top 50 Interview Questions' from the internet. Once you receive a company call, inform us immediately. We connect with the company and extract the latest question sheet for the exact position you're interviewing for. The questions in your interview will come from this sheet. You'll walk in already knowing what they're going to ask — that's the Talentra advantage.",
         color: "from-indigo-500 to-purple-500"
     },
     {
@@ -36,7 +36,7 @@ const blocks = [
     },
     {
         title: "What Others Do vs What We Do",
-        desc: "Let's be honest about what typical staffing agencies actually do — they assign someone who spends 10 minutes editing your LinkedIn, sends out random connection requests, and bulk-applies to jobs through 'Easy Apply'. You get a flood of emails saying 'Applied', but you never get an interview call because it's all automated noise.\n\nWe don't waste your time with random clicks. We have direct, official tie-ups with companies where your resume is sent directly to the internal hiring team. We don't just 'apply' — we bypass the queue and get your profile on the right desk immediately. That's the CareerLaunch difference.",
+        desc: "Let's be honest about what typical staffing agencies actually do — they assign someone who spends 10 minutes editing your LinkedIn, sends out random connection requests, and bulk-applies to jobs through 'Easy Apply'. You get a flood of emails saying 'Applied', but you never get an interview call because it's all automated noise.\n\nWe don't waste your time with random clicks. We have direct, official tie-ups with companies where your resume is sent directly to the internal hiring team. We don't just 'apply' — we bypass the queue and get your profile on the right desk immediately. That's the Talentra difference.",
         color: "from-red-500 to-pink-600"
     }
 ]
@@ -66,7 +66,7 @@ function CostComparisonTable() {
                         <tr className="border-b border-white/10">
                             <th className="px-5 py-4 text-white/60 font-semibold uppercase text-xs tracking-wider">Fee Structure</th>
                             <th className="px-5 py-4 text-red-300 font-semibold uppercase text-xs tracking-wider text-center">Other Agencies</th>
-                            <th className="px-5 py-4 text-green-300 font-semibold uppercase text-xs tracking-wider text-center">CareerLaunch</th>
+                            <th className="px-5 py-4 text-green-300 font-semibold uppercase text-xs tracking-wider text-center">Talentra</th>
                         </tr>
                     </thead>
                     <tbody className="text-white/80">
