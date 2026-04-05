@@ -23,10 +23,18 @@ export async function POST(req: Request) {
         // 3. Deploy as Web App -> Anyone
         // 4. Paste the URL below:
         
-        const GOOGLE_SCRIPT_WEBHOOK_URL = process.env.GOOGLE_SCRIPT_WEBHOOK_URL || "https://script.google.com/macros/s/AKfycbwkqzLATwvi9hnoH7xD-sKYbgJLZYWUDMV0q6mNCjK_H8-ZG3AOuUHY1QYDty_YDrvr/exec";
+        const GOOGLE_SCRIPT_WEBHOOK_URL = process.env.GOOGLE_SCRIPT_WEBHOOK_URL || "https://script.google.com/macros/s/AKfycbxf1B1bgmvHrFEGfBorTTALMp90zHB30lur2XXHP2j2gNTU95Uzgl5ljK3wejD3_ryY/exec";
 
         if (GOOGLE_SCRIPT_WEBHOOK_URL) {
             try {
+                // Format the timestamp nicely for human readability
+                const readableTimestamp = new Date().toLocaleString('en-IN', { 
+                    timeZone: 'Asia/Kolkata',
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                    hour12: true
+                });
+
                 // Forward the data to Google Sheets
                 await fetch(GOOGLE_SCRIPT_WEBHOOK_URL, {
                     method: 'POST',
@@ -36,9 +44,10 @@ export async function POST(req: Request) {
                     body: JSON.stringify({
                         name,
                         email,
-                        phone,
+                        // Add single quote so Google Sheets treats the +1 as text instead of a math formula
+                        phone: "'" + phone,
                         visa,
-                        timestamp: new Date().toISOString()
+                        timestamp: readableTimestamp
                     }),
                     // Adding no-cors or catching errors in case of CORS issues from Apps Script
                 });

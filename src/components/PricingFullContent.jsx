@@ -7,16 +7,18 @@ import Link from "next/link"
 
 const plans = [
     {
-        id: "proxy",
+        id: "trial",
         name: "Proxy Tool Only",
-        price: "250",
+        subtitle: "One-time Payment",
+        price: "125",
+        billing: "one-time",
         description: "Perfect for candidates needing technical interview assistance seamlessly.",
         features: [
-            "100% success rate of passing interview",
-            "100% undetectable even after sharing screen to interviewer",
-            "Undetectable even in coding environments like HackerRank and other platforms",
-            "Real-time answers fed directly to your screen",
-            "The interviewer sees nothing, you answer everything"
+            "2 Proxy interview sessions",
+            "Max 2 hours duration per interview",
+            "100% success rate of passing",
+            "Undetectable even in HackerRank",
+            "Invisible while screen sharing"
         ],
         gradient: "from-blue-600 to-cyan-500",
         shadow: "shadow-cyan-500/20",
@@ -24,38 +26,63 @@ const plans = [
         featured: false,
     },
     {
-        id: "combo",
-        name: "Performance Combo",
-        subtitle: "Proxy Tool + Job Marketing",
-        price: "750",
-        description: "The ultimate end-to-end package. Get the interviews and ace them effortlessly.",
-        features: [
-            "Everything in Proxy Tool & Job Marketing",
-            "Direct company tie-ups for faster placement",
-            "Targeted company-matched resume creation",
-            "Actual interview question sheets sourced from companies",
-            "Dedicated Placement Manager for your journey"
-        ],
-        gradient: "from-purple-600 to-blue-600",
-        shadow: "shadow-purple-500/40",
-        delay: 0.2,
-        featured: true,
-    },
-    {
         id: "marketing",
-        name: "Job Marketing Only",
-        price: "650",
-        description: "For professionals who need their profile to reach top-tier recruiters.",
+        name: "Marketing Only",
+        subtitle: "Valid for 7 months",
+        price: "600",
+        billing: "upfront",
+        description: "Direct ties with companies to secure your interview calls.",
         features: [
-            "Direct company tie-ups, no generic mass applications",
-            "Actual interview question sheets sourced directly from companies",
-            "Resume built on targeted company's exact template",
-            "Dedicated Placement Manager through every step",
-            "Complete LinkedIn & Profile Optimization"
+            "+ $920 after interview call",
+            "+ 9% success placement fee",
+            "Direct company tie-ups",
+            "Actual interview question sheets sourced from companies",
+            "Targeted company-matched resume creation",
+            "Dedicated Placement Manager"
         ],
         gradient: "from-indigo-600 to-purple-500",
         shadow: "shadow-indigo-500/20",
+        delay: 0.2,
+        featured: false,
+    },
+    {
+        id: "combo",
+        name: "3 Proxy + Marketing",
+        subtitle: "Valid for 7 months",
+        price: "800",
+        billing: "upfront",
+        description: "Combined power of guaranteed interviews and technical proxy support.",
+        features: [
+            "+ $920 after interview call",
+            "+ 9% success placement fee",
+            "3 Proxy interviews support",
+            "Direct company tie-ups",
+            "Actual interview question sheets",
+            "Dedicated Placement Manager"
+        ],
+        gradient: "from-purple-600 to-blue-600",
+        shadow: "shadow-purple-500/40",
         delay: 0.3,
+        featured: true,
+    },
+    {
+        id: "unlimited",
+        name: "Unlimited Proxy + Marketing",
+        subtitle: "Valid for 7 months",
+        price: "1,000",
+        billing: "upfront",
+        description: "The ultimate package. Unlimited support until you're formally hired.",
+        features: [
+            "+ $920 after interview call",
+            "+ 9% success placement fee",
+            "Unlimited Proxy interviews support",
+            "Direct company tie-ups",
+            "Actual interview question sheets",
+            "Dedicated Placement Manager"
+        ],
+        gradient: "from-pink-500 to-rose-500",
+        shadow: "shadow-rose-500/20",
+        delay: 0.4,
         featured: false,
     }
 ]
@@ -118,7 +145,7 @@ export default function PricingFullContent() {
                 </motion.div>
 
                 {/* Pricing Grid */}
-                <div className="grid lg:grid-cols-3 gap-8 items-center max-w-6xl mx-auto mb-32">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch max-w-7xl mx-auto mb-32">
                     {plans.map((plan) => (
                         <motion.div
                             key={plan.id}
@@ -128,7 +155,7 @@ export default function PricingFullContent() {
                             onHoverStart={() => setHoveredPlan(plan.id)}
                             onHoverEnd={() => setHoveredPlan(null)}
                             className={`relative rounded-3xl backdrop-blur-xl transition-all duration-500 flex flex-col h-full
-                                ${plan.featured ? 'bg-white/10 border-2 border-purple-500 my-0 py-12 md:-mt-8 md:mb-[-2rem] z-20' : 'bg-white/5 border border-white/10 p-10 hover:bg-white/[0.08] hover:border-white/30 z-10'}
+                                ${plan.featured ? 'bg-white/10 border-2 border-purple-500 my-0 py-8 lg:-mt-4 lg:mb-[-1rem] z-20' : 'bg-white/5 border border-white/10 p-6 xl:p-8 hover:bg-white/[0.08] hover:border-white/30 z-10'}
                             `}
                             style={{
                                 boxShadow: hoveredPlan === plan.id || plan.featured 
@@ -144,25 +171,25 @@ export default function PricingFullContent() {
                                 </div>
                             )}
 
-                            <div className={plan.featured ? "px-10" : ""}>
-                                <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
-                                {plan.subtitle && <p className="text-purple-400 font-medium mb-2">{plan.subtitle}</p>}
-                                <p className="text-gray-400 text-sm h-12 mb-6">{plan.description}</p>
+                            <div className={plan.featured ? "px-6 xl:px-8" : ""}>
+                                <h3 className="text-xl xl:text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                                {plan.subtitle && <p className="text-purple-400 font-medium text-sm mb-2">{plan.subtitle}</p>}
+                                <p className="text-gray-400 text-xs xl:text-sm h-12 mb-6">{plan.description}</p>
                                 
                                 <div className="flex items-baseline gap-2 mb-8 relative">
-                                    <span className="text-6xl font-extrabold text-white tracking-tight">${plan.price}</span>
-                                    <span className="text-gray-400 font-medium">/one-time</span>
+                                    <span className="text-5xl lg:text-4xl xl:text-5xl font-extrabold text-white tracking-tight">${plan.price}</span>
+                                    <span className="text-gray-400 font-medium">/{plan.billing}</span>
                                 </div>
                             </div>
 
-                            <div className={`flex-1 ${plan.featured ? "px-10 bg-gradient-to-b from-transparent to-black/20 pt-6 rounded-b-3xl border-t border-white/5" : "pt-6 border-t border-white/10"}`}>
+                            <div className={`flex-1 ${plan.featured ? "px-6 xl:px-8 bg-gradient-to-b from-transparent to-black/20 pt-6 rounded-b-3xl border-t border-white/5" : "pt-6 border-t border-white/10"}`}>
                                 <ul className="space-y-4 mb-10">
                                     {plan.features.map((feature, i) => (
                                         <li key={i} className="flex flex-start gap-4">
                                             <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-r ${plan.gradient}`}>
                                                 <HiCheck className="text-white text-sm" />
                                             </div>
-                                            <span className="text-gray-300 font-medium">{feature}</span>
+                                            <span className="text-gray-300 font-medium text-sm xl:text-base">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>

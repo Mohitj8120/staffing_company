@@ -72,29 +72,29 @@ function CostComparisonTable() {
                     <tbody className="text-white/80">
                         <tr className="border-b border-white/5">
                             <td className="px-5 py-3.5 font-medium">Registration Fee</td>
-                            <td className="px-5 py-3.5 text-center text-red-300 font-bold">$1,000</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$599</td>
+                            <td className="px-5 py-3.5 text-center text-red-300 font-bold">$1,500</td>
+                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$600</td>
                         </tr>
                         <tr className="border-b border-white/5">
                             <td className="px-5 py-3.5 font-medium">After Interview Call</td>
                             <td className="px-5 py-3.5 text-center text-red-300 font-bold">$1,000</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$650</td>
+                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$920</td>
                         </tr>
                         <tr className="border-b border-white/5">
                             <td className="px-5 py-3.5 font-medium">Success Fee</td>
                             <td className="px-5 py-3.5 text-center text-red-300 font-bold">12%</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">11%</td>
+                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">9%</td>
                         </tr>
                         <tr>
                             <td className="px-5 py-4 font-bold text-white">Total Upfront</td>
-                            <td className="px-5 py-4 text-center text-red-400 font-extrabold text-base">$2,000</td>
-                            <td className="px-5 py-4 text-center text-green-400 font-extrabold text-base">$599 *</td>
+                            <td className="px-5 py-4 text-center text-red-400 font-extrabold text-base">$1,500</td>
+                            <td className="px-5 py-4 text-center text-green-400 font-extrabold text-base">$600 *</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <p className="text-white/40 text-xs mt-3 text-center italic">
-                *$650 is charged only after you receive an interview call — you pay the rest only when we deliver results.
+                *$920 is charged only after you receive an interview call — you pay the rest only when we deliver results. All plans are valid for 7 months.
             </p>
         </motion.div>
     )
