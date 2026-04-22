@@ -29,12 +29,12 @@ const plans = [
         id: "marketing",
         name: "Marketing Only",
         subtitle: "Valid for 7 months",
-        price: "600",
+        price: "750",
         billing: "upfront",
         description: "Direct ties with companies to secure your interview calls.",
         features: [
-            "+ $920 after interview call",
-            "+ 9% success placement fee",
+            "+ $920 on an offer letter acceptance(on offer letter)",
+            "+ 9% in 90 days for the 1st year of post employment",
             "Direct company tie-ups",
             "Actual interview question sheets sourced from companies",
             "Targeted company-matched resume creation",
@@ -53,8 +53,8 @@ const plans = [
         billing: "upfront",
         description: "Combined power of guaranteed interviews and technical proxy support.",
         features: [
-            "+ $920 after interview call",
-            "+ 9% success placement fee",
+            "+ $920 on an offer letter acceptance(on offer letter)",
+            "+ 9% in 90 days for the 1st year of post employment",
             "3 Proxy interviews support",
             "Direct company tie-ups",
             "Actual interview question sheets",
@@ -73,8 +73,8 @@ const plans = [
         billing: "upfront",
         description: "The ultimate package. Unlimited support until you're formally hired.",
         features: [
-            "+ $920 after interview call",
-            "+ 9% success placement fee",
+            "+ $920 on an offer letter acceptance(on offer letter)",
+            "+ 9% in 90 days for the 1st year of post employment",
             "Unlimited Proxy interviews support",
             "Direct company tie-ups",
             "Actual interview question sheets",
@@ -102,7 +102,7 @@ const faqs = [
     },
     {
         q: "Can I upgrade my plan later?",
-        a: "Absolutely! If you purchase the Proxy Tool or Job Marketing alone and decide you want the combo, you can just pay the difference to upgrade."
+        a: "No, there is no upgrade policy. Need to purchase new plan"
     }
 ]
 
@@ -117,13 +117,13 @@ export default function PricingFullContent() {
 
             <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
                 {/* Hero section */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="text-center max-w-3xl mx-auto mt-16 mb-24"
                 >
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
@@ -132,9 +132,9 @@ export default function PricingFullContent() {
                         <HiOutlineSparkles className="text-purple-400" />
                         <span className="text-sm font-medium tracking-wide text-gray-300">Level up your tech career</span>
                     </motion.div>
-                    
+
                     <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
-                        Simple pricing for <br className="hidden md:block"/>
+                        Simple pricing for <br className="hidden md:block" />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 animate-gradient-x">
                             powerful results.
                         </span>
@@ -158,7 +158,7 @@ export default function PricingFullContent() {
                                 ${plan.featured ? 'bg-white/10 border-2 border-purple-500 my-0 py-8 lg:-mt-4 lg:mb-[-1rem] z-20' : 'bg-white/5 border border-white/10 p-6 xl:p-8 hover:bg-white/[0.08] hover:border-white/30 z-10'}
                             `}
                             style={{
-                                boxShadow: hoveredPlan === plan.id || plan.featured 
+                                boxShadow: hoveredPlan === plan.id || plan.featured
                                     ? `0 0 40px -10px ${plan.gradient.includes('purple') ? '#9333ea' : '#3b82f6'}`
                                     : 'none'
                             }}
@@ -175,7 +175,7 @@ export default function PricingFullContent() {
                                 <h3 className="text-xl xl:text-2xl font-bold text-white mb-2">{plan.name}</h3>
                                 {plan.subtitle && <p className="text-purple-400 font-medium text-sm mb-2">{plan.subtitle}</p>}
                                 <p className="text-gray-400 text-xs xl:text-sm h-12 mb-6">{plan.description}</p>
-                                
+
                                 <div className="flex items-baseline gap-2 mb-8 relative">
                                     <span className="text-5xl lg:text-4xl xl:text-5xl font-extrabold text-white tracking-tight">${plan.price}</span>
                                     <span className="text-gray-400 font-medium">/{plan.billing}</span>
@@ -213,7 +213,7 @@ export default function PricingFullContent() {
                 </div>
 
                 {/* FAQ Section */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
@@ -226,8 +226,8 @@ export default function PricingFullContent() {
 
                     <div className="grid md:grid-cols-2 gap-8">
                         {faqs.map((faq, i) => (
-                            <motion.div 
-                                key={i} 
+                            <motion.div
+                                key={i}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
@@ -244,7 +244,7 @@ export default function PricingFullContent() {
                     </div>
                 </motion.div>
             </div>
-            
+
             <style jsx>{`
                 @keyframes gradient-x {
                     0%, 100% { background-position: 0% 50%; }
