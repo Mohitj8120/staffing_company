@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { HiCheckCircle, HiStar } from "react-icons/hi"
+import { HiCheckCircle, HiStar, HiSparkles } from "react-icons/hi"
 import Link from "next/link"
 
 const plans = [
@@ -18,160 +18,193 @@ const plans = [
             "Invisible while screen sharing"
         ],
         gradient: "from-blue-600 to-cyan-500",
-        shadow: "hover:shadow-cyan-500/40",
+        shadow: "hover:shadow-cyan-500/30",
         popular: false
     },
     {
         name: "Marketing Only",
-        price: "600",
-        subtitle: "Upfront",
-        description: "We secure your interviews with our direct company network.",
+        price: "750",
+        subtitle: "Valid for 7 months",
+        description: "Direct ties with companies to secure your interview calls.",
         features: [
-            "+ $920 after interview call",
-            "+ 9% success placement fee",
+            "+ $920 on offer letter acceptance",
+            "+ 9% in 90 days (post employment)",
             "Direct company tie-ups",
-            "Valid for 7 full months"
+            "Actual interview question sheets",
+            "Dedicated Placement Manager"
         ],
         gradient: "from-indigo-600 to-purple-500",
-        shadow: "hover:shadow-indigo-500/40",
+        shadow: "hover:shadow-indigo-500/30",
         popular: false
     },
     {
         name: "3 Proxy + Marketing",
         price: "800",
-        subtitle: "Upfront",
-        description: "Combined power of interview calls and technical proxy support.",
+        subtitle: "Valid for 7 months",
+        description: "Combined power of guaranteed interviews and technical proxy support.",
         features: [
-            "+ $920 after interview call",
-            "+ 9% success placement fee",
-            "3 Proxy tool interviews",
-            "Valid for 7 full months"
+            "+ $920 on offer letter acceptance",
+            "+ 9% in 90 days (post employment)",
+            "3 Proxy interviews support",
+            "Direct company tie-ups",
+            "Dedicated Placement Manager"
         ],
         gradient: "from-purple-600 to-blue-600",
-        shadow: "hover:shadow-purple-500/50",
+        shadow: "hover:shadow-purple-500/40",
         popular: true
     },
     {
         name: "Unlimited Proxy + Marketing",
         price: "1,000",
-        subtitle: "Upfront",
-        description: "The ultimate package. Unlimited support until you're hired.",
+        subtitle: "Valid for 7 months",
+        description: "The ultimate package. Unlimited support until you're formally hired.",
         features: [
-            "+ $920 after interview call",
-            "+ 9% success placement fee",
-            "Unlimited Proxy interviews",
-            "Valid for 7 full months"
+            "+ $920 on offer letter acceptance",
+            "+ 9% in 90 days (post employment)",
+            "Unlimited Proxy support",
+            "Direct company tie-ups",
+            "Dedicated Placement Manager"
         ],
         gradient: "from-pink-500 to-rose-500",
-        shadow: "hover:shadow-rose-500/40",
+        shadow: "hover:shadow-rose-500/30",
         popular: false
     }
 ]
 
 export default function PricingPreview() {
     return (
-        <section className="py-24 relative overflow-hidden bg-white" id="pricing-preview">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-50/50 via-white to-white pointer-events-none"></div>
+        <section className="py-28 relative overflow-hidden bg-[#fcfaff]" id="pricing-preview">
+            {/* Soft decorative background elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-200/40 blur-[120px] rounded-full" />
+                <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-blue-200/30 blur-[100px] rounded-full" />
+                <div className="absolute -bottom-[5%] left-[20%] w-[35%] h-[35%] bg-rose-100/40 blur-[100px] rounded-full" />
+            </div>
             
             <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-                <div className="text-center mb-16">
+                <div className="text-center mb-20">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <span className="px-4 py-1.5 rounded-full bg-purple-100 text-purple-700 font-semibold text-sm tracking-wide uppercase shadow-sm border border-purple-200">
-                            Transparent Pricing
-                        </span>
-                        <h2 className="mt-6 text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-                            Invest in your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">career growth</span>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white shadow-sm border border-purple-100 mb-6">
+                            <HiSparkles className="text-purple-500" />
+                            <span className="text-purple-700 font-bold text-xs tracking-wider uppercase">
+                                Invest in your future
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+                            Simple Pricing, <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 animate-gradient-x">
+                                Massive ROI.
+                            </span>
                         </h2>
-                        <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                            Choose the plan that best fits your needs. Get full access to our premium tools or expert marketing services.
+                        <p className="mt-6 text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed">
+                            No hidden fees. No subscriptions. Just transparent pricing for the tools and support you need to land your dream job.
                         </p>
                     </motion.div>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto items-stretch">
                     {plans.map((plan, index) => (
                         <motion.div
                             key={plan.name}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 40 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: index * 0.15 }}
-                            whileHover={{ y: -8 }}
-                            className={`relative bg-white rounded-3xl border-2 transition-all duration-300 ${
-                                plan.popular ? 'border-purple-500 shadow-2xl shadow-purple-500/20 z-10' : 'border-gray-100 shadow-xl'
-                            } ${plan.shadow} flex flex-col h-full`}
+                            transition={{ duration: 0.7, delay: index * 0.1 }}
+                            whileHover={{ y: -10 }}
+                            className={`group relative flex flex-col h-full bg-white rounded-[2rem] border transition-all duration-500 overflow-hidden ${
+                                plan.popular 
+                                ? 'border-purple-200 shadow-[0_20px_50px_rgba(147,51,234,0.12)] scale-105 z-20 md:-translate-y-2' 
+                                : 'border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] z-10'
+                            }`}
                         >
                             {plan.popular && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-max">
-                                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg flex items-center gap-1">
-                                        <HiStar className="text-yellow-300" /> Best Value
-                                    </span>
+                                <div className="absolute top-0 left-0 w-full">
+                                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 py-2 text-center">
+                                        <span className="text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-1.5">
+                                            <HiStar className="text-yellow-300 animate-pulse" /> Most Popular Choice
+                                        </span>
+                                    </div>
                                 </div>
                             )}
 
-                            <div className="p-6 xl:p-8 flex-1">
-                                <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-                                <p className="mt-2 text-xs xl:text-sm text-gray-500 h-10">{plan.description}</p>
+                            <div className={`p-8 ${plan.popular ? 'pt-12' : ''} flex-1`}>
+                                <div className="mb-6">
+                                    <h3 className={`text-xl font-black ${plan.popular ? 'text-purple-900' : 'text-slate-800'} mb-2`}>{plan.name}</h3>
+                                    <p className="text-slate-400 text-sm font-medium leading-snug min-h-[40px]">{plan.description}</p>
+                                </div>
                                 
-                                <div className="mt-6 mb-8 flex items-baseline gap-1">
-                                    <span className="text-4xl lg:text-3xl xl:text-4xl font-extrabold text-gray-900">${plan.price}</span>
-                                    <span className="text-sm font-semibold text-gray-500 uppercase">/ {plan.subtitle}</span>
+                                <div className="mb-8 p-6 rounded-2xl bg-slate-50/50 border border-slate-100 group-hover:bg-white group-hover:border-purple-100 transition-colors duration-300">
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-5xl font-black text-slate-900 tracking-tighter">${plan.price}</span>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{plan.subtitle}</span>
+                                    </div>
                                 </div>
 
-                                <ul className="space-y-4">
+                                <ul className="space-y-4 mb-8">
                                     {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3">
-                                            <HiCheckCircle className={`text-xl mt-0.5 shrink-0 bg-clip-text text-transparent bg-gradient-to-r ${plan.gradient}`} style={{ WebkitTextFillColor: "transparent", fill: "url(#gradient)" }} />
-                                            {/* Note: WebkitTextFillColor for react-icons doesn't always work perfectly, so standard coloring below */}
-                                            <svg width="0" height="0" className="hidden">
-                                              <linearGradient id={`${plan.gradient.replace(/\s+/g, '-')}`} x1="100%" y1="100%" x2="0%" y2="0%">
-                                                <stop stopColor={plan.gradient.includes('purple') ? '#9333ea' : '#2563eb'} offset="0%" />
-                                                <stop stopColor={plan.gradient.includes('blue') ? '#3b82f6' : '#06b6d4'} offset="100%" />
-                                              </linearGradient>
-                                            </svg>
-                                            <span className="text-gray-700 font-medium text-sm xl:text-base">{feature}</span>
+                                        <li key={i} className="flex items-start gap-3 group/item">
+                                            <div className={`mt-1 p-0.5 rounded-full bg-gradient-to-r ${plan.gradient} shadow-sm group-hover/item:scale-110 transition-transform`}>
+                                                <HiCheckCircle className="text-white text-lg" />
+                                            </div>
+                                            <span className="text-slate-600 font-semibold text-sm leading-tight">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
 
-                            <div className="p-6 xl:p-8 pt-0 mt-auto">
-                                <Link href="/pricing" className="block w-full">
-                                    <button className={`w-full py-4 rounded-xl font-bold text-white transition-all duration-300 hover:shadow-lg bg-gradient-to-r ${plan.gradient} hover:scale-105`}>
-                                        View Full Details
+                            <div className="px-8 pb-8 mt-auto">
+                                <Link href="/pricing" className="block group/btn">
+                                    <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
+                                        ${plan.popular 
+                                            ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)]' 
+                                            : 'bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-white'
+                                        }
+                                    `}>
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                            Get Full Access
+                                            <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>
+                                        </span>
                                     </button>
                                 </Link>
                             </div>
-                            
-                            {/* Adding the styling for icons manually to ensure gradient works */}
-                            <style jsx>{`
-                                .text-xl.mt-0\\.5 {
-                                    fill: url(#${plan.gradient.replace(/\s+/g, '-')});
-                                    color: ${plan.popular ? '#9333ea' : '#2563eb'};
-                                }
-                            `}</style>
+
+                            {/* Background accent glow on hover */}
+                            <div className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br ${plan.gradient} opacity-0 group-hover:opacity-[0.03] blur-3xl transition-opacity duration-700 rounded-full`} />
                         </motion.div>
                     ))}
                 </div>
                 
                 <motion.div 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.8 }}
-                    className="mt-16 text-center"
+                    transition={{ delay: 0.6, duration: 0.5 }}
+                    className="mt-20 text-center"
                 >
-                    <Link href="/pricing" className="inline-flex items-center gap-2 text-purple-600 font-bold hover:text-purple-800 transition-colors group">
-                        See all features and comparisons
-                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    <Link href="/pricing" className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 rounded-full text-slate-600 font-bold hover:text-purple-600 hover:border-purple-200 hover:shadow-xl transition-all duration-500 overflow-hidden">
+                        <span className="relative z-10">Compare all features and services</span>
+                        <span className="relative z-10 group-hover:translate-x-1 transition-transform">→</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-blue-50 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                     </Link>
                 </motion.div>
             </div>
+
+            <style jsx>{`
+                @keyframes gradient-x {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+                .animate-gradient-x {
+                    background-size: 200% 200%;
+                    animation: gradient-x 10s ease infinite;
+                }
+            `}</style>
         </section>
     )
 }
+
