@@ -3,6 +3,7 @@
 
 import React from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { SiGooglemeet, SiZoom, SiHackerrank, SiLeetcode, SiSlack, SiGithub } from "react-icons/si"
 import { BsMicrosoftTeams } from "react-icons/bs"
 import { FaCode } from "react-icons/fa"
@@ -61,15 +62,17 @@ export default function Integrations() {
                     Our Proxy Tool runs undetected even during full screen sharing.<br className="hidden md:block" />
                     — Perfectly integrated with your entire interview stack.
                 </motion.p>
-                <motion.button
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="bg-gray-900 hover:bg-black text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:scale-95"
-                >
-                    Get Proxy Access
-                </motion.button>
+                <Link href="/proxy-tool">
+                    <motion.button
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        className="bg-gray-900 hover:bg-black text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:scale-95"
+                    >
+                        Get Proxy Access
+                    </motion.button>
+                </Link>
             </div>
 
             {/* ───── Orbit Arena ───── */}
