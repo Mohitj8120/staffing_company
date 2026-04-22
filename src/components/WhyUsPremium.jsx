@@ -73,7 +73,7 @@ function CostComparisonTable() {
                         <tr className="border-b border-white/5">
                             <td className="px-5 py-3.5 font-medium">Registration Fee</td>
                             <td className="px-5 py-3.5 text-center text-red-300 font-bold">$1,500</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$600</td>
+                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$750</td>
                         </tr>
                         <tr className="border-b border-white/5">
                             <td className="px-5 py-3.5 font-medium">After Interview Call</td>
@@ -88,13 +88,13 @@ function CostComparisonTable() {
                         <tr>
                             <td className="px-5 py-4 font-bold text-white">Total Upfront</td>
                             <td className="px-5 py-4 text-center text-red-400 font-extrabold text-base">$1,500</td>
-                            <td className="px-5 py-4 text-center text-green-400 font-extrabold text-base">$600 *</td>
+                            <td className="px-5 py-4 text-center text-green-400 font-extrabold text-base">$750 *</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <p className="text-white/40 text-xs mt-3 text-center italic">
-                *$920 is charged only after you receive an interview call — you pay the rest only when we deliver results. All plans are valid for 7 months.
+                *$920 is charged only after you receive an offer letter — you pay the rest only when we deliver results. All plans are valid for 7 months.
             </p>
         </motion.div>
     )
