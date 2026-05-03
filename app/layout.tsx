@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Talentra | Premium Support",
-  description: "Talentra Staffing Solutions",
+  title: "Averion Group | Premium Support",
+  description: "Averion Group Staffing Solutions",
 };
 
 export const viewport: Viewport = {

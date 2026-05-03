@@ -20,7 +20,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
                 <Link href="/">
                     <h1 className="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-700 cursor-pointer">
-                        Talentra
+                        Averion Group
                     </h1>
                 </Link>
 

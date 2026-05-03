@@ -11,10 +11,10 @@ export default function HeroVideo() {
 
             {/* background blur clouds */}
 
-            <div className="absolute left-0 bottom-0 w-[500px] h-[500px] bg-white opacity-20 blur-3xl rounded-full" />
-            <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-white opacity-20 blur-3xl rounded-full" />
+            <div className="absolute left-0 bottom-0 w-[500px] h-[500px] bg-white opacity-20 blur-3xl rounded-full pointer-events-none" />
+            <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-white opacity-20 blur-3xl rounded-full pointer-events-none" />
 
-            <div className="max-w-6xl mx-auto text-center px-6">
+            <div className="relative z-10 max-w-6xl mx-auto text-center px-6">
 
                 {/* main title */}
 
@@ -67,10 +67,12 @@ export default function HeroVideo() {
 
                 <div className="mt-6 max-w-4xl mx-auto rounded-2xl overflow-hidden border-4 border-white shadow-2xl">
 
-                    <iframe
-                        className="w-full aspect-video"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        allowFullScreen
+                    <video
+                        className="w-full aspect-video object-cover"
+                        controls
+                        controlsList="nodownload"
+                        playsInline
+                        src="/my-video.mp4"
                     />
 
                 </div>

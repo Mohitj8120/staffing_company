@@ -7,12 +7,12 @@ export default function TermsContent() {
         <LegalContent title="Terms & Conditions" lastUpdated="March 20, 2026">
             <h2>1. Acceptance of Terms</h2>
             <p>
-                By accessing and using Talentra (talentra.io) and its associated services, including the AI Proxy Tool, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please refrain from using our services.
+                By accessing and using Averion Group (averiongroup.com) and its associated services, including the AI Proxy Tool, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please refrain from using our services.
             </p>
 
             <h2>2. Description of Services</h2>
             <p>
-                Talentra provides career placement assistance, resume optimization, and interview preparation technologies. Our flagship "AI Proxy Tool" is a supplemental utility designed to assist candidates during technical evaluations. 
+                Averion Group provides career placement assistance, resume optimization, and interview preparation technologies. Our flagship "AI Proxy Tool" is a supplemental utility designed to assist candidates during technical evaluations. 
             </p>
 
             <h2>3. AI Proxy Tool Usage & Ethics</h2>
@@ -42,7 +42,7 @@ export default function TermsContent() {
 
             <h2>6. Limitation of Liability</h2>
             <p>
-                Talentra shall not be liable for any indirect, incidental, or consequential damages resulting from the use or inability to use our services or for the cost of procurement of substitute services.
+                Averion Group shall not be liable for any indirect, incidental, or consequential damages resulting from the use or inability to use our services or for the cost of procurement of substitute services.
             </p>
         </LegalContent>
     )

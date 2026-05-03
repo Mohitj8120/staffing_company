@@ -26,10 +26,12 @@ Watch how we help students get jobs faster
 
 <div className="mt-10 rounded-xl overflow-hidden shadow-xl">
 
-<iframe
-className="w-full h-112.5"
-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-allowFullScreen
+<video
+className="w-full aspect-video object-cover"
+controls
+controlsList="nodownload"
+playsInline
+src="/my-video.mp4"
 />
 
 </div>

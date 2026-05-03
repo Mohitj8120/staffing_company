@@ -10,7 +10,7 @@ export default function CookiesContent() {
                 Cookies are small text files stored on your device when you visit a website. They help the site recognize your device and remember information about your visit.
             </p>
 
-            <h2>2. How Talentra Uses Cookies</h2>
+            <h2>2. How Averion Group Uses Cookies</h2>
             <p>
                 We use cookies for the following purposes:
             </p>

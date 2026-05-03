@@ -5,19 +5,19 @@ import { motion, AnimatePresence } from "framer-motion"
 
 const faqs = [
     {
-        q: "What is Talentra?",
-        a: "Talentra is a premium staffing and placement platform that connects talented professionals with top companies across various industries."
+        q: "What is Averion Group?",
+        a: "Averion Group is a premium staffing and placement platform that connects talented professionals with top companies across various industries."
     },
     {
-        q: "Who is Talentra for?",
-        a: "Talentra is for job seekers looking for career opportunities and companies seeking skilled professionals to fill their open positions."
+        q: "Who is Averion Group for?",
+        a: "Averion Group is for job seekers looking for career opportunities and companies seeking skilled professionals to fill their open positions."
     },
     {
         q: "How does the placement process work?",
         a: "We match candidates with suitable opportunities through our AI-powered matching system, followed by interviews and onboarding support."
     },
     {
-        q: "Is Talentra free to use?",
+        q: "Is Averion Group free to use?",
         a: "For job seekers, our basic services are completely free. Premium career coaching and resume services are available at affordable rates."
     },
     {
@@ -37,11 +37,11 @@ const faqs = [
         a: "We offer 90-day post-placement support including onboarding assistance, performance check-ins, and career mentoring."
     },
     {
-        q: "How can companies partner with Talentra?",
+        q: "How can companies partner with Averion Group?",
         a: "Companies can reach out through our Get Started page or contact our business team directly to discuss partnership and staffing solutions."
     },
     {
-        q: "What makes Talentra different?",
+        q: "What makes Averion Group different?",
         a: "Our AI-driven matching, dedicated career coaches, and 95%+ placement success rate set us apart from traditional staffing agencies."
     },
     {
@@ -66,7 +66,7 @@ const faqs = [
     },
     {
         q: "Can I update my resume on the platform?",
-        a: "Yes! You can upload, update, and manage multiple versions of your resume directly from your Talentra dashboard."
+        a: "Yes! You can upload, update, and manage multiple versions of your resume directly from your Averion Group dashboard."
     },
     {
         q: "Is there a mobile app available?",
@@ -74,7 +74,7 @@ const faqs = [
     },
     {
         q: "How do I contact support?",
-        a: "You can reach our support team via email at support@talentra.io or through the live chat feature available on our website."
+        a: "You can reach our support team via email at support@averiongroup.com or through the live chat feature available on our website."
     },
 ]
 
@@ -201,7 +201,7 @@ export default function FAQ() {
                     transition={{ duration: 0.6, delay: 0.3 }}
                     className="text-center text-gray-400 text-sm mt-10"
                 >
-                    📩 Feel free to mail us for any enquiries — <a href="mailto:support@talentra.io" className="text-purple-500 hover:underline">support@talentra.io</a>
+                    📩 Feel free to mail us for any enquiries — <a href="mailto:support@averiongroup.com" className="text-purple-500 hover:underline">support@averiongroup.com</a>
                 </motion.p>
 
             </div>
