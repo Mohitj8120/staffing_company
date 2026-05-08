@@ -1,6 +1,6 @@
-import RefundContent from "../src/components/RefundContent";
-import Navbar from "../src/components/Navbar";
-import Footer from "../src/components/Footer";
+import RefundContent from "../../src/components/RefundContent";
+import Navbar from "../../src/components/Navbar";
+import Footer from "../../src/components/Footer";
 
 export const metadata = {
   title: "Refund Policy | Averion Group",

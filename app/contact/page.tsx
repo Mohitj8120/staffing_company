@@ -1,6 +1,6 @@
-import ContactContent from "../src/components/ContactContent";
-import Navbar from "../src/components/Navbar";
-import Footer from "../src/components/Footer";
+import ContactContent from "../../src/components/ContactContent";
+import Navbar from "../../src/components/Navbar";
+import Footer from "../../src/components/Footer";
 
 export const metadata = {
   title: "Contact Us | Averion Group",
