@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion"
 import { HiCheck, HiOutlineSparkles, HiOutlineQuestionMarkCircle } from "react-icons/hi"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
+import NegotiationSection from "./NegotiationSection"
 
 const plans = [
     {
@@ -108,6 +109,11 @@ const faqs = [
 
 export default function PricingFullContent() {
     const [hoveredPlan, setHoveredPlan] = useState(null)
+    const negotiationRef = useRef(null)
+
+    const scrollToNegotiation = () => {
+        negotiationRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
 
     return (
         <div className="min-h-screen bg-[#030014] text-white pt-24 pb-20 overflow-hidden font-sans">
@@ -199,12 +205,20 @@ export default function PricingFullContent() {
                                         ${plan.featured ? 'bg-white text-purple-900 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-white/10 text-white hover:bg-white/20'}
                                     `}>
                                         <span className="relative z-10 flex items-center justify-center gap-2">
-                                            Get Started
+                                            Pay & Start Your Career
                                             <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
                                         </span>
                                         {plan.featured && (
                                             <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         )}
+                                    </button>
+
+                                    <button 
+                                        onClick={scrollToNegotiation}
+                                        className="w-full mt-4 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] text-purple-300 bg-white/5 border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all duration-500 relative overflow-hidden group/neg"
+                                    >
+                                        <span className="relative z-10">Proceed to Pay & Secure Job</span>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 -translate-x-full group-hover/neg:translate-x-full transition-transform duration-1000" />
                                     </button>
                                 </div>
                             </div>
@@ -243,6 +257,10 @@ export default function PricingFullContent() {
                         ))}
                     </div>
                 </motion.div>
+
+                <div ref={negotiationRef}>
+                    <NegotiationSection />
+                </div>
             </div>
 
             <style jsx>{`

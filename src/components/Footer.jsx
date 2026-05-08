@@ -86,6 +86,7 @@ export default function Footer() {
                                 <li><Link href="/#faq" className="hover:text-purple-400 transition-colors">FAQ</Link></li>
                                 <li><Link href="/terms" className="hover:text-purple-400 transition-colors">Terms & Conditions</Link></li>
                                 <li><Link href="/privacy" className="hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
+                                <li><Link href="/refund" className="hover:text-purple-400 transition-colors">Refund Policy</Link></li>
                                 <li><Link href="/cookies" className="hover:text-purple-400 transition-colors">Cookies Policy</Link></li>
                             </ul>
                         </div>

@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
+import { HiChevronRight } from "react-icons/hi"
 
 const blocks = [
     {
@@ -68,35 +70,35 @@ function CostComparisonTable() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-8 w-full"
         >
-            <div className="overflow-x-auto rounded-2xl border border-white/20 bg-black/30 backdrop-blur-md">
-                <table className="w-full text-left text-sm">
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40 backdrop-blur-2xl shadow-2xl">
+                <table className="w-full text-left text-sm border-collapse">
                     <thead>
-                        <tr className="border-b border-white/10">
-                            <th className="px-5 py-4 text-white/60 font-semibold uppercase text-xs tracking-wider">Fee Structure</th>
-                            <th className="px-5 py-4 text-red-300 font-semibold uppercase text-xs tracking-wider text-center">Other Agencies</th>
-                            <th className="px-5 py-4 text-green-300 font-semibold uppercase text-xs tracking-wider text-center">Averion Group</th>
+                        <tr className="bg-white/5">
+                            <th className="px-6 py-5 text-white/40 font-black uppercase text-[10px] tracking-[0.2em]">Fee Structure</th>
+                            <th className="px-6 py-5 text-red-400/80 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-red-500/5">Other Agencies</th>
+                            <th className="px-6 py-5 text-green-400 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-green-500/10 shadow-[inset_0_0_20px_rgba(34,197,94,0.1)]">Averion Group</th>
                         </tr>
                     </thead>
                     <tbody className="text-white/80">
-                        <tr className="border-b border-white/5">
-                            <td className="px-5 py-3.5 font-medium">Registration Fee</td>
-                            <td className="px-5 py-3.5 text-center text-red-300 font-bold">$1,500</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$750</td>
+                        <tr className="border-b border-white/5 group/row hover:bg-white/[0.02] transition-colors">
+                            <td className="px-6 py-4 font-bold text-white/90">Registration Fee</td>
+                            <td className="px-6 py-4 text-center text-red-400/60 font-black line-through opacity-50">$1,500</td>
+                            <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">$750</td>
                         </tr>
-                        <tr className="border-b border-white/5">
-                            <td className="px-5 py-3.5 font-medium">After Interview Call</td>
-                            <td className="px-5 py-3.5 text-center text-red-300 font-bold">$1,000</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">$920</td>
+                        <tr className="border-b border-white/5 group/row hover:bg-white/[0.02] transition-colors">
+                            <td className="px-6 py-4 font-bold text-white/90">After Interview Call</td>
+                            <td className="px-6 py-4 text-center text-red-400/60 font-black line-through opacity-50">$1,000</td>
+                            <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">$920</td>
                         </tr>
-                        <tr className="border-b border-white/5">
-                            <td className="px-5 py-3.5 font-medium">Success Fee</td>
-                            <td className="px-5 py-3.5 text-center text-red-300 font-bold">12%</td>
-                            <td className="px-5 py-3.5 text-center text-green-300 font-bold">9%</td>
+                        <tr className="border-b border-white/5 group/row hover:bg-white/[0.02] transition-colors">
+                            <td className="px-6 py-4 font-bold text-white/90">Success Fee</td>
+                            <td className="px-6 py-4 text-center text-red-400/60 font-black line-through opacity-50">12%</td>
+                            <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">9%</td>
                         </tr>
-                        <tr>
-                            <td className="px-5 py-4 font-bold text-white">Total Upfront</td>
-                            <td className="px-5 py-4 text-center text-red-400 font-extrabold text-base">$1,500</td>
-                            <td className="px-5 py-4 text-center text-green-400 font-extrabold text-base">$750 *</td>
+                        <tr className="bg-white/5">
+                            <td className="px-6 py-6 font-black text-white uppercase tracking-wider">Total Upfront</td>
+                            <td className="px-6 py-6 text-center text-red-500 font-black text-xl">$1,500</td>
+                            <td className="px-6 py-6 text-center text-green-500 font-black text-2xl bg-green-500/10 shadow-[inset_0_0_30px_rgba(34,197,94,0.2)]">$750*</td>
                         </tr>
                     </tbody>
                 </table>
@@ -104,6 +106,15 @@ function CostComparisonTable() {
             <p className="text-white/40 text-xs mt-3 text-center italic">
                 *$920 is charged only after you receive an offer letter — you pay the rest only when we deliver results. All plans are valid for 7 months.
             </p>
+            <div className="mt-8 flex justify-center">
+                <Link href="/pricing#negotiate" className="group relative py-4 px-8 rounded-full border border-purple-500/30 bg-purple-500/5 overflow-hidden transition-all duration-500 hover:border-purple-400 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+                    <div className="relative z-10 flex items-center gap-3">
+                        <span className="text-sm font-black uppercase tracking-[0.2em] text-purple-300 group-hover:text-white transition-colors">Flexible budget? Check out negotiating plan</span>
+                        <HiChevronRight className="text-purple-400 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600/0 via-purple-600/10 to-purple-600/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                </Link>
+            </div>
         </motion.div>
     )
 }

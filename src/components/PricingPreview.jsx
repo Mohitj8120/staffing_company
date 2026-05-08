@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion"
 import { HiCheckCircle, HiStar, HiSparkles } from "react-icons/hi"
+import { useRef } from "react"
 import Link from "next/link"
+import NegotiationSection from "./NegotiationSection"
 
 const plans = [
     {
@@ -72,6 +74,12 @@ const plans = [
 ]
 
 export default function PricingPreview() {
+    const negotiationRef = useRef(null)
+
+    const scrollToNegotiation = () => {
+        negotiationRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+
     return (
         <section className="py-28 relative overflow-hidden bg-[#fcfaff]" id="pricing-preview">
             {/* Soft decorative background elements */}
@@ -166,11 +174,19 @@ export default function PricingPreview() {
                                         }
                                     `}>
                                         <span className="relative z-10 flex items-center justify-center gap-2">
-                                            Get Full Access
+                                            Pay & Start Your Career
                                             <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>
                                         </span>
                                     </button>
                                 </Link>
+
+                                <button 
+                                    onClick={scrollToNegotiation}
+                                    className="w-full mt-4 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] text-slate-400 hover:text-purple-600 bg-slate-50 border border-slate-200 hover:border-purple-200 hover:shadow-[0_10px_25px_rgba(147,51,234,0.1)] transition-all duration-500 relative overflow-hidden group/neg"
+                                >
+                                    <span className="relative z-10">Proceed to Pay & Secure Job</span>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 -translate-x-full group-hover/neg:translate-x-full transition-transform duration-1000" />
+                                </button>
                             </div>
 
                             {/* Background accent glow on hover */}
@@ -192,6 +208,10 @@ export default function PricingPreview() {
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-blue-50 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                     </Link>
                 </motion.div>
+
+                <div ref={negotiationRef} className="mt-32">
+                    <NegotiationSection />
+                </div>
             </div>
 
             <style jsx>{`
