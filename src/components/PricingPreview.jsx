@@ -313,9 +313,9 @@ export default function PricingPreview() {
                                             e.stopPropagation();
                                             scrollToNegotiation();
                                         }}
-                                        className="w-full mt-4 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] text-slate-400 hover:text-purple-600 bg-slate-50 border border-slate-200 hover:border-purple-200 transition-all duration-500 relative overflow-hidden group/neg"
+                                        className="w-full mt-4 py-4 rounded-xl font-black text-xs uppercase tracking-[0.15em] text-slate-400 hover:text-purple-600 bg-slate-50 border border-slate-200 hover:border-purple-200 transition-all duration-500 relative overflow-hidden group/neg"
                                     >
-                                        <span className="relative z-10">Proceed to Pay & Secure Job</span>
+                                        <span className="relative z-10">Check our Negotiation Plan also</span>
                                         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 -translate-x-full group-hover/neg:translate-x-full transition-transform duration-1000" />
                                     </button>
                                 </div>

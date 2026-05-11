@@ -327,9 +327,9 @@ export default function PricingFullContent() {
                                             e.stopPropagation();
                                             scrollToNegotiation();
                                         }}
-                                        className="w-full mt-4 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition-colors duration-300"
+                                        className="w-full mt-4 py-3 rounded-xl font-black text-xs uppercase tracking-widest text-gray-400 hover:text-purple-400 transition-all duration-300"
                                     >
-                                        Negotiate with us
+                                        Check our Negotiation Plan also
                                     </button>
                                 </div>
 
