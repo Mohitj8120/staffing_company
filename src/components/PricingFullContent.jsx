@@ -99,8 +99,10 @@ const faqs = [
 ]
 
 const RazorpayButton = ({ buttonId, children }) => {
+    const { data: session } = useSession();
     const containerRef = useRef(null);
     const rzpButtonRef = useRef(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (!containerRef.current) return;

@@ -3,6 +3,8 @@
 import { motion } from "framer-motion"
 import { HiCheckCircle, HiStar, HiSparkles } from "react-icons/hi"
 import { useRef, useEffect, useState } from "react"
+import { useSession, signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import NegotiationSection from "./NegotiationSection"
 
@@ -74,6 +76,8 @@ const plans = [
 ]
 
 const RazorpayButton = ({ buttonId, children }) => {
+    const { data: session } = useSession();
+    const router = useRouter();
     const containerRef = useRef(null);
     const rzpButtonRef = useRef(null);
 
@@ -130,6 +134,11 @@ const RazorpayButton = ({ buttonId, children }) => {
             e.preventDefault();
             e.stopPropagation();
         }
+
+        if (!session) {
+            router.push('/auth/signin');
+            return;
+        }
         
         if (rzpButtonRef.current) {
             rzpButtonRef.current.click();
@@ -149,6 +158,8 @@ const RazorpayButton = ({ buttonId, children }) => {
 };
 
 export default function PricingPreview() {
+    const { data: session } = useSession()
+    const router = useRouter()
     const [selectedPlanName, setSelectedPlanName] = useState("3 Proxy + Marketing")
     const negotiationRef = useRef(null)
 
@@ -258,25 +269,32 @@ export default function PricingPreview() {
                                                 }
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                    {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
                                                     {isSelected && <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>}
                                                 </span>
                                             </button>
                                         </RazorpayButton>
                                     ) : (
-                                        <Link href={isSelected ? "/pricing" : "#"} onClick={(e) => !isSelected && e.preventDefault()} className="block group/btn">
-                                            <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
+                                        <button 
+                                            onClick={() => {
+                                                if (!isSelected) return;
+                                                if (!session) {
+                                                    router.push('/auth/signin');
+                                                } else {
+                                                    router.push('/pricing');
+                                                }
+                                            }}
+                                            className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
                                                 ${isSelected 
                                                     ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
                                                     : 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
                                                 }
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                    {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
                                                     {isSelected && <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>}
                                                 </span>
                                             </button>
-                                        </Link>
                                     )}
 
                                     <button 
