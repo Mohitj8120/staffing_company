@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { HiLightningBolt, HiBadgeCheck, HiGlobeAlt, HiChevronRight, HiSparkles, HiPlusCircle, HiCheckCircle } from "react-icons/hi"
 import { useState, useRef } from "react"
+import { useSession, signIn } from "next-auth/react"
 
 const negotiateOptions = [
     {
@@ -68,6 +69,7 @@ const negotiateOptions = [
 ]
 
 export default function NegotiationSection() {
+    const { data: session } = useSession()
     const [selectedId, setSelectedId] = useState("one-time-fixed") 
     const [hasProxyAddon, setHasProxyAddon] = useState(false)
     const containerRef = useRef(null)
@@ -261,14 +263,23 @@ export default function NegotiationSection() {
                                         ))}
                                     </ul>
 
-                                    <button className={`w-full py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] transition-all duration-500 relative overflow-hidden group/btn shadow-2xl
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (!session) {
+                                                signIn('google');
+                                            } else {
+                                                // Handle actual payment here
+                                            }
+                                        }}
+                                        className={`w-full py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] transition-all duration-500 relative overflow-hidden group/btn shadow-2xl
                                         ${isSelected 
                                             ? 'bg-white text-black hover:shadow-purple-500/40' 
                                             : 'bg-white/10 text-white/40 border border-white/5 cursor-not-allowed'
                                         }
                                     `}>
                                         <span className="relative z-10 flex items-center justify-center gap-3">
-                                            {isSelected ? 'Proceed to Pay & Secure Job' : 'Select Plan'}
+                                            {isSelected ? (session ? 'Proceed to Pay & Secure Job' : 'Login to Proceed') : 'Select Plan'}
                                             {isSelected && <HiSparkles className="transition-transform duration-500 group-hover/btn:rotate-45 text-purple-600" />}
                                         </span>
                                         {isSelected && (
@@ -314,13 +325,22 @@ export default function NegotiationSection() {
                                         <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{plan.subtitle} — $125 One-time</p>
                                     </div>
                                 </div>
-                                <button className={`px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!session) {
+                                            signIn('google');
+                                        } else {
+                                            // Handle actual payment here
+                                        }
+                                    }}
+                                    className={`px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500
                                     ${isSelected 
                                         ? 'bg-white text-black shadow-lg' 
                                         : 'bg-white/10 text-white/40 border border-white/10'
                                     }
                                 `}>
-                                    {isSelected ? 'Pay & Deploy Tool' : 'Select Tool'}
+                                    {isSelected ? (session ? 'Pay & Deploy Tool' : 'Login to Pay') : 'Select Tool'}
                                 </button>
                             </motion.div>
                          );

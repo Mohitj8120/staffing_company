@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { HiCheck, HiOutlineSparkles, HiOutlineQuestionMarkCircle } from "react-icons/hi"
 import { useState, useRef, useEffect } from "react"
+import { useSession, signIn } from "next-auth/react"
 import Link from "next/link"
 import NegotiationSection from "./NegotiationSection"
 
@@ -153,6 +154,11 @@ const RazorpayButton = ({ buttonId, children }) => {
             e.preventDefault();
             e.stopPropagation();
         }
+
+        if (!session) {
+            signIn('google');
+            return;
+        }
         
         if (rzpButtonRef.current) {
             rzpButtonRef.current.click();
@@ -172,6 +178,7 @@ const RazorpayButton = ({ buttonId, children }) => {
 };
 
 export default function PricingFullContent() {
+    const { data: session } = useSession()
     const [selectedPlanId, setSelectedPlanId] = useState("combo") // Default selection
     const [hoveredPlan, setHoveredPlan] = useState(null)
     const negotiationRef = useRef(null)
@@ -279,14 +286,16 @@ export default function PricingFullContent() {
                                             </button>
                                         </RazorpayButton>
                                     ) : (
-                                        <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
+                                        <button 
+                                            onClick={() => !session ? signIn('google') : null}
+                                            className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                             ${isSelected 
                                                 ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
                                                 : 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
                                             }
                                         `}>
                                             <span className="relative z-10 flex items-center justify-center gap-2">
-                                                {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
                                                 {isSelected && <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>}
                                             </span>
                                             {isSelected && (

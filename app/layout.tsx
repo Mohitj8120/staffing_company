@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import MobileToDesktopPrompt from "../src/components/MobileToDesktopPrompt";
 import LeadCapturePopup from "../src/components/LeadCapturePopup";
+import AuthProvider from "../src/components/AuthProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,23 +29,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} bg-slate-50`}>
-        {/* Google Analytics Tag */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-ZDSWZS7Z99"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
+        <AuthProvider>
+          {/* Google Analytics Tag */}
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-ZDSWZS7Z99"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
 
-            gtag('config', 'G-ZDSWZS7Z99');
-          `}
-        </Script>
-        <LeadCapturePopup />
-        <MobileToDesktopPrompt />
-        {children}
+              gtag('config', 'G-ZDSWZS7Z99');
+            `}
+          </Script>
+          <LeadCapturePopup />
+          <MobileToDesktopPrompt />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

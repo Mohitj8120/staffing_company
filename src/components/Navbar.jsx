@@ -3,12 +3,15 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { HiMenu, HiX } from "react-icons/hi"
+import { HiMenu, HiX, HiUserCircle, HiLogout } from "react-icons/hi"
+import { useSession, signIn, signOut } from "next-auth/react"
 
 export default function Navbar() {
-    const [isOpen, setIsOpen] = useState(false)
+    const { data: session } = useSession()
+    const [isAccountOpen, setIsAccountOpen] = useState(false)
 
     const toggleMenu = () => setIsOpen(!isOpen)
+    const toggleAccount = () => setIsAccountOpen(!isAccountOpen)
 
     return (
         <motion.header
@@ -34,7 +37,44 @@ export default function Navbar() {
                     <Link href="/#faq" className="hover:text-purple-600 transition-colors">FAQ</Link>
                 </nav>
 
-                <div className="hidden md:block">
+                <div className="hidden md:flex items-center gap-4">
+                    {/* User Account Icon */}
+                    <div className="relative">
+                        <button 
+                            onClick={session ? toggleAccount : () => signIn('google')}
+                            className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+                        >
+                            {session?.user?.image ? (
+                                <img src={session.user.image} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                <HiUserCircle className="w-8 h-8 text-purple-600" />
+                            )}
+                        </button>
+
+                        <AnimatePresence>
+                            {isAccountOpen && session && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute right-0 mt-2 w-56 rounded-2xl bg-white/95 backdrop-blur-xl border border-gray-100 shadow-xl overflow-hidden z-50 p-2"
+                                >
+                                    <div className="px-4 py-3 border-b border-gray-50 mb-2">
+                                        <p className="text-sm font-bold text-gray-900 truncate">{session.user.name}</p>
+                                        <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => signOut()}
+                                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                                    >
+                                        <HiLogout className="w-5 h-5" />
+                                        Sign Out
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
                     <Link href="/pricing">
                         <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300">
                             Get Started
@@ -69,6 +109,33 @@ export default function Navbar() {
                             <Link href="/pricing" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">Pricing</Link>
                             <Link href="/contact" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">Contact</Link>
                             <Link href="/#faq" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">FAQ</Link>
+                            
+                            {/* Mobile User Section */}
+                            <div className="py-4 border-b border-gray-100">
+                                {session ? (
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <p className="text-sm font-bold text-gray-900">{session.user.name}</p>
+                                                <p className="text-xs text-gray-500">{session.user.email}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => signOut()} className="p-2 text-red-500">
+                                            <HiLogout size={24} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button 
+                                        onClick={() => signIn('google')}
+                                        className="flex items-center gap-3 w-full py-2 text-purple-700 font-bold"
+                                    >
+                                        <HiUserCircle size={24} />
+                                        Sign In with Google
+                                    </button>
+                                )}
+                            </div>
+
                             <Link href="/pricing" onClick={toggleMenu}>
                                 <button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg mt-2">
                                     Get Started
