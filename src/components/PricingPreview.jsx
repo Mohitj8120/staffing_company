@@ -292,6 +292,8 @@ export default function PricingPreview() {
                                                     setSelectedPlanName(plan.name);
                                                 } else if (!session) {
                                                     router.push('/auth/signin');
+                                                } else if (plan.name === 'Proxy Tool Only') {
+                                                    window.location.href = 'https://rzp.io/rzp/VmmFnUpJ';
                                                 } else {
                                                     router.push('/pricing');
                                                 }

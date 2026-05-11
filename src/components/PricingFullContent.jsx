@@ -305,6 +305,8 @@ export default function PricingFullContent() {
                                                     setSelectedPlanId(plan.id);
                                                 } else if (!session) {
                                                     router.push('/auth/signin');
+                                                } else if (plan.id === 'proxy') {
+                                                    window.location.href = 'https://rzp.io/rzp/VmmFnUpJ';
                                                 }
                                             }}
                                             className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
