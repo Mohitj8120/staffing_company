@@ -42,7 +42,7 @@ export default function Navbar() {
                     {/* User Account Icon */}
                     <div className="relative">
                         <button 
-                            onClick={session ? toggleAccount : () => signIn('google')}
+                            onClick={session ? toggleAccount : () => signIn('google', { callbackUrl: '/profile' })}
                             className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                         >
                             {session?.user?.image ? (
@@ -136,7 +136,7 @@ export default function Navbar() {
                                     </div>
                                 ) : (
                                     <button 
-                                        onClick={() => signIn('google')}
+                                        onClick={() => signIn('google', { callbackUrl: '/profile' })}
                                         className="flex items-center gap-3 w-full py-2 text-purple-700 font-bold"
                                     >
                                         <HiUserCircle size={24} />

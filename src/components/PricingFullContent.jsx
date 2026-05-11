@@ -156,7 +156,7 @@ const RazorpayButton = ({ buttonId, children }) => {
         }
 
         if (!session) {
-            signIn('google');
+            signIn('google', { callbackUrl: window.location.href });
             return;
         }
         
@@ -287,7 +287,7 @@ export default function PricingFullContent() {
                                         </RazorpayButton>
                                     ) : (
                                         <button 
-                                            onClick={() => !session ? signIn('google') : null}
+                                            onClick={() => !session ? signIn('google', { callbackUrl: window.location.href }) : null}
                                             className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                             ${isSelected 
                                                 ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 

@@ -267,7 +267,7 @@ export default function NegotiationSection() {
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (!session) {
-                                                signIn('google');
+                                                signIn('google', { callbackUrl: window.location.href });
                                             } else {
                                                 // Handle actual payment here
                                             }
@@ -329,7 +329,7 @@ export default function NegotiationSection() {
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (!session) {
-                                            signIn('google');
+                                            signIn('google', { callbackUrl: window.location.href });
                                         } else {
                                             // Handle actual payment here
                                         }
