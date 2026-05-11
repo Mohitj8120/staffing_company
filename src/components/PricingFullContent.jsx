@@ -8,94 +8,83 @@ import NegotiationSection from "./NegotiationSection"
 
 const plans = [
     {
-        id: "trial",
+        id: "proxy",
         name: "Proxy Tool Only",
-        subtitle: "One-time Payment",
         price: "125",
-        billing: "one-time",
-        description: "Perfect for candidates needing technical interview assistance seamlessly.",
+        subtitle: "One-time Only",
+        description: "Perfect for candidates who need technical assistance during live interviews.",
         features: [
             "2 Proxy interview sessions",
             "Max 2 hours duration per interview",
             "100% success rate of passing",
             "Undetectable even in HackerRank",
-            "Invisible while screen sharing"
+            "Invisible while screen sharing",
+            "Support for 20+ technologies"
         ],
-        gradient: "from-blue-600 to-cyan-500",
-        shadow: "shadow-cyan-500/20",
-        delay: 0.1,
         featured: false,
+        color: "blue"
     },
     {
         id: "marketing",
         name: "Marketing Only",
-        subtitle: "Valid for 7 months",
         price: "750",
-        billing: "upfront",
-        description: "Direct ties with companies to secure your interview calls.",
+        subtitle: "Valid for 7 months",
+        description: "Direct ties with major companies to secure your interview calls.",
         features: [
-            "+ $920 on an offer letter acceptance(on offer letter)",
+            "+ $920 on offer letter acceptance",
             "+ 9% in 90 days for the 1st year of post employment",
             "Direct company tie-ups",
-            "Actual interview question sheets sourced from companies",
-            "Targeted company-matched resume creation",
-            "Dedicated Placement Manager"
+            "Actual interview question sheets",
+            "Dedicated Placement Manager",
+            "Weekly mock interviews"
         ],
-        gradient: "from-indigo-600 to-purple-500",
-        shadow: "shadow-indigo-500/20",
-        delay: 0.2,
         featured: false,
+        color: "indigo"
     },
     {
         id: "combo",
         name: "3 Proxy + Marketing",
-        subtitle: "Valid for 7 months",
         price: "800",
-        billing: "upfront",
+        subtitle: "Valid for 7 months",
         description: "Combined power of guaranteed interviews and technical proxy support.",
         features: [
-            "+ $920 on an offer letter acceptance(on offer letter)",
+            "+ $920 on offer letter acceptance",
             "+ 9% in 90 days for the 1st year of post employment",
             "3 Proxy interviews support",
             "Direct company tie-ups",
             "Actual interview question sheets",
             "Dedicated Placement Manager"
         ],
-        gradient: "from-purple-600 to-blue-600",
-        shadow: "shadow-purple-500/40",
-        delay: 0.3,
         featured: true,
+        color: "purple"
     },
     {
         id: "unlimited",
         name: "Unlimited Proxy + Marketing",
-        subtitle: "Valid for 7 months",
         price: "1,000",
-        billing: "upfront",
+        subtitle: "Valid for 7 months",
         description: "The ultimate package. Unlimited support until you're formally hired.",
         features: [
-            "+ $920 on an offer letter acceptance(on offer letter)",
+            "+ $920 on offer letter acceptance",
             "+ 9% in 90 days for the 1st year of post employment",
-            "Unlimited Proxy interviews support",
+            "Unlimited Proxy support",
             "Direct company tie-ups",
             "Actual interview question sheets",
             "Dedicated Placement Manager"
         ],
-        gradient: "from-pink-500 to-rose-500",
-        shadow: "shadow-rose-500/20",
-        delay: 0.4,
         featured: false,
+        color: "rose"
     }
 ]
 
 const faqs = [
     {
-        q: "Is it a one-time payment?",
-        a: "Yes! All of our plans represent a one-time fee for a defined outcome. There are no surprise monthly subscriptions or hidden charges."
+        q: "What is the Proxy Interview Tool?",
+        a: "Our tool allows experts to assist you during technical interviews seamlessly. It's invisible to screen-sharing software and undetectable by platforms like HackerRank."
     },
     {
-        q: "How does the Proxy Tool work?",
-        a: "The tool runs seamlessly alongside your interview software. It provides real-time intelligent hints and transcripts directly onto your screen, without being visible to the interviewer."
+        q: "How does the 'Marketing Only' plan work?",
+        a: "We leverage our direct partnerships with HRs and technical leads at top firms to get your resume to the top of the pile and guarantee interview calls."
     },
     {
         q: "Do you guarantee a job placement?",
@@ -125,7 +114,6 @@ const RazorpayButton = ({ buttonId, children }) => {
         form.appendChild(script);
         
         // Use opacity and absolute positioning instead of display:none
-        // Some button scripts check for visibility before allowing clicks
         form.style.position = 'absolute';
         form.style.opacity = '0';
         form.style.pointerEvents = 'none';
@@ -144,14 +132,12 @@ const RazorpayButton = ({ buttonId, children }) => {
             return false;
         };
 
-        // MutationObserver for immediate detection
         const observer = new MutationObserver(() => {
             if (findButton()) observer.disconnect();
         });
 
         observer.observe(containerRef.current, { childList: true, subtree: true });
 
-        // Fallback polling just in case
         const interval = setInterval(() => {
             if (findButton()) clearInterval(interval);
         }, 500);
@@ -186,6 +172,7 @@ const RazorpayButton = ({ buttonId, children }) => {
 };
 
 export default function PricingFullContent() {
+    const [selectedPlanId, setSelectedPlanId] = useState("combo") // Default selection
     const [hoveredPlan, setHoveredPlan] = useState(null)
     const negotiationRef = useRef(null)
 
@@ -194,86 +181,84 @@ export default function PricingFullContent() {
     }
 
     return (
-        <div className="min-h-screen bg-[#030014] text-white pt-24 pb-20 overflow-hidden font-sans">
-            {/* Background Glows */}
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/20 blur-[150px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/20 blur-[150px] rounded-full pointer-events-none" />
+        <div className="bg-[#030014] min-h-screen text-white pt-32 pb-20 overflow-hidden selection:bg-purple-500/30">
+            {/* Background elements */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-600/10 blur-[150px] rounded-full translate-x-1/2 -translate-y-1/2" />
+                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-600/10 blur-[120px] rounded-full -translate-x-1/2 translate-y-1/2" />
+            </div>
 
-            <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-                {/* Hero section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="text-center max-w-3xl mx-auto mt-16 mb-24"
-                >
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="text-center mb-24">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-xl"
                     >
                         <HiOutlineSparkles className="text-purple-400" />
-                        <span className="text-sm font-medium tracking-wide text-gray-300">Level up your tech career</span>
+                        <span className="text-xs font-black tracking-widest uppercase">Premium Plans</span>
                     </motion.div>
-
-                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
-                        Simple pricing for <br className="hidden md:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 animate-gradient-x">
-                            powerful results.
+                    <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter">
+                        Transparent <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-indigo-400">
+                            Professional Support.
                         </span>
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
-                        Accelerate your hiring journey with our bespoke job marketing strategies and cutting-edge interview copilot tool. No hidden fees.
+                    <p className="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed">
+                        Select a package to view details and proceed. <br />
+                        One plan per selection for maximum focus.
                     </p>
-                </motion.div>
+                </div>
 
-                {/* Pricing Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch max-w-7xl mx-auto mb-32">
-                    {plans.map((plan) => (
-                        <motion.div
-                            key={plan.id}
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.7, delay: plan.delay, ease: "easeOut" }}
-                            onHoverStart={() => setHoveredPlan(plan.id)}
-                            onHoverEnd={() => setHoveredPlan(null)}
-                            className={`relative rounded-3xl backdrop-blur-xl transition-all duration-500 flex flex-col h-full
-                                ${plan.featured ? 'bg-white/10 border-2 border-purple-500 my-0 py-8 lg:-mt-4 lg:mb-[-1rem] z-20' : 'bg-white/5 border border-white/10 p-6 xl:p-8 hover:bg-white/[0.08] hover:border-white/30 z-10'}
-                            `}
-                            style={{
-                                boxShadow: hoveredPlan === plan.id || plan.featured
-                                    ? `0 0 40px -10px ${plan.gradient.includes('purple') ? '#9333ea' : '#3b82f6'}`
-                                    : 'none'
-                            }}
-                        >
-                            {plan.featured && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center">
-                                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold px-6 py-1.5 rounded-full text-sm shadow-[0_0_20px_rgba(147,51,234,0.5)] border border-purple-400/30 whitespace-nowrap">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
+                    {plans.map((plan, index) => {
+                        const isSelected = selectedPlanId === plan.id;
+                        
+                        return (
+                            <motion.div
+                                key={plan.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                onHoverStart={() => setHoveredPlan(plan.id)}
+                                onHoverEnd={() => setHoveredPlan(null)}
+                                onClick={() => setSelectedPlanId(plan.id)}
+                                className={`relative group p-8 rounded-[2.5rem] border backdrop-blur-2xl transition-all duration-700 cursor-pointer h-full flex flex-col
+                                    ${isSelected 
+                                        ? 'bg-white/10 border-purple-500/50 shadow-[0_0_50px_rgba(168,85,247,0.2)] ring-1 ring-purple-500/30' 
+                                        : 'bg-white/5 border-white/10 hover:border-white/20'
+                                    }
+                                `}
+                            >
+                                {plan.featured && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
                                         Best Value
                                     </div>
+                                )}
+
+                                <div className="mb-8">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className={`text-xl font-black ${isSelected ? 'text-white' : 'text-gray-400'}`}>{plan.name}</h3>
+                                        {isSelected && <HiCheck className="text-purple-400 text-2xl" />}
+                                    </div>
+                                    <div className="flex items-baseline gap-1 mb-2">
+                                        <span className="text-5xl font-black tracking-tighter">${plan.price}</span>
+                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{plan.subtitle}</span>
+                                    </div>
+                                    <p className="text-gray-400 text-sm font-medium leading-relaxed min-h-[60px]">
+                                        {plan.description}
+                                    </p>
                                 </div>
-                            )}
 
-                            <div className={plan.featured ? "px-6 xl:px-8" : ""}>
-                                <h3 className="text-xl xl:text-2xl font-bold text-white mb-2">{plan.name}</h3>
-                                {plan.subtitle && <p className="text-purple-400 font-medium text-sm mb-2">{plan.subtitle}</p>}
-                                <p className="text-gray-400 text-xs xl:text-sm h-12 mb-6">{plan.description}</p>
-
-                                <div className="flex items-baseline gap-2 mb-8 relative">
-                                    <span className="text-5xl lg:text-4xl xl:text-5xl font-extrabold text-white tracking-tight">${plan.price}</span>
-                                    <span className="text-gray-400 font-medium">/{plan.billing}</span>
-                                </div>
-                            </div>
-
-                            <div className={`flex-1 ${plan.featured ? "px-6 xl:px-8 bg-gradient-to-b from-transparent to-black/20 pt-6 rounded-b-3xl border-t border-white/5" : "pt-6 border-t border-white/10"}`}>
-                                <ul className="space-y-4 mb-10">
+                                <ul className="space-y-4 mb-10 flex-1">
                                     {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex flex-start gap-4">
-                                            <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-r ${plan.gradient}`}>
-                                                <HiCheck className="text-white text-sm" />
+                                        <li key={i} className="flex items-start gap-3">
+                                            <div className={`mt-1 p-0.5 rounded-full ${isSelected ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-gray-600'} transition-colors duration-300`}>
+                                                <HiCheck className="text-sm" />
                                             </div>
-                                            <span className="text-gray-300 font-medium text-sm xl:text-base">{feature}</span>
+                                            <span className={`text-sm font-semibold transition-colors duration-300 ${isSelected ? 'text-gray-200' : 'text-gray-500'}`}>
+                                                {feature}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>
@@ -281,87 +266,88 @@ export default function PricingFullContent() {
                                 <div className="mt-auto">
                                     {plan.id === 'marketing' ? (
                                         <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
-                                            <button className="w-full py-4 rounded-2xl font-bold bg-white/10 text-white hover:bg-white/20 transition-all duration-300 group relative overflow-hidden">
+                                            <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
+                                                ${isSelected 
+                                                    ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
+                                                    : 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                                                }
+                                            `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    Pay & Start Your Career
-                                                    <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                                                    {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                    {isSelected && <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>}
                                                 </span>
                                             </button>
                                         </RazorpayButton>
                                     ) : (
                                         <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
-                                            ${plan.featured ? 'bg-white text-purple-900 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-white/10 text-white hover:bg-white/20'}
+                                            ${isSelected 
+                                                ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
+                                                : 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                                            }
                                         `}>
                                             <span className="relative z-10 flex items-center justify-center gap-2">
-                                                Pay & Start Your Career
-                                                <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                                                {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                {isSelected && <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>}
                                             </span>
-                                            {plan.featured && (
+                                            {isSelected && (
                                                 <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                             )}
                                         </button>
                                     )}
 
                                     <button 
-                                        onClick={scrollToNegotiation}
-                                        className="w-full mt-4 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] text-purple-300 bg-white/5 border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all duration-500 relative overflow-hidden group/neg"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            scrollToNegotiation();
+                                        }}
+                                        className="w-full mt-4 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition-colors duration-300"
                                     >
-                                        <span className="relative z-10">Proceed to Pay & Secure Job</span>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 -translate-x-full group-hover/neg:translate-x-full transition-transform duration-1000" />
+                                        Negotiate with us
                                     </button>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
+
+                                {/* Background accent glow on select */}
+                                <div className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-purple-500 to-blue-500 blur-3xl transition-opacity duration-700 rounded-full
+                                    ${isSelected ? 'opacity-[0.08]' : 'opacity-0'}
+                                `} />
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
-                {/* FAQ Section */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="max-w-4xl mx-auto border-t border-white/10 pt-20"
-                >
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Pricing FAQs</h2>
-                        <p className="text-gray-400">Everything you need to know about our plans.</p>
+                <div className="mt-32 mb-40">
+                    <div className="flex items-center gap-4 mb-16">
+                        <div className="h-px flex-1 bg-white/10" />
+                        <h2 className="text-4xl font-black tracking-tighter">Frequently Asked Questions</h2>
+                        <div className="h-px flex-1 bg-white/10" />
                     </div>
-
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                         {faqs.map((faq, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                className="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-colors"
+                                className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300"
                             >
-                                <div className="flex items-start gap-4 mb-3">
-                                    <HiOutlineQuestionMarkCircle className="text-purple-400 text-2xl flex-shrink-0 mt-1" />
-                                    <h3 className="text-xl font-semibold text-white">{faq.q}</h3>
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                        <HiOutlineQuestionMarkCircle className="text-xl" />
+                                    </div>
+                                    <h4 className="font-bold text-lg">{faq.q}</h4>
                                 </div>
-                                <p className="text-gray-400 leading-relaxed pl-10">{faq.a}</p>
+                                <p className="text-gray-400 leading-relaxed font-medium">
+                                    {faq.a}
+                                </p>
                             </motion.div>
                         ))}
                     </div>
-                </motion.div>
+                </div>
 
                 <div ref={negotiationRef}>
                     <NegotiationSection />
                 </div>
             </div>
-
-            <style jsx>{`
-                @keyframes gradient-x {
-                    0%, 100% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                }
-                .animate-gradient-x {
-                    background-size: 200% 200%;
-                    animation: gradient-x 6s ease infinite;
-                }
-            `}</style>
         </div>
     )
 }

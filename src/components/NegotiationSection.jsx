@@ -68,11 +68,12 @@ const negotiateOptions = [
 ]
 
 export default function NegotiationSection() {
-    const [hoveredId, setHoveredId] = useState(null)
+    const [selectedPlanId, setSelectedPlanId] = useState("one-time-fixed") // Default selection
     const [addons, setAddons] = useState({}) // planId: boolean (proxy tool added)
     const containerRef = useRef(null)
 
-    const toggleAddon = (planId) => {
+    const toggleAddon = (e, planId) => {
+        e.stopPropagation() // Prevent selecting the plan when clicking the addon toggle
         setAddons(prev => ({
             ...prev,
             [planId]: !prev[planId]
@@ -117,13 +118,14 @@ export default function NegotiationSection() {
                         </span>
                     </motion.h2>
                     <p className="text-gray-400 text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed font-medium">
-                        Don't let rigid pricing hold you back. <br className="hidden md:block" /> 
-                        Choose the path that fuels your success.
+                        Select your preferred package below. <br className="hidden md:block" /> 
+                        Only one primary package can be active at a time.
                     </p>
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-8 xl:gap-12 max-w-5xl mx-auto">
                     {negotiateOptions.filter(p => !p.isAddonOnly).map((plan, idx) => {
+                        const isSelected = selectedPlanId === plan.id;
                         const isProxyAdded = addons[plan.id];
 
                         return (
@@ -133,21 +135,27 @@ export default function NegotiationSection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.7, delay: idx * 0.1 }}
-                                onHoverStart={() => setHoveredId(plan.id)}
-                                onHoverEnd={() => setHoveredId(null)}
-                                whileHover={{ rotateX: 2, rotateY: -2, scale: 1.02 }}
-                                className="relative h-full flex perspective-1000"
+                                whileHover={{ rotateX: 2, rotateY: -2, scale: isSelected ? 1 : 1.02 }}
+                                onClick={() => setSelectedPlanId(plan.id)}
+                                className="relative h-full flex perspective-1000 cursor-pointer"
                             >
-                                {plan.popular && <div className="popular-card-border" />}
-                                <div className={`relative flex flex-col w-full bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-8 lg:p-12 transition-all duration-700 overflow-hidden group
-                                    ${hoveredId === plan.id ? 'border-white/20 bg-white/[0.06] -translate-y-4' : ''}
-                                    ${plan.popular ? 'ring-2 ring-purple-500/50 shadow-[0_0_50px_rgba(168,85,247,0.15)]' : ''}
+                                {(plan.popular || isSelected) && <div className={`popular-card-border ${isSelected ? 'opacity-100' : 'opacity-40'}`} />}
+                                <div className={`relative flex flex-col w-full bg-white/[0.03] backdrop-blur-3xl border rounded-[3rem] p-8 lg:p-12 transition-all duration-700 overflow-hidden group
+                                    ${isSelected ? 'border-purple-500 bg-white/[0.08] shadow-[0_0_80px_rgba(168,85,247,0.2)]' : 'border-white/10 hover:border-white/20'}
                                 `}>
                                     
-                                    {/* Background glow on hover */}
-                                    <div className={`absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br ${plan.gradient} opacity-0 group-hover:opacity-20 blur-[80px] transition-opacity duration-700 rounded-full`} />
+                                    {/* Selection Indicator */}
+                                    <div className={`absolute top-10 left-10 flex items-center gap-2 transition-all duration-500 ${isSelected ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+                                        <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center">
+                                            <HiCheckCircle className="text-white w-4 h-4" />
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">Selected Plan</span>
+                                    </div>
 
-                                    {plan.popular && (
+                                    {/* Background glow on hover/select */}
+                                    <div className={`absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br ${plan.gradient} ${isSelected ? 'opacity-30' : 'opacity-0 group-hover:opacity-20'} blur-[80px] transition-opacity duration-700 rounded-full`} />
+
+                                    {plan.popular && !isSelected && (
                                         <div className="absolute top-10 right-10">
                                             <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-purple-500/30">
                                                 Most Popular
@@ -155,13 +163,13 @@ export default function NegotiationSection() {
                                         </div>
                                     )}
 
-                                    <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center mb-10 shadow-2xl relative overflow-hidden group-hover:scale-110 transition-transform duration-500`}>
+                                    <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center mb-10 mt-6 shadow-2xl relative overflow-hidden transition-transform duration-500 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}>
                                         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                         {plan.icon}
                                     </div>
 
                                     <div className="mb-10">
-                                        <h3 className="text-4xl font-black text-white mb-2 tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/60 transition-all">
+                                        <h3 className="text-4xl font-black text-white mb-2 tracking-tight transition-all">
                                             {plan.title}
                                         </h3>
                                         <p className="text-white/40 font-bold text-sm uppercase tracking-widest">{plan.subtitle}</p>
@@ -208,7 +216,7 @@ export default function NegotiationSection() {
                                     {/* Add-on Upsell */}
                                     <div className="mb-12">
                                         <div 
-                                            onClick={() => toggleAddon(plan.id)}
+                                            onClick={(e) => toggleAddon(e, plan.id)}
                                             className={`p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-500 flex items-center justify-between group/addon
                                                 ${isProxyAdded 
                                                     ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' 
@@ -246,16 +254,16 @@ export default function NegotiationSection() {
                                     </ul>
 
                                     <button className={`w-full py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] transition-all duration-500 relative overflow-hidden group/btn shadow-2xl
-                                        ${plan.popular 
+                                        ${isSelected 
                                             ? 'bg-white text-black hover:shadow-purple-500/40' 
-                                            : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:border-white/30'
+                                            : 'bg-white/10 text-white/40 border border-white/5 cursor-not-allowed'
                                         }
                                     `}>
                                         <span className="relative z-10 flex items-center justify-center gap-3">
-                                            Proceed to Pay & Secure Job
-                                            <HiSparkles className={`transition-transform duration-500 group-hover/btn:rotate-45 ${plan.popular ? 'text-purple-600' : 'text-yellow-400'}`} />
+                                            {isSelected ? 'Proceed to Pay & Secure Job' : 'Select Plan to Continue'}
+                                            {isSelected && <HiSparkles className="transition-transform duration-500 group-hover/btn:rotate-45 text-purple-600" />}
                                         </span>
-                                        {plan.popular && (
+                                        {isSelected && (
                                             <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-blue-100 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-700 ease-expo" />
                                         )}
                                     </button>
@@ -267,28 +275,48 @@ export default function NegotiationSection() {
 
                 {/* Proxy Tool Standalone at Bottom */}
                 <div className="max-w-3xl mx-auto mt-20">
-                    {negotiateOptions.filter(p => p.isAddonOnly).map((plan) => (
-                         <motion.div
-                            key={plan.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 group hover:border-white/20 transition-all duration-500"
-                        >
-                            <div className="flex items-center gap-6">
-                                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center shadow-2xl`}>
-                                    {plan.icon}
+                    {negotiateOptions.filter(p => p.isAddonOnly).map((plan) => {
+                         const isSelected = selectedPlanId === plan.id;
+                         
+                         return (
+                            <motion.div
+                                key={plan.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                onClick={() => setSelectedPlanId(plan.id)}
+                                className={`backdrop-blur-2xl border rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 group transition-all duration-500 cursor-pointer
+                                    ${isSelected 
+                                        ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.1)]' 
+                                        : 'bg-white/5 border-white/10 hover:border-white/20'
+                                    }
+                                `}
+                            >
+                                <div className="flex items-center gap-6">
+                                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center shadow-2xl relative`}>
+                                        {isSelected && (
+                                            <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-[#030014]">
+                                                <HiCheckCircle className="text-white w-4 h-4" />
+                                            </div>
+                                        )}
+                                        {plan.icon}
+                                    </div>
+                                    <div>
+                                        <h4 className="text-2xl font-black text-white tracking-tight">{plan.title}</h4>
+                                        <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{plan.subtitle} — $125 One-time</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 className="text-2xl font-black text-white tracking-tight">{plan.title}</h4>
-                                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{plan.subtitle} — $125 One-time</p>
-                                </div>
-                            </div>
-                            <button className="px-10 py-5 rounded-2xl bg-white/10 text-white font-black text-[10px] uppercase tracking-[0.2em] border border-white/10 hover:bg-white hover:text-black transition-all duration-500">
-                                Pay & Deploy Tool
-                            </button>
-                        </motion.div>
-                    ))}
+                                <button className={`px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500
+                                    ${isSelected 
+                                        ? 'bg-white text-black shadow-lg' 
+                                        : 'bg-white/10 text-white/40 border border-white/10'
+                                    }
+                                `}>
+                                    {isSelected ? 'Pay & Deploy Tool' : 'Select Tool Only'}
+                                </button>
+                            </motion.div>
+                         );
+                    })}
                 </div>
                 
                 <motion.p 

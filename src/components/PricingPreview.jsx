@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { HiCheckCircle, HiStar, HiSparkles } from "react-icons/hi"
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import NegotiationSection from "./NegotiationSection"
 
@@ -91,7 +91,6 @@ const RazorpayButton = ({ buttonId, children }) => {
         form.appendChild(script);
         
         // Use opacity and absolute positioning instead of display:none
-        // Some button scripts check for visibility before allowing clicks
         form.style.position = 'absolute';
         form.style.opacity = '0';
         form.style.pointerEvents = 'none';
@@ -110,14 +109,12 @@ const RazorpayButton = ({ buttonId, children }) => {
             return false;
         };
 
-        // MutationObserver for immediate detection
         const observer = new MutationObserver(() => {
             if (findButton()) observer.disconnect();
         });
 
         observer.observe(containerRef.current, { childList: true, subtree: true });
 
-        // Fallback polling just in case
         const interval = setInterval(() => {
             if (findButton()) clearInterval(interval);
         }, 500);
@@ -152,6 +149,7 @@ const RazorpayButton = ({ buttonId, children }) => {
 };
 
 export default function PricingPreview() {
+    const [selectedPlanName, setSelectedPlanName] = useState("3 Proxy + Marketing")
     const negotiationRef = useRef(null)
 
     const scrollToNegotiation = () => {
@@ -188,100 +186,116 @@ export default function PricingPreview() {
                             </span>
                         </h2>
                         <p className="mt-6 text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed">
-                            No hidden fees. No subscriptions. Just transparent pricing for the tools and support you need to land your dream job.
+                            Select the plan that fits your career goals. <br />
+                            Only one active package allowed per selection.
                         </p>
                     </motion.div>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto items-stretch">
-                    {plans.map((plan, index) => (
-                        <motion.div
-                            key={plan.name}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.7, delay: index * 0.1 }}
-                            whileHover={{ y: -10 }}
-                            className={`group relative flex flex-col h-full bg-white rounded-[2rem] border transition-all duration-500 overflow-hidden ${
-                                plan.popular 
-                                ? 'border-purple-200 shadow-[0_20px_50px_rgba(147,51,234,0.12)] scale-105 z-20 md:-translate-y-2' 
-                                : 'border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] z-10'
-                            }`}
-                        >
-                            {plan.popular && (
-                                <div className="absolute top-0 left-0 w-full">
-                                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 py-2 text-center">
-                                        <span className="text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-1.5">
-                                            <HiStar className="text-yellow-300 animate-pulse" /> Most Popular Choice
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className={`p-8 ${plan.popular ? 'pt-12' : ''} flex-1`}>
-                                <div className="mb-6">
-                                    <h3 className={`text-xl font-black ${plan.popular ? 'text-purple-900' : 'text-slate-800'} mb-2`}>{plan.name}</h3>
-                                    <p className="text-slate-400 text-sm font-medium leading-snug min-h-[40px]">{plan.description}</p>
-                                </div>
-                                
-                                <div className="mb-8 p-6 rounded-2xl bg-slate-50/50 border border-slate-100 group-hover:bg-white group-hover:border-purple-100 transition-colors duration-300">
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-5xl font-black text-slate-900 tracking-tighter">${plan.price}</span>
-                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{plan.subtitle}</span>
-                                    </div>
-                                </div>
-
-                                <ul className="space-y-4 mb-8">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3 group/item">
-                                            <div className={`mt-1 p-0.5 rounded-full bg-gradient-to-r ${plan.gradient} shadow-sm group-hover/item:scale-110 transition-transform`}>
-                                                <HiCheckCircle className="text-white text-lg" />
-                                            </div>
-                                            <span className="text-slate-600 font-semibold text-sm leading-tight">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            <div className="px-8 pb-8 mt-auto">
-                                {plan.name === 'Marketing Only' ? (
-                                    <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
-                                        <button className="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-white transition-all duration-300 relative overflow-hidden group/btn">
-                                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                                Pay & Start Your Career
-                                                <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>
+                    {plans.map((plan, index) => {
+                        const isSelected = selectedPlanName === plan.name;
+                        
+                        return (
+                            <motion.div
+                                key={plan.name}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.7, delay: index * 0.1 }}
+                                onClick={() => setSelectedPlanName(plan.name)}
+                                className={`group relative flex flex-col h-full bg-white rounded-[2rem] border transition-all duration-500 overflow-hidden cursor-pointer ${
+                                    isSelected 
+                                    ? 'border-purple-400 shadow-[0_20px_50px_rgba(147,51,234,0.15)] scale-105 z-20 md:-translate-y-2' 
+                                    : 'border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] z-10'
+                                }`}
+                            >
+                                {plan.popular && !isSelected && (
+                                    <div className="absolute top-0 left-0 w-full">
+                                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 py-2 text-center">
+                                            <span className="text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-1.5">
+                                                <HiStar className="text-yellow-300 animate-pulse" /> Most Popular
                                             </span>
-                                        </button>
-                                    </RazorpayButton>
-                                ) : (
-                                    <Link href="/pricing" className="block group/btn">
-                                        <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
-                                            ${plan.popular 
-                                                ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)]' 
-                                                : 'bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-white'
-                                            }
-                                        `}>
-                                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                                Pay & Start Your Career
-                                                <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>
-                                            </span>
-                                        </button>
-                                    </Link>
+                                        </div>
+                                    </div>
                                 )}
 
-                                <button 
-                                    onClick={scrollToNegotiation}
-                                    className="w-full mt-4 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] text-slate-400 hover:text-purple-600 bg-slate-50 border border-slate-200 hover:border-purple-200 hover:shadow-[0_10px_25px_rgba(147,51,234,0.1)] transition-all duration-500 relative overflow-hidden group/neg"
-                                >
-                                    <span className="relative z-10">Proceed to Pay & Secure Job</span>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 -translate-x-full group-hover/neg:translate-x-full transition-transform duration-1000" />
-                                </button>
-                            </div>
+                                <div className={`p-8 ${plan.popular || isSelected ? 'pt-12' : ''} flex-1`}>
+                                    <div className="mb-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className={`text-xl font-black ${isSelected ? 'text-purple-900' : 'text-slate-800'}`}>{plan.name}</h3>
+                                            {isSelected && <HiCheckCircle className="text-purple-600 text-2xl" />}
+                                        </div>
+                                        <p className="text-slate-400 text-sm font-medium leading-snug min-h-[40px]">{plan.description}</p>
+                                    </div>
+                                    
+                                    <div className={`mb-8 p-6 rounded-2xl border transition-colors duration-300 ${isSelected ? 'bg-purple-50 border-purple-100' : 'bg-slate-50/50 border-slate-100 group-hover:bg-white group-hover:border-purple-100'}`}>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-5xl font-black text-slate-900 tracking-tighter">${plan.price}</span>
+                                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{plan.subtitle}</span>
+                                        </div>
+                                    </div>
 
-                            {/* Background accent glow on hover */}
-                            <div className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br ${plan.gradient} opacity-0 group-hover:opacity-[0.03] blur-3xl transition-opacity duration-700 rounded-full`} />
-                        </motion.div>
-                    ))}
+                                    <ul className="space-y-4 mb-8">
+                                        {plan.features.map((feature, i) => (
+                                            <li key={i} className="flex items-start gap-3 group/item">
+                                                <div className={`mt-1 p-0.5 rounded-full bg-gradient-to-r ${plan.gradient} shadow-sm transition-transform ${isSelected ? 'scale-110' : 'group-hover/item:scale-110'}`}>
+                                                    <HiCheckCircle className="text-white text-lg" />
+                                                </div>
+                                                <span className={`font-semibold text-sm leading-tight ${isSelected ? 'text-slate-900' : 'text-slate-600'}`}>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="px-8 pb-8 mt-auto">
+                                    {plan.name === 'Marketing Only' ? (
+                                        <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
+                                            <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
+                                                ${isSelected 
+                                                    ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
+                                                    : 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
+                                                }
+                                            `}>
+                                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                                    {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                    {isSelected && <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>}
+                                                </span>
+                                            </button>
+                                        </RazorpayButton>
+                                    ) : (
+                                        <Link href={isSelected ? "/pricing" : "#"} onClick={(e) => !isSelected && e.preventDefault()} className="block group/btn">
+                                            <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
+                                                ${isSelected 
+                                                    ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
+                                                    : 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
+                                                }
+                                            `}>
+                                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                                    {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                    {isSelected && <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>}
+                                                </span>
+                                            </button>
+                                        </Link>
+                                    )}
+
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            scrollToNegotiation();
+                                        }}
+                                        className="w-full mt-4 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] text-slate-400 hover:text-purple-600 bg-slate-50 border border-slate-200 hover:border-purple-200 transition-all duration-500 relative overflow-hidden group/neg"
+                                    >
+                                        <span className="relative z-10">Proceed to Pay & Secure Job</span>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 -translate-x-full group-hover/neg:translate-x-full transition-transform duration-1000" />
+                                    </button>
+                                </div>
+
+                                {/* Background accent glow on hover */}
+                                <div className={`absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br ${plan.gradient} ${isSelected ? 'opacity-10' : 'opacity-0 group-hover:opacity-[0.03]'} blur-3xl transition-opacity duration-700 rounded-full`} />
+                            </motion.div>
+                        );
+                    })}
                 </div>
                 
                 <motion.div 
@@ -316,4 +330,3 @@ export default function PricingPreview() {
         </section>
     )
 }
-
