@@ -8,6 +8,7 @@ import { useSession, signIn, signOut } from "next-auth/react"
 
 export default function Navbar() {
     const { data: session } = useSession()
+    const [isOpen, setIsOpen] = useState(false)
     const [isAccountOpen, setIsAccountOpen] = useState(false)
 
     const toggleMenu = () => setIsOpen(!isOpen)
