@@ -123,35 +123,40 @@ const RazorpayButton = ({ buttonId, children }) => {
 
         const form = document.createElement('form');
         form.appendChild(script);
-        
-        // Hide the actual Razorpay button
-        form.style.display = 'none';
+        form.style.display = 'none'; // Keep it hidden
         
         containerRef.current.appendChild(form);
 
-        // Polling to find the injected button and store its reference
-        const interval = setInterval(() => {
+        // More robust: use MutationObserver to detect the button insertion
+        const observer = new MutationObserver(() => {
             const btn = containerRef.current.querySelector('button');
             if (btn) {
                 rzpButtonRef.current = btn;
-                clearInterval(interval);
+                observer.disconnect();
             }
-        }, 100);
+        });
 
-        return () => clearInterval(interval);
+        observer.observe(containerRef.current, { childList: true, subtree: true });
+
+        return () => observer.disconnect();
     }, [buttonId]);
 
-    const handleTrigger = () => {
+    const handleTrigger = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
         if (rzpButtonRef.current) {
             rzpButtonRef.current.click();
         } else {
-            console.error("Razorpay button not ready");
+            console.warn("Razorpay button is initializing, please try again in a second.");
         }
     };
 
     return (
-        <div className="w-full">
-            <div ref={containerRef} />
+        <div className="w-full relative">
+            <div ref={containerRef} className="absolute inset-0 pointer-events-none opacity-0" />
             <div onClick={handleTrigger} className="cursor-pointer">
                 {children}
             </div>
