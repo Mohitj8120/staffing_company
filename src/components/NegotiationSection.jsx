@@ -68,16 +68,24 @@ const negotiateOptions = [
 ]
 
 export default function NegotiationSection() {
-    const [selectedPlanId, setSelectedPlanId] = useState("one-time-fixed") // Default selection
-    const [addons, setAddons] = useState({}) // planId: boolean (proxy tool added)
+    const [selectedId, setSelectedId] = useState("one-time-fixed") 
+    const [hasProxyAddon, setHasProxyAddon] = useState(false)
     const containerRef = useRef(null)
 
-    const toggleAddon = (e, planId) => {
-        e.stopPropagation() // Prevent selecting the plan when clicking the addon toggle
-        setAddons(prev => ({
-            ...prev,
-            [planId]: !prev[planId]
-        }))
+    const handleSelectPlan = (id) => {
+        setSelectedId(id);
+        // If switching plans, we might want to keep or clear the addon. 
+        // User said "ek baar m ek", so if they switch to a different plan, 
+        // the addon remains attached to the NEW selection, OR we clear it.
+        // Let's keep it for the new selection if it's a main plan.
+        if (id === 'proxy-tool-only') {
+            setHasProxyAddon(false); // Standalone doesn't have an addon (it IS the tool)
+        }
+    }
+
+    const toggleAddon = (e) => {
+        e.stopPropagation();
+        setHasProxyAddon(!hasProxyAddon);
     }
     
     return (
@@ -118,15 +126,15 @@ export default function NegotiationSection() {
                         </span>
                     </motion.h2>
                     <p className="text-gray-400 text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed font-medium">
-                        Select your preferred package below. <br className="hidden md:block" /> 
-                        Only one primary package can be active at a time.
+                        Select one package to proceed. <br className="hidden md:block" /> 
+                        Your selection is exclusive.
                     </p>
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-8 xl:gap-12 max-w-5xl mx-auto">
                     {negotiateOptions.filter(p => !p.isAddonOnly).map((plan, idx) => {
-                        const isSelected = selectedPlanId === plan.id;
-                        const isProxyAdded = addons[plan.id];
+                        const isSelected = selectedId === plan.id;
+                        const isProxyAdded = isSelected && hasProxyAddon;
 
                         return (
                             <motion.div
@@ -136,12 +144,12 @@ export default function NegotiationSection() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.7, delay: idx * 0.1 }}
                                 whileHover={{ rotateX: 2, rotateY: -2, scale: isSelected ? 1 : 1.02 }}
-                                onClick={() => setSelectedPlanId(plan.id)}
+                                onClick={() => handleSelectPlan(plan.id)}
                                 className="relative h-full flex perspective-1000 cursor-pointer"
                             >
                                 {(plan.popular || isSelected) && <div className={`popular-card-border ${isSelected ? 'opacity-100' : 'opacity-40'}`} />}
                                 <div className={`relative flex flex-col w-full bg-white/[0.03] backdrop-blur-3xl border rounded-[3rem] p-8 lg:p-12 transition-all duration-700 overflow-hidden group
-                                    ${isSelected ? 'border-purple-500 bg-white/[0.08] shadow-[0_0_80px_rgba(168,85,247,0.2)]' : 'border-white/10 hover:border-white/20'}
+                                    ${isSelected ? 'border-purple-500 bg-white/[0.08] shadow-[0_0_80px_rgba(168,85,247,0.2)]' : 'border-white/10 hover:border-white/20 opacity-50 hover:opacity-100'}
                                 `}>
                                     
                                     {/* Selection Indicator */}
@@ -149,7 +157,7 @@ export default function NegotiationSection() {
                                         <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center">
                                             <HiCheckCircle className="text-white w-4 h-4" />
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">Selected Plan</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">Selected Path</span>
                                     </div>
 
                                     {/* Background glow on hover/select */}
@@ -214,26 +222,26 @@ export default function NegotiationSection() {
                                     </div>
 
                                     {/* Add-on Upsell */}
-                                    <div className="mb-12">
+                                    <div className={`mb-12 transition-all duration-500 ${isSelected ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden pointer-events-none'}`}>
                                         <div 
-                                            onClick={(e) => toggleAddon(e, plan.id)}
+                                            onClick={toggleAddon}
                                             className={`p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-500 flex items-center justify-between group/addon
-                                                ${isProxyAdded 
+                                                ${hasProxyAddon 
                                                     ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' 
                                                     : 'bg-white/5 border-white/10 hover:border-white/30'
                                                 }
                                             `}
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${isProxyAdded ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white/40'}`}>
-                                                    {isProxyAdded ? <HiCheckCircle className="w-7 h-7" /> : <HiPlusCircle className="w-7 h-7" />}
+                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${hasProxyAddon ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white/40'}`}>
+                                                    {hasProxyAddon ? <HiCheckCircle className="w-7 h-7" /> : <HiPlusCircle className="w-7 h-7" />}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className={`font-black text-sm uppercase tracking-widest ${isProxyAdded ? 'text-emerald-400' : 'text-white'}`}>Add Proxy Tool</span>
+                                                    <span className={`font-black text-sm uppercase tracking-widest ${hasProxyAddon ? 'text-emerald-400' : 'text-white'}`}>Add Proxy Tool</span>
                                                     <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">One-time payment only (+$125)</span>
                                                 </div>
                                             </div>
-                                            {isProxyAdded && (
+                                            {hasProxyAddon && (
                                                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-emerald-500 font-black text-xs uppercase tracking-widest">Added</motion.div>
                                             )}
                                         </div>
@@ -246,7 +254,7 @@ export default function NegotiationSection() {
                                                 <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r ${plan.gradient} flex items-center justify-center shadow-lg transform group-hover/item:scale-125 transition-transform`}>
                                                     <HiChevronRight className="text-white text-xs" />
                                                 </div>
-                                                <span className="text-white/70 text-base font-semibold leading-snug group-hover/item:text-white transition-colors">
+                                                <span className={`text-white/70 text-base font-semibold leading-snug group-hover/item:text-white transition-colors ${isSelected ? 'text-white/90' : ''}`}>
                                                     {feature}
                                                 </span>
                                             </li>
@@ -260,7 +268,7 @@ export default function NegotiationSection() {
                                         }
                                     `}>
                                         <span className="relative z-10 flex items-center justify-center gap-3">
-                                            {isSelected ? 'Proceed to Pay & Secure Job' : 'Select Plan to Continue'}
+                                            {isSelected ? 'Proceed to Pay & Secure Job' : 'Select Plan'}
                                             {isSelected && <HiSparkles className="transition-transform duration-500 group-hover/btn:rotate-45 text-purple-600" />}
                                         </span>
                                         {isSelected && (
@@ -276,7 +284,7 @@ export default function NegotiationSection() {
                 {/* Proxy Tool Standalone at Bottom */}
                 <div className="max-w-3xl mx-auto mt-20">
                     {negotiateOptions.filter(p => p.isAddonOnly).map((plan) => {
-                         const isSelected = selectedPlanId === plan.id;
+                         const isSelected = selectedId === plan.id;
                          
                          return (
                             <motion.div
@@ -284,11 +292,11 @@ export default function NegotiationSection() {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                onClick={() => setSelectedPlanId(plan.id)}
+                                onClick={() => handleSelectPlan(plan.id)}
                                 className={`backdrop-blur-2xl border rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 group transition-all duration-500 cursor-pointer
                                     ${isSelected 
                                         ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.1)]' 
-                                        : 'bg-white/5 border-white/10 hover:border-white/20'
+                                        : 'bg-white/5 border-white/10 hover:border-white/20 opacity-50 hover:opacity-100'
                                     }
                                 `}
                             >
@@ -312,7 +320,7 @@ export default function NegotiationSection() {
                                         : 'bg-white/10 text-white/40 border border-white/10'
                                     }
                                 `}>
-                                    {isSelected ? 'Pay & Deploy Tool' : 'Select Tool Only'}
+                                    {isSelected ? 'Pay & Deploy Tool' : 'Select Tool'}
                                 </button>
                             </motion.div>
                          );
