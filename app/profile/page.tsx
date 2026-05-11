@@ -1,13 +1,15 @@
 "use client"
 
 import { useSession, signIn } from "next-auth/react"
-import { motion } from "framer-motion"
-import { HiUser, HiShoppingBag, HiShieldCheck, HiArrowRight, HiOutlineSparkles } from "react-icons/hi"
+import { motion, AnimatePresence } from "framer-motion"
+import { HiUser, HiShoppingBag, HiShieldCheck, HiArrowRight, HiOutlineSparkles, HiXCircle } from "react-icons/hi"
+import { useState } from "react"
 import Navbar from "../../src/components/Navbar"
 import Footer from "../../src/components/Footer"
 
 export default function ProfilePage() {
     const { data: session, status } = useSession()
+    const [isCancelling, setIsCancelling] = useState(false)
 
     if (status === "loading") {
         return (
@@ -29,7 +31,7 @@ export default function ProfilePage() {
                         <HiShieldCheck className="text-purple-500 w-10 h-10" />
                     </div>
                     <h1 className="text-4xl font-black text-white mb-4 tracking-tight">Access Restricted</h1>
-                    <p className="text-gray-400 mb-8 max-w-sm mx-auto">Please sign in to view your profile and managed your active subscriptions.</p>
+                    <p className="text-gray-400 mb-8 max-w-sm mx-auto">Please sign in to view your profile and manage your career services.</p>
                     <button 
                         onClick={() => signIn('google')}
                         className="px-8 py-4 bg-white text-black font-black rounded-2xl hover:scale-105 transition-transform"
@@ -41,17 +43,9 @@ export default function ProfilePage() {
         )
     }
 
-    // Mock purchases for now - in a real app, these would come from a database
-    const purchases = [
-        {
-            id: "PUR-8291",
-            name: "Elite Fixed Package",
-            date: "May 12, 2026",
-            status: "Active",
-            price: "$100",
-            icon: <HiOutlineSparkles className="text-purple-400" />
-        }
-    ]
+    // Purchases is now empty by default as requested. 
+    // In a real implementation, this would be fetched from your database based on session.user.email
+    const purchases = [] 
 
     return (
         <div className="bg-[#030014] min-h-screen text-white">
@@ -87,7 +81,7 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center gap-3 text-purple-400">
                                     <HiShoppingBag />
-                                    <span className="text-sm font-bold">My Purchases</span>
+                                    <span className="text-sm font-bold">My Services</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -100,9 +94,9 @@ export default function ProfilePage() {
                             animate={{ opacity: 1, y: 0 }}
                         >
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-3xl font-black tracking-tight">Active Subscriptions</h3>
+                                <h3 className="text-3xl font-black tracking-tight">Active Services</h3>
                                 <span className="px-4 py-1.5 bg-white/5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                    {purchases.length} Items
+                                    {purchases.length} Active
                                 </span>
                             </div>
 
@@ -120,7 +114,7 @@ export default function ProfilePage() {
                                                     </div>
                                                     <div>
                                                         <h4 className="text-xl font-black mb-1">{item.name}</h4>
-                                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Purchased on {item.date}</p>
+                                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Active since {item.date}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
@@ -134,13 +128,23 @@ export default function ProfilePage() {
                                             
                                             <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
                                                 <div className="flex gap-4">
-                                                    <button className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Download Receipt</button>
-                                                    <button className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">View Details</button>
+                                                    <button className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">View Contract</button>
                                                 </div>
-                                                <button className="flex items-center gap-2 text-xs font-black text-purple-400 hover:text-purple-300 transition-colors group/link">
-                                                    Manage Subscription 
-                                                    <HiArrowRight className="group-hover/link:translate-x-1 transition-transform" />
-                                                </button>
+                                                
+                                                {item.type === 'monthly' ? (
+                                                    <button 
+                                                        onClick={() => setIsCancelling(true)}
+                                                        className="flex items-center gap-2 text-xs font-black text-red-400 hover:text-red-300 transition-colors group/link"
+                                                    >
+                                                        Stop Subscription
+                                                        <HiXCircle className="group-hover/link:scale-110 transition-transform" />
+                                                    </button>
+                                                ) : (
+                                                    <button className="flex items-center gap-2 text-xs font-black text-gray-500 cursor-not-allowed">
+                                                        Lifetime Access
+                                                        <HiShieldCheck />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -148,24 +152,54 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="p-20 rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-center">
                                     <HiShoppingBag className="text-gray-600 w-16 h-16 mb-4" />
-                                    <p className="text-gray-500 font-bold">No active purchases found.</p>
-                                    <button className="mt-6 text-purple-400 font-black text-sm hover:underline">Browse Packages</button>
+                                    <p className="text-gray-500 font-bold">You haven't purchased any packages yet.</p>
+                                    <p className="text-gray-600 text-xs mt-2 uppercase tracking-widest">Select a plan from the pricing section to get started.</p>
                                 </div>
                             )}
 
-                            {/* Promotional Section */}
-                            <div className="mt-12 p-10 rounded-[3rem] bg-gradient-to-br from-purple-600 to-blue-700 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-700" />
-                                <div className="relative z-10 max-w-sm">
-                                    <h4 className="text-2xl font-black mb-4">Upgrade your career path today.</h4>
-                                    <p className="text-white/80 text-sm font-medium mb-8 leading-relaxed">Get unlimited proxy support and direct HR marketing to secure your dream job faster.</p>
-                                    <button className="px-6 py-3 bg-white text-black font-black rounded-xl text-xs uppercase tracking-widest hover:shadow-xl transition-all">Explore Pro Plans</button>
+                            {/* Info Box instead of Upgrade */}
+                            <div className="mt-12 p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
+                                <div className="relative z-10">
+                                    <h4 className="text-xl font-black mb-4 flex items-center gap-2">
+                                        <HiOutlineSparkles className="text-purple-400" />
+                                        Your Career Dashboard
+                                    </h4>
+                                    <p className="text-gray-400 text-sm font-medium leading-relaxed">
+                                        Welcome to your professional portal. Here you can track your interview credits, placement status, and manage your active subscriptions. Our team is working 24/7 to secure your next big role.
+                                    </p>
                                 </div>
                             </div>
                         </motion.div>
                     </div>
                 </div>
             </main>
+
+            {/* Cancellation Modal Placeholder */}
+            <AnimatePresence>
+                {isCancelling && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+                    >
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsCancelling(false)} />
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-[#0c0c1e] border border-white/10 p-10 rounded-[3rem] max-w-md w-full relative z-10 shadow-2xl"
+                        >
+                            <h3 className="text-2xl font-black mb-4">Stop Subscription?</h3>
+                            <p className="text-gray-400 mb-8 leading-relaxed">Stopping your monthly subscription will pause your HR marketing and placement assistance at the end of the current billing cycle.</p>
+                            <div className="flex gap-4">
+                                <button onClick={() => setIsCancelling(false)} className="flex-1 py-4 bg-white/5 rounded-2xl font-bold hover:bg-white/10 transition-colors">Keep it</button>
+                                <button className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-colors">Yes, Stop</button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <Footer />
         </div>
