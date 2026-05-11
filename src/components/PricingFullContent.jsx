@@ -290,11 +290,18 @@ export default function PricingFullContent() {
                                         </RazorpayButton>
                                     ) : (
                                         <button 
-                                            onClick={() => !session ? router.push('/auth/signin') : null}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (!isSelected) {
+                                                    setSelectedPlanId(plan.id);
+                                                } else if (!session) {
+                                                    router.push('/auth/signin');
+                                                }
+                                            }}
                                             className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                             ${isSelected 
                                                 ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
-                                                : 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                                                : 'bg-white/10 text-white/60 border border-white/10 hover:bg-white/20'
                                             }
                                         `}>
                                             <span className="relative z-10 flex items-center justify-center gap-2">

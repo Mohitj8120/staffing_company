@@ -262,10 +262,19 @@ export default function PricingPreview() {
                                 <div className="px-8 pb-8 mt-auto">
                                     {plan.name === 'Marketing Only' ? (
                                         <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
-                                            <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (!session) {
+                                                        router.push('/auth/signin');
+                                                    } else {
+                                                        // Razorpay trigger will handle it since it's wrapped
+                                                    }
+                                                }}
+                                                className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
                                                 ${isSelected 
                                                     ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
-                                                    : 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
+                                                    : 'bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200'
                                                 }
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
@@ -275,9 +284,11 @@ export default function PricingPreview() {
                                         </RazorpayButton>
                                     ) : (
                                         <button 
-                                            onClick={() => {
-                                                if (!isSelected) return;
-                                                if (!session) {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (!isSelected) {
+                                                    setSelectedPlanName(plan.name);
+                                                } else if (!session) {
                                                     router.push('/auth/signin');
                                                 } else {
                                                     router.push('/pricing');
@@ -286,7 +297,7 @@ export default function PricingPreview() {
                                             className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
                                                 ${isSelected 
                                                     ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
-                                                    : 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
+                                                    : 'bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200'
                                                 }
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
