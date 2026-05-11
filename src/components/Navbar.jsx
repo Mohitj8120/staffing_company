@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { HiMenu, HiX, HiUserCircle, HiLogout } from "react-icons/hi"
+import { HiMenu, HiX, HiUserCircle, HiLogout, HiUser } from "react-icons/hi"
 import { useSession, signIn, signOut } from "next-auth/react"
 
 export default function Navbar() {
@@ -64,6 +64,14 @@ export default function Navbar() {
                                         <p className="text-sm font-bold text-gray-900 truncate">{session.user.name}</p>
                                         <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
                                     </div>
+                                    <Link 
+                                        href="/profile" 
+                                        onClick={() => setIsAccountOpen(false)}
+                                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
+                                    >
+                                        <HiUser className="w-5 h-5 text-purple-600" />
+                                        My Profile
+                                    </Link>
                                     <button 
                                         onClick={() => signOut()}
                                         className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors"
