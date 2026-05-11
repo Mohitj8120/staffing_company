@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { HiShieldCheck, HiSparkles } from "react-icons/hi"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
+import Link from "next/link"
 
 function SignInContent() {
     const { status } = useSession()
@@ -71,7 +72,7 @@ function SignInContent() {
 
                 <p className="mt-12 text-center text-[10px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed">
                     By continuing, you agree to our <br />
-                    <span className="text-white/40 underline underline-offset-4 cursor-pointer hover:text-white">Terms of Service</span> and <span className="text-white/40 underline underline-offset-4 cursor-pointer hover:text-white">Privacy Policy</span>
+                    <Link href="/terms" className="text-white/40 underline underline-offset-4 cursor-pointer hover:text-white">Terms of Service</Link> and <Link href="/privacy" className="text-white/40 underline underline-offset-4 cursor-pointer hover:text-white">Privacy Policy</Link>
                 </p>
             </motion.div>
         </div>
