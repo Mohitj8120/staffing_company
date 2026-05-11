@@ -67,6 +67,7 @@ const plans = [
             "+ 9% in 90 days (post employment)",
             "Unlimited Proxy support",
             "Direct company tie-ups",
+            "Actual interview question sheets",
             "Dedicated Placement Manager"
         ],
         gradient: "from-pink-500 to-rose-500",
@@ -75,7 +76,7 @@ const plans = [
     }
 ]
 
-const RazorpayButton = ({ buttonId, children }) => {
+const RazorpayButton = ({ buttonId, children, isSelected, onSelect }) => {
     const { data: session } = useSession();
     const router = useRouter();
     const containerRef = useRef(null);
@@ -133,6 +134,11 @@ const RazorpayButton = ({ buttonId, children }) => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
+        }
+
+        if (!isSelected) {
+            onSelect();
+            return;
         }
 
         if (!session) {
@@ -261,16 +267,12 @@ export default function PricingPreview() {
 
                                 <div className="px-8 pb-8 mt-auto">
                                     {plan.name === 'Marketing Only' ? (
-                                        <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
+                                        <RazorpayButton 
+                                            buttonId="pl_So2gTMvs2tajA1"
+                                            isSelected={isSelected}
+                                            onSelect={() => setSelectedPlanName(plan.name)}
+                                        >
                                             <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    if (!session) {
-                                                        router.push('/auth/signin');
-                                                    } else {
-                                                        // Razorpay trigger will handle it since it's wrapped
-                                                    }
-                                                }}
                                                 className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
                                                 ${isSelected 
                                                     ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
@@ -302,7 +304,6 @@ export default function PricingPreview() {
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                                     {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                                    {isSelected && <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>}
                                                 </span>
                                             </button>
                                     )}

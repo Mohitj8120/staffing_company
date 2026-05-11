@@ -98,7 +98,7 @@ const faqs = [
     }
 ]
 
-const RazorpayButton = ({ buttonId, children }) => {
+const RazorpayButton = ({ buttonId, children, isSelected, onSelect }) => {
     const { data: session } = useSession();
     const containerRef = useRef(null);
     const rzpButtonRef = useRef(null);
@@ -156,6 +156,11 @@ const RazorpayButton = ({ buttonId, children }) => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
+        }
+
+        if (!isSelected) {
+            onSelect();
+            return;
         }
 
         if (!session) {
@@ -276,15 +281,19 @@ export default function PricingFullContent() {
 
                                 <div className="mt-auto">
                                     {plan.id === 'marketing' ? (
-                                        <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
+                                        <RazorpayButton 
+                                            buttonId="pl_So2gTMvs2tajA1"
+                                            isSelected={isSelected}
+                                            onSelect={() => setSelectedPlanId(plan.id)}
+                                        >
                                             <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                                 ${isSelected 
                                                     ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
-                                                    : 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                                                    : 'bg-white/10 text-white/60 border border-white/10 hover:bg-white/20'
                                                 }
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
+                                                    {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
                                                 </span>
                                             </button>
                                         </RazorpayButton>
