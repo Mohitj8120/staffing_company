@@ -270,7 +270,6 @@ export default function PricingPreview() {
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                                     {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                                    {isSelected && <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>}
                                                 </span>
                                             </button>
                                         </RazorpayButton>
@@ -325,7 +324,6 @@ export default function PricingPreview() {
                 >
                     <Link href="/pricing" className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 rounded-full text-slate-600 font-bold hover:text-purple-600 hover:border-purple-200 hover:shadow-xl transition-all duration-500 overflow-hidden">
                         <span className="relative z-10">Compare all features and services</span>
-                        <span className="relative z-10 group-hover:translate-x-1 transition-transform">→</span>
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-blue-50 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                     </Link>
                 </motion.div>

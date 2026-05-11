@@ -285,7 +285,6 @@ export default function PricingFullContent() {
                                             `}>
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                                     {isSelected ? 'Pay & Start Your Career' : 'Select Plan'}
-                                                    {isSelected && <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>}
                                                 </span>
                                             </button>
                                         </RazorpayButton>
@@ -300,7 +299,6 @@ export default function PricingFullContent() {
                                         `}>
                                             <span className="relative z-10 flex items-center justify-center gap-2">
                                                 {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                                {isSelected && <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>}
                                             </span>
                                             {isSelected && (
                                                 <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
