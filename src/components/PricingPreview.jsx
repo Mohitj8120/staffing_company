@@ -73,13 +73,13 @@ const plans = [
     }
 ]
 
-const RazorpayButton = ({ buttonId }) => {
+const RazorpayButton = ({ buttonId, children }) => {
     const containerRef = useRef(null);
+    const rzpButtonRef = useRef(null);
 
     useEffect(() => {
         if (!containerRef.current) return;
 
-        // Clear existing button if any
         containerRef.current.innerHTML = '';
 
         const script = document.createElement('script');
@@ -90,10 +90,39 @@ const RazorpayButton = ({ buttonId }) => {
         const form = document.createElement('form');
         form.appendChild(script);
         
+        // Hide the actual Razorpay button
+        form.style.display = 'none';
+        
         containerRef.current.appendChild(form);
+
+        // Polling to find the injected button and store its reference
+        const interval = setInterval(() => {
+            const btn = containerRef.current.querySelector('button');
+            if (btn) {
+                rzpButtonRef.current = btn;
+                clearInterval(interval);
+            }
+        }, 100);
+
+        return () => clearInterval(interval);
     }, [buttonId]);
 
-    return <div ref={containerRef} className="w-full flex justify-center" />;
+    const handleTrigger = () => {
+        if (rzpButtonRef.current) {
+            rzpButtonRef.current.click();
+        } else {
+            console.error("Razorpay button not ready");
+        }
+    };
+
+    return (
+        <div className="w-full">
+            <div ref={containerRef} />
+            <div onClick={handleTrigger} className="cursor-pointer">
+                {children}
+            </div>
+        </div>
+    );
 };
 
 export default function PricingPreview() {
@@ -190,9 +219,14 @@ export default function PricingPreview() {
 
                             <div className="px-8 pb-8 mt-auto">
                                 {plan.name === 'Marketing Only' ? (
-                                    <div className="w-full min-h-[56px] flex items-center justify-center bg-slate-50 rounded-2xl overflow-hidden py-2 border border-slate-100">
-                                        <RazorpayButton buttonId="pl_So2gTMvs2tajA1" />
-                                    </div>
+                                    <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
+                                        <button className="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-white transition-all duration-300 relative overflow-hidden group/btn">
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                Pay & Start Your Career
+                                                <span className="translate-x-0 group-hover/btn:translate-x-1 transition-transform">→</span>
+                                            </span>
+                                        </button>
+                                    </RazorpayButton>
                                 ) : (
                                     <Link href="/pricing" className="block group/btn">
                                         <button className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative

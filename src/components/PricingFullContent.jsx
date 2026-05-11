@@ -107,13 +107,13 @@ const faqs = [
     }
 ]
 
-const RazorpayButton = ({ buttonId }) => {
+const RazorpayButton = ({ buttonId, children }) => {
     const containerRef = useRef(null);
+    const rzpButtonRef = useRef(null);
 
     useEffect(() => {
         if (!containerRef.current) return;
 
-        // Clear existing button if any (for re-renders)
         containerRef.current.innerHTML = '';
 
         const script = document.createElement('script');
@@ -124,10 +124,39 @@ const RazorpayButton = ({ buttonId }) => {
         const form = document.createElement('form');
         form.appendChild(script);
         
+        // Hide the actual Razorpay button
+        form.style.display = 'none';
+        
         containerRef.current.appendChild(form);
+
+        // Polling to find the injected button and store its reference
+        const interval = setInterval(() => {
+            const btn = containerRef.current.querySelector('button');
+            if (btn) {
+                rzpButtonRef.current = btn;
+                clearInterval(interval);
+            }
+        }, 100);
+
+        return () => clearInterval(interval);
     }, [buttonId]);
 
-    return <div ref={containerRef} className="w-full flex justify-center" />;
+    const handleTrigger = () => {
+        if (rzpButtonRef.current) {
+            rzpButtonRef.current.click();
+        } else {
+            console.error("Razorpay button not ready");
+        }
+    };
+
+    return (
+        <div className="w-full">
+            <div ref={containerRef} />
+            <div onClick={handleTrigger} className="cursor-pointer">
+                {children}
+            </div>
+        </div>
+    );
 };
 
 export default function PricingFullContent() {
@@ -225,9 +254,14 @@ export default function PricingFullContent() {
 
                                 <div className="mt-auto">
                                     {plan.id === 'marketing' ? (
-                                        <div className="w-full min-h-[56px] flex items-center justify-center bg-white/10 rounded-2xl overflow-hidden py-2">
-                                            <RazorpayButton buttonId="pl_So2gTMvs2tajA1" />
-                                        </div>
+                                        <RazorpayButton buttonId="pl_So2gTMvs2tajA1">
+                                            <button className="w-full py-4 rounded-2xl font-bold bg-white/10 text-white hover:bg-white/20 transition-all duration-300 group relative overflow-hidden">
+                                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                                    Pay & Start Your Career
+                                                    <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                                                </span>
+                                            </button>
+                                        </RazorpayButton>
                                     ) : (
                                         <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                             ${plan.featured ? 'bg-white text-purple-900 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-white/10 text-white hover:bg-white/20'}
