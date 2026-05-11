@@ -3,18 +3,20 @@
 import { signIn, useSession } from "next-auth/react"
 import { motion } from "framer-motion"
 import { HiShieldCheck, HiSparkles } from "react-icons/hi"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, Suspense } from "react"
 
-export default function SignInPage() {
+function SignInContent() {
     const { status } = useSession()
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get('callbackUrl') || '/'
 
     useEffect(() => {
         if (status === "authenticated") {
-            router.push("/")
+            router.push(callbackUrl)
         }
-    }, [status, router])
+    }, [status, router, callbackUrl])
 
     return (
         <div className="min-h-screen bg-[#030014] flex items-center justify-center p-6 relative overflow-hidden">
@@ -39,7 +41,7 @@ export default function SignInPage() {
 
                 <div className="space-y-4">
                     <button 
-                        onClick={() => signIn('google', { callbackUrl: '/' })}
+                        onClick={() => signIn('google', { callbackUrl })}
                         className="w-full flex items-center justify-center gap-4 bg-white py-5 rounded-2xl font-black text-black hover:bg-gray-100 transition-all duration-300 shadow-xl"
                     >
                         <img src="https://authjs.dev/img/providers/google.svg" alt="Google" className="w-6 h-6" />
@@ -73,5 +75,13 @@ export default function SignInPage() {
                 </p>
             </motion.div>
         </div>
+    )
+}
+
+export default function SignInPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#030014] flex items-center justify-center text-white font-bold">Loading Auth...</div>}>
+            <SignInContent />
+        </Suspense>
     )
 }

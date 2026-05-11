@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { HiCheck, HiOutlineSparkles, HiOutlineQuestionMarkCircle } from "react-icons/hi"
 import { useState, useRef, useEffect } from "react"
 import { useSession, signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import NegotiationSection from "./NegotiationSection"
 
@@ -156,7 +157,7 @@ const RazorpayButton = ({ buttonId, children }) => {
         }
 
         if (!session) {
-            signIn('google', { callbackUrl: window.location.href });
+            router.push('/auth/signin');
             return;
         }
         
@@ -179,6 +180,7 @@ const RazorpayButton = ({ buttonId, children }) => {
 
 export default function PricingFullContent() {
     const { data: session } = useSession()
+    const router = useRouter()
     const [selectedPlanId, setSelectedPlanId] = useState("combo") // Default selection
     const [hoveredPlan, setHoveredPlan] = useState(null)
     const negotiationRef = useRef(null)
@@ -287,7 +289,7 @@ export default function PricingFullContent() {
                                         </RazorpayButton>
                                     ) : (
                                         <button 
-                                            onClick={() => !session ? signIn('google', { callbackUrl: window.location.href }) : null}
+                                            onClick={() => !session ? router.push('/auth/signin') : null}
                                             className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                             ${isSelected 
                                                 ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 

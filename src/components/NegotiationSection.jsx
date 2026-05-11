@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { HiLightningBolt, HiBadgeCheck, HiGlobeAlt, HiChevronRight, HiSparkles, HiPlusCircle, HiCheckCircle } from "react-icons/hi"
 import { useState, useRef } from "react"
 import { useSession, signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 const negotiateOptions = [
     {
@@ -70,6 +71,7 @@ const negotiateOptions = [
 
 export default function NegotiationSection() {
     const { data: session } = useSession()
+    const router = useRouter()
     const [selectedId, setSelectedId] = useState("one-time-fixed") 
     const [hasProxyAddon, setHasProxyAddon] = useState(false)
     const containerRef = useRef(null)
@@ -267,7 +269,7 @@ export default function NegotiationSection() {
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (!session) {
-                                                signIn('google', { callbackUrl: window.location.href });
+                                                router.push('/auth/signin');
                                             } else {
                                                 // Handle actual payment here
                                             }
@@ -329,7 +331,7 @@ export default function NegotiationSection() {
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (!session) {
-                                            signIn('google', { callbackUrl: window.location.href });
+                                            router.push('/auth/signin');
                                         } else {
                                             // Handle actual payment here
                                         }

@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { HiMenu, HiX, HiUserCircle, HiLogout, HiUser } from "react-icons/hi"
 import { useSession, signIn, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function Navbar() {
     const { data: session } = useSession()
+    const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isAccountOpen, setIsAccountOpen] = useState(false)
 
@@ -42,7 +44,7 @@ export default function Navbar() {
                     {/* User Account Icon */}
                     <div className="relative">
                         <button 
-                            onClick={session ? toggleAccount : () => signIn('google', { callbackUrl: '/profile' })}
+                            onClick={session ? toggleAccount : () => router.push('/auth/signin?callbackUrl=/profile')}
                             className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                         >
                             {session?.user?.image ? (
@@ -136,7 +138,7 @@ export default function Navbar() {
                                     </div>
                                 ) : (
                                     <button 
-                                        onClick={() => signIn('google', { callbackUrl: '/profile' })}
+                                        onClick={() => router.push('/auth/signin?callbackUrl=/profile')}
                                         className="flex items-center gap-3 w-full py-2 text-purple-700 font-bold"
                                     >
                                         <HiUserCircle size={24} />
