@@ -89,22 +89,43 @@ const RazorpayButton = ({ buttonId, children }) => {
 
         const form = document.createElement('form');
         form.appendChild(script);
-        form.style.display = 'none'; // Keep it hidden
+        
+        // Use opacity and absolute positioning instead of display:none
+        // Some button scripts check for visibility before allowing clicks
+        form.style.position = 'absolute';
+        form.style.opacity = '0';
+        form.style.pointerEvents = 'none';
+        form.style.width = '1px';
+        form.style.height = '1px';
+        form.style.overflow = 'hidden';
         
         containerRef.current.appendChild(form);
 
-        // More robust: use MutationObserver to detect the button insertion
-        const observer = new MutationObserver(() => {
+        const findButton = () => {
             const btn = containerRef.current.querySelector('button');
             if (btn) {
                 rzpButtonRef.current = btn;
-                observer.disconnect();
+                return true;
             }
+            return false;
+        };
+
+        // MutationObserver for immediate detection
+        const observer = new MutationObserver(() => {
+            if (findButton()) observer.disconnect();
         });
 
         observer.observe(containerRef.current, { childList: true, subtree: true });
 
-        return () => observer.disconnect();
+        // Fallback polling just in case
+        const interval = setInterval(() => {
+            if (findButton()) clearInterval(interval);
+        }, 500);
+
+        return () => {
+            observer.disconnect();
+            clearInterval(interval);
+        };
     }, [buttonId]);
 
     const handleTrigger = (e) => {
