@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import MobileToDesktopPrompt from "../src/components/MobileToDesktopPrompt";
 import LeadCapturePopup from "../src/components/LeadCapturePopup";
@@ -27,6 +28,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} bg-slate-50`}>
+        {/* Google Analytics Tag */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZDSWZS7Z99"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-ZDSWZS7Z99');
+          `}
+        </Script>
         <LeadCapturePopup />
         <MobileToDesktopPrompt />
         {children}
