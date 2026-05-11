@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { HiCheck, HiOutlineSparkles, HiOutlineQuestionMarkCircle } from "react-icons/hi"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import NegotiationSection from "./NegotiationSection"
 
@@ -107,6 +107,29 @@ const faqs = [
     }
 ]
 
+const RazorpayButton = ({ buttonId }) => {
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        // Clear existing button if any (for re-renders)
+        containerRef.current.innerHTML = '';
+
+        const script = document.createElement('script');
+        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
+        script.setAttribute('data-payment_button_id', buttonId);
+        script.async = true;
+
+        const form = document.createElement('form');
+        form.appendChild(script);
+        
+        containerRef.current.appendChild(form);
+    }, [buttonId]);
+
+    return <div ref={containerRef} className="w-full flex justify-center" />;
+};
+
 export default function PricingFullContent() {
     const [hoveredPlan, setHoveredPlan] = useState(null)
     const negotiationRef = useRef(null)
@@ -201,17 +224,23 @@ export default function PricingFullContent() {
                                 </ul>
 
                                 <div className="mt-auto">
-                                    <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
-                                        ${plan.featured ? 'bg-white text-purple-900 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-white/10 text-white hover:bg-white/20'}
-                                    `}>
-                                        <span className="relative z-10 flex items-center justify-center gap-2">
-                                            Pay & Start Your Career
-                                            <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
-                                        </span>
-                                        {plan.featured && (
-                                            <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        )}
-                                    </button>
+                                    {plan.id === 'marketing' ? (
+                                        <div className="w-full min-h-[56px] flex items-center justify-center bg-white/10 rounded-2xl overflow-hidden py-2">
+                                            <RazorpayButton buttonId="pl_So2gTMvs2tajA1" />
+                                        </div>
+                                    ) : (
+                                        <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
+                                            ${plan.featured ? 'bg-white text-purple-900 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-white/10 text-white hover:bg-white/20'}
+                                        `}>
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                Pay & Start Your Career
+                                                <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                                            </span>
+                                            {plan.featured && (
+                                                <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            )}
+                                        </button>
+                                    )}
 
                                     <button 
                                         onClick={scrollToNegotiation}
