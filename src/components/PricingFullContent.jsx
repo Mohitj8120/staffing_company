@@ -281,22 +281,30 @@ export default function PricingFullContent() {
 
                                 <div className="mt-auto">
                                     {plan.id === 'marketing' ? (
-                                        <RazorpayButton 
-                                            buttonId="pl_So2gTMvs2tajA1"
-                                            isSelected={isSelected}
-                                            onSelect={() => setSelectedPlanId(plan.id)}
-                                        >
-                                            <button className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (!isSelected) {
+                                                    setSelectedPlanId(plan.id);
+                                                } else if (!session) {
+                                                    router.push('/auth/signin');
+                                                } else {
+                                                    window.location.href = 'https://rzp.io/rzp/G1C6QbLF';
+                                                }
+                                            }}
+                                            className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
                                                 ${isSelected 
                                                     ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
                                                     : 'bg-white/10 text-white/60 border border-white/10 hover:bg-white/20'
                                                 }
                                             `}>
-                                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                                </span>
-                                            </button>
-                                        </RazorpayButton>
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
+                                            </span>
+                                            {isSelected && (
+                                                <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            )}
+                                        </button>
                                     ) : (
                                         <button 
                                             onClick={(e) => {
@@ -307,6 +315,10 @@ export default function PricingFullContent() {
                                                     router.push('/auth/signin');
                                                 } else if (plan.id === 'proxy') {
                                                     window.location.href = 'https://rzp.io/rzp/VmmFnUpJ';
+                                                } else if (plan.id === 'combo') {
+                                                    window.location.href = 'https://rzp.io/rzp/m4VtFPNl';
+                                                } else if (plan.id === 'unlimited') {
+                                                    window.location.href = 'https://rzp.io/rzp/1oqfXSO7';
                                                 }
                                             }}
                                             className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden

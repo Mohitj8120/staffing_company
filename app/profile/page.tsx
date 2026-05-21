@@ -45,7 +45,7 @@ export default function ProfilePage() {
 
     // Purchases is now empty by default as requested. 
     // In a real implementation, this would be fetched from your database based on session.user.email
-    const purchases = [] 
+    const purchases: any[] = [] 
 
     return (
         <div className="bg-[#030014] min-h-screen text-white">

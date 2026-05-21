@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { FiCheckCircle, FiShield, FiEyeOff, FiMonitor, FiArrowRight, FiUnlock } from "react-icons/fi"
 import { BsCpuFill, BsLightningChargeFill } from "react-icons/bs"
 import { FaGhost } from "react-icons/fa"
@@ -76,9 +77,11 @@ export default function ProxyToolContent() {
             transition={{ delay: 0.6 }}
             className="flex flex-col sm:flex-row justify-center gap-4"
           >
-            <button className="bg-linear-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-[0_0_30px_rgba(225,29,72,0.5)] transition-all hover:-translate-y-1 flex items-center justify-center gap-3">
-              Get Started Now <FiArrowRight className="text-xl" />
-            </button>
+            <Link href="/pricing">
+              <button className="bg-linear-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-[0_0_30px_rgba(225,29,72,0.5)] transition-all hover:-translate-y-1 flex items-center justify-center gap-3">
+                Get Started Now <FiArrowRight className="text-xl" />
+              </button>
+            </Link>
             <button className="bg-white/5 border border-white/10 hover:bg-white/10 backdrop-blur-md text-white px-10 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-3">
               Watch Demo
             </button>
@@ -183,9 +186,11 @@ export default function ProxyToolContent() {
             </div>
           </div>
 
-          <button className="w-full sm:w-auto bg-white text-gray-950 hover:bg-gray-200 px-12 py-5 rounded-2xl font-black text-xl shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all hover:scale-105">
-            Purchase Access Now
-          </button>
+          <Link href="/pricing">
+            <button className="w-full sm:w-auto bg-white text-gray-950 hover:bg-gray-200 px-12 py-5 rounded-2xl font-black text-xl shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all hover:scale-105">
+              Purchase Access Now
+            </button>
+          </Link>
 
           <p className="mt-8 text-sm text-gray-500 max-w-md mx-auto">
             100% secure checkout. Your proxy tool dashboard credentials will be instantly delivered via email.

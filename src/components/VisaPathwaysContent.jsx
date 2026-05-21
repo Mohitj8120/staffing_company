@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { FiCheckCircle, FiBriefcase, FiTarget, FiArrowRight } from "react-icons/fi"
 import { BsShieldFillCheck } from "react-icons/bs"
 import { FaGraduationCap, FaUserTie } from "react-icons/fa"
@@ -125,9 +126,11 @@ export default function VisaPathwaysContent() {
             transition={{ delay: 0.6 }}
             className="flex justify-center"
           >
-            <button className="bg-white text-gray-900 hover:bg-gray-100 hover:scale-105 px-8 py-4 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all flex items-center gap-3">
-              Start Your Journey Today <FiArrowRight className="text-xl" />
-            </button>
+            <Link href="/pricing">
+              <button className="bg-white text-gray-900 hover:bg-gray-100 hover:scale-105 px-8 py-4 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all flex items-center gap-3">
+                Start Your Journey Today <FiArrowRight className="text-xl" />
+              </button>
+            </Link>
           </motion.div>
 
           {/* VIDEO PLACEHOLDER */}
@@ -269,13 +272,15 @@ export default function VisaPathwaysContent() {
             <p className="text-xl text-gray-600 mb-10">
                Get placed faster with a strategy tailored specifically to your visa status.
             </p>
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-[0_10px_30px_rgba(0,0,0,0.2)] flex items-center justify-center gap-3 mx-auto lg:mx-0"
-            >
-              Get Started Now <FiArrowRight className="text-xl" />
-            </motion.button>
+            <Link href="/pricing">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-[0_10px_30px_rgba(0,0,0,0.2)] flex items-center justify-center gap-3 mx-auto lg:mx-0"
+              >
+                Get Started Now <FiArrowRight className="text-xl" />
+              </motion.button>
+            </Link>
           </div>
           
         </div>

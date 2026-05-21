@@ -99,13 +99,7 @@ export default function Footer() {
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-600/20 text-green-400 shrink-0">
                                         <FaWhatsapp size={16} />
                                     </span>
-                                    <span>+91 98765 43210</span>
-                                </li>
-                                <li className="flex items-center gap-3">
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-600/20 text-green-400 shrink-0">
-                                        <FaWhatsapp size={16} />
-                                    </span>
-                                    <span>+91 91234 56789</span>
+                                    <a href="https://wa.me/15068055727" target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors">+1 506 805 5727</a>
                                 </li>
                                 <li className="flex items-center gap-3">
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-600/20 text-purple-400 shrink-0">
