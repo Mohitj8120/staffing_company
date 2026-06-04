@@ -120,16 +120,16 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-gray-800">
-                    <div className="max-w-7xl mx-auto px-8 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-xs text-gray-500">
-                            © 2026 Averion Group by <span className="font-medium text-gray-400">Averion Group Technologies Pvt Ltd.</span> All rights reserved.
+                <div className="border-t border-gray-800/50 bg-gray-900/50 backdrop-blur-lg">
+                    <div className="max-w-7xl mx-auto px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p className="text-sm text-gray-400">
+                            © {new Date().getFullYear()} <span className="font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Averion Group</span>. All rights reserved.
                         </p>
-                        <nav className="flex flex-wrap justify-center gap-5 text-xs text-gray-500">
-                            <Link href="/pricing" className="hover:text-purple-400 transition-colors">Pricing</Link>
-                            <Link href="#" className="hover:text-purple-400 transition-colors">Help</Link>
-                            <Link href="#" className="hover:text-purple-400 transition-colors">Changelog</Link>
-                            <Link href="#" className="hover:text-purple-400 transition-colors">Sitemap</Link>
+                        <nav className="flex flex-wrap justify-center gap-6 text-sm font-medium text-gray-400">
+                            <Link href="/pricing" className="hover:text-purple-400 hover:scale-105 transition-all duration-300">Pricing</Link>
+                            <Link href="/#faq" className="hover:text-purple-400 hover:scale-105 transition-all duration-300">Help</Link>
+                            <Link href="/terms" className="hover:text-purple-400 hover:scale-105 transition-all duration-300">Terms</Link>
+                            <Link href="/privacy" className="hover:text-purple-400 hover:scale-105 transition-all duration-300">Privacy Policy</Link>
                         </nav>
                     </div>
                 </div>

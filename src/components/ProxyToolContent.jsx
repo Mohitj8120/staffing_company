@@ -82,30 +82,184 @@ export default function ProxyToolContent() {
                 Get Started Now <FiArrowRight className="text-xl" />
               </button>
             </Link>
-            <button className="bg-white/5 border border-white/10 hover:bg-white/10 backdrop-blur-md text-white px-10 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-3">
-              Watch Demo
-            </button>
           </motion.div>
 
-          {/* VIDEO PLACEHOLDER */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="mt-20 w-full max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.8)] border border-white/20 aspect-video bg-gray-900 flex items-center justify-center relative group cursor-pointer"
-          >
-            <div className="absolute inset-0 bg-linear-to-tr from-rose-900/30 via-transparent to-purple-900/30"></div>
-
-            {/* Play Button */}
-            <div className="w-24 h-24 bg-white/10 border border-white/20 backdrop-blur-xl rounded-full flex items-center justify-center z-20 group-hover:scale-110 group-hover:bg-rose-500/30 group-hover:border-rose-500/50 transition-all duration-300 shadow-[0_0_40px_rgba(225,29,72,0.3)]">
-              <div className="w-0 h-0 border-t-[14px] border-t-transparent border-l-[24px] border-l-white border-b-[14px] border-b-transparent ml-2"></div>
+          {/* STEP-BY-STEP PROCESS */}
+          <div className="mt-32 w-full max-w-7xl mx-auto">
+            <div className="text-center mb-24">
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">How The Magic Happens</h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">A seamless, real-time workflow designed to get you the offer without breaking a sweat.</p>
             </div>
 
-            <div className="absolute bottom-6 left-8 z-20 text-left">
-              <h3 className="text-2xl font-bold text-white mb-1">Proxy Tool in Action</h3>
-              <p className="text-gray-400 text-sm">See how invisible the software truly is under screen share.</p>
+            <div className="space-y-32">
+              
+              {/* STEP 1 */}
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col lg:flex-row items-center gap-12"
+              >
+                <div className="flex-1 order-2 lg:order-1 text-left">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 font-black text-xl mb-6 border border-rose-500/50 shadow-[0_0_20px_rgba(225,29,72,0.3)]">1</div>
+                  <h3 className="text-3xl font-bold text-white mb-4">The Interviewer Asks A Question</h3>
+                  <p className="text-xl text-gray-400 leading-relaxed">
+                    The moment the interviewer speaks, our advanced audio recognition instantly captures the technical question with <strong className="text-rose-400">zero latency</strong>.
+                  </p>
+                </div>
+                <div className="flex-1 order-1 lg:order-2 w-full relative group">
+                  <div className="absolute inset-0 bg-rose-600/20 blur-[80px] rounded-full group-hover:bg-rose-600/30 transition-all duration-700" />
+                  <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-6 md:p-8 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-2">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-full bg-gray-700 overflow-hidden relative border border-gray-600">
+                         <div className="absolute inset-0 bg-linear-to-b from-gray-500 to-gray-800"></div>
+                      </div>
+                      <div>
+                        <h4 className="text-white font-bold text-lg">Interviewer</h4>
+                        <div className="flex items-center gap-2">
+                          <div className="flex gap-1 items-end h-3">
+                            <motion.div animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 0.5 }} className="w-1 bg-rose-500 rounded-full"></motion.div>
+                            <motion.div animate={{ height: [4, 16, 4] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-1 bg-rose-500 rounded-full"></motion.div>
+                            <motion.div animate={{ height: [4, 8, 4] }} transition={{ repeat: Infinity, duration: 0.4 }} className="w-1 bg-rose-500 rounded-full"></motion.div>
+                          </div>
+                          <span className="text-xs text-rose-400 font-mono tracking-widest uppercase">Capturing Audio...</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-xl p-5 border border-gray-700 relative overflow-hidden">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500 rounded-l-xl"></div>
+                      <p className="text-gray-200 font-medium text-lg leading-relaxed">"Can you explain how you would optimize a React application that is experiencing rendering bottlenecks?"</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* STEP 2 */}
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col lg:flex-row items-center gap-12"
+              >
+                <div className="flex-1 w-full relative group">
+                  <div className="absolute inset-0 bg-blue-600/20 blur-[80px] rounded-full group-hover:bg-blue-600/30 transition-all duration-700" />
+                  <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-6 md:p-8 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] h-[300px] flex flex-col transform transition-transform duration-500 hover:-translate-y-2">
+                     {/* Screen Analysis Mock */}
+                     <div className="h-8 border-b border-gray-800 flex items-center gap-2 mb-4">
+                        <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                        <span className="ml-2 text-xs text-gray-600 font-mono">App.jsx</span>
+                     </div>
+                     <div className="flex-1 relative font-mono text-sm text-gray-500 overflow-hidden">
+                       <p><span className="text-purple-400">import</span> React, {'{'} useMemo {'}'} <span className="text-purple-400">from</span> 'react';</p>
+                       <p className="mt-2"><span className="text-blue-400">const</span> <span className="text-yellow-200">ExpensiveComponent</span> = () =&gt; {'{'}</p>
+                       <p className="pl-4 mt-2 text-gray-600 italic">// Active Screen Context</p>
+                       <p className="pl-4">...</p>
+                       
+                       {/* Scanner Animation */}
+                       <motion.div 
+                          initial={{ top: 0 }}
+                          animate={{ top: "100%" }}
+                          transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
+                          className="absolute left-0 right-0 h-1 bg-blue-400/80 shadow-[0_0_20px_rgba(96,165,250,1)] z-10"
+                       />
+                       <div className="absolute top-4 right-4 bg-blue-500/20 border border-blue-500/50 text-blue-300 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase flex items-center gap-2 backdrop-blur-md">
+                         <BsCpuFill /> Analyzing Code
+                       </div>
+                     </div>
+                  </div>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-black text-xl mb-6 border border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]">2</div>
+                  <h3 className="text-3xl font-bold text-white mb-4">Real-Time Screen Analysis</h3>
+                  <p className="text-xl text-gray-400 leading-relaxed">
+                    It doesn't just listen to audio. The tool <strong className="text-blue-400">analyzes your screen context</strong>, instantly reading the code in your IDE to ensure the generated solution perfectly matches your specific environment and variables.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* STEP 3 */}
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col lg:flex-row items-center gap-12"
+              >
+                <div className="flex-1 order-2 lg:order-1 text-left">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-black text-xl mb-6 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]">3</div>
+                  <h3 className="text-3xl font-bold text-white mb-4">Instant AI Code & Answers</h3>
+                  <p className="text-xl text-gray-400 leading-relaxed">
+                    Within milliseconds after the question finishes, <strong className="text-purple-400">exact code snippets and perfectly scripted conversational answers</strong> float directly onto your screen. No delays, no awkward pauses.
+                  </p>
+                </div>
+                <div className="flex-1 order-1 lg:order-2 w-full relative group">
+                  <div className="absolute inset-0 bg-purple-600/20 blur-[80px] rounded-full group-hover:bg-purple-600/30 transition-all duration-700" />
+                  <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-6 md:p-8 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-2">
+                     <div className="bg-gray-900/90 backdrop-blur-xl rounded-2xl border border-purple-500/50 p-6 shadow-2xl relative overflow-hidden">
+                       <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-purple-500 via-pink-500 to-rose-500"></div>
+                       <div className="flex items-center gap-2 mb-4">
+                         <BsLightningChargeFill className="text-purple-400 text-lg" />
+                         <span className="text-purple-300 font-bold tracking-widest text-xs uppercase">Generated Solution</span>
+                       </div>
+                       <p className="text-white text-lg leading-relaxed mb-6 font-medium">
+                         "To fix the bottleneck, I would wrap the expensive child components in <span className="text-purple-300 font-mono text-base">React.memo()</span> and use <span className="text-purple-300 font-mono text-base">useMemo()</span> to cache the expensive calculation..."
+                       </p>
+                       <div className="bg-black/60 rounded-xl p-4 border border-gray-700/50 relative overflow-hidden">
+                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                         <code className="text-green-400 text-sm font-mono block">
+                           <span className="text-blue-400">const</span> cachedValue = useMemo(() =&gt; computeExpensiveValue(a, b), [a, b]);
+                         </code>
+                       </div>
+                     </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* STEP 4 */}
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col lg:flex-row items-center gap-12"
+              >
+                <div className="flex-1 w-full relative group">
+                  <div className="absolute inset-0 bg-emerald-600/20 blur-[80px] rounded-full group-hover:bg-emerald-600/30 transition-all duration-700" />
+                  <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-6 md:p-8 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform duration-500 hover:-translate-y-2">
+                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-800">
+                      <span className="text-gray-300 font-bold flex items-center gap-3"><FiMonitor className="text-xl" /> Interviewer's Display</span>
+                      <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 text-xs font-bold tracking-widest uppercase rounded-full border border-emerald-800 flex items-center gap-2">
+                        <FiCheckCircle /> 100% Clean
+                      </span>
+                    </div>
+                    <div className="bg-[#1e293b] rounded-xl h-[180px] flex items-center justify-center border border-gray-700 relative overflow-hidden">
+                       <span className="text-gray-500 font-mono text-sm flex items-center gap-2">
+                          <FiEyeOff /> Standard Screen Share View
+                       </span>
+                       <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%)] bg-[length:250px_250px] animate-shimmer pointer-events-none"></div>
+                    </div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-4">
+                       <div className="w-20 h-20 bg-emerald-500/20 backdrop-blur-md rounded-full flex items-center justify-center border border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.5)]">
+                         <FiShield className="text-emerald-400 text-3xl" />
+                       </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-black text-xl mb-6 border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]">4</div>
+                  <h3 className="text-3xl font-bold text-white mb-4">100% Invisible to Interviewer</h3>
+                  <p className="text-xl text-gray-400 leading-relaxed">
+                    Even while sharing your entire screen, <strong className="text-emerald-400">the interviewer sees absolutely nothing</strong>. The overlay is completely undetected by Teams, Zoom, WebEx, or any advanced proctoring software.
+                  </p>
+                </div>
+              </motion.div>
+
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 

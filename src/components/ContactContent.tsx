@@ -1,10 +1,45 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { HiOutlineMail, HiOutlineLocationMarker, HiOutlinePhone, HiSparkles } from "react-icons/hi"
 import { FaWhatsapp } from "react-icons/fa6"
 
 const ContactContent = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: 'Placement Program',
+        message: ''
+    });
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus('loading');
+        
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                setStatus('success');
+                setFormData({ name: '', email: '', subject: 'Placement Program', message: '' });
+            } else {
+                setStatus('error');
+            }
+        } catch (error) {
+            setStatus('error');
+        }
+    };
+
     return (
         <section className="py-32 relative overflow-hidden bg-[#030014]">
             {/* Background elements */}
@@ -76,32 +111,77 @@ const ContactContent = () => {
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 blur-[100px] rounded-full -z-10" />
                         <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-8 md:p-12 shadow-2xl">
-                            <form className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Full Name</label>
-                                        <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="John Doe" />
+                                        <input 
+                                            type="text" 
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors" 
+                                            placeholder="John Doe" 
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Email Address</label>
-                                        <input type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="john@example.com" />
+                                        <input 
+                                            type="email" 
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors" 
+                                            placeholder="john@example.com" 
+                                        />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Subject</label>
-                                    <select className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors appearance-none">
-                                        <option className="bg-gray-900">Placement Program</option>
-                                        <option className="bg-gray-900">AI Proxy Tool</option>
-                                        <option className="bg-gray-900">Visa Pathway</option>
-                                        <option className="bg-gray-900">General Inquiry</option>
+                                    <select 
+                                        name="subject"
+                                        value={formData.subject}
+                                        onChange={handleChange}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors appearance-none"
+                                    >
+                                        <option value="Placement Program" className="bg-gray-900">Placement Program</option>
+                                        <option value="AI Proxy Tool" className="bg-gray-900">AI Proxy Tool</option>
+                                        <option value="Visa Pathway" className="bg-gray-900">Visa Pathway</option>
+                                        <option value="General Inquiry" className="bg-gray-900">General Inquiry</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Message</label>
-                                    <textarea rows={4} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="How can we help you?"></textarea>
+                                    <textarea 
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        required
+                                        rows={4} 
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-purple-500 transition-colors" 
+                                        placeholder="How can we help you?"
+                                    ></textarea>
                                 </div>
-                                <button className="w-full py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.2em] hover:bg-purple-600 hover:text-white transition-all duration-500 shadow-xl">
-                                    Send Message
+                                
+                                {status === 'error' && (
+                                    <div className="text-red-400 text-sm font-medium bg-red-400/10 border border-red-400/20 p-3 rounded-lg text-center">
+                                        Failed to send message. Please try again.
+                                    </div>
+                                )}
+                                {status === 'success' && (
+                                    <div className="text-emerald-400 text-sm font-medium bg-emerald-400/10 border border-emerald-400/20 p-3 rounded-lg text-center">
+                                        Your message has been sent successfully! We'll get back to you soon.
+                                    </div>
+                                )}
+
+                                <button 
+                                    type="submit" 
+                                    disabled={status === 'loading'}
+                                    className={`w-full py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${status === 'loading' ? 'opacity-70 cursor-not-allowed' : 'hover:bg-purple-600 hover:text-white'}`}
+                                >
+                                    {status === 'loading' ? 'Sending...' : 'Send Message'}
                                 </button>
                             </form>
                         </div>

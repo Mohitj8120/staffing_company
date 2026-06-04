@@ -29,7 +29,7 @@ const plans = [
     {
         id: "marketing",
         name: "Marketing Only",
-        price: "750",
+        price: "700",
         subtitle: "Valid for 7 months",
         description: "Direct ties with major companies to secure your interview calls.",
         features: [

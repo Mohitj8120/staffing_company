@@ -11,7 +11,7 @@ const blocks = [
         desc: "Most staffing agencies charge heavy upfront costs with no guaranteed results. We've flipped the model. You pay less upfront, and the majority of the cost comes only when you start seeing real results. No hidden charges, no surprise fees — just honest, transparent pricing that respects your budget.",
         color: "from-purple-500 to-pink-500",
         hasTable: true,
-        image: "/image1.jpeg"
+        image: "/image1.png"
     },
     {
         title: "Direct Company Tie-Ups, Not Random Applications",
@@ -75,30 +75,30 @@ function CostComparisonTable() {
                     <thead>
                         <tr className="bg-white/5">
                             <th className="px-6 py-5 text-white/40 font-black uppercase text-[10px] tracking-[0.2em]">Fee Structure</th>
-                            <th className="px-6 py-5 text-red-400/80 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-red-500/5">Other Agencies</th>
+                            <th className="px-6 py-5 text-red-500 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-red-500/10">Other Agencies</th>
                             <th className="px-6 py-5 text-green-400 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-green-500/10 shadow-[inset_0_0_20px_rgba(34,197,94,0.1)]">Averion Group</th>
                         </tr>
                     </thead>
                     <tbody className="text-white/80">
                         <tr className="border-b border-white/5 group/row hover:bg-white/[0.02] transition-colors">
                             <td className="px-6 py-4 font-bold text-white/90">Registration Fee</td>
-                            <td className="px-6 py-4 text-center text-red-400/60 font-black line-through opacity-50">$1,500</td>
-                            <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">$750</td>
+                            <td className="px-6 py-4 text-center text-red-500/80 font-black line-through">$1,500</td>
+                            <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">$700</td>
                         </tr>
                         <tr className="border-b border-white/5 group/row hover:bg-white/[0.02] transition-colors">
-                            <td className="px-6 py-4 font-bold text-white/90">After Interview Call</td>
-                            <td className="px-6 py-4 text-center text-red-400/60 font-black line-through opacity-50">$1,000</td>
+                            <td className="px-6 py-4 font-bold text-white/90">After Accepting Offer Letter</td>
+                            <td className="px-6 py-4 text-center text-red-500/80 font-black line-through">$1,000</td>
                             <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">$920</td>
                         </tr>
                         <tr className="border-b border-white/5 group/row hover:bg-white/[0.02] transition-colors">
                             <td className="px-6 py-4 font-bold text-white/90">Success Fee</td>
-                            <td className="px-6 py-4 text-center text-red-400/60 font-black line-through opacity-50">12%</td>
+                            <td className="px-6 py-4 text-center text-red-500/80 font-black line-through">12%</td>
                             <td className="px-6 py-4 text-center text-green-400 font-black text-lg bg-green-500/5">9%</td>
                         </tr>
                         <tr className="bg-white/5">
                             <td className="px-6 py-6 font-black text-white uppercase tracking-wider">Total Upfront</td>
                             <td className="px-6 py-6 text-center text-red-500 font-black text-xl">$1,500</td>
-                            <td className="px-6 py-6 text-center text-green-500 font-black text-2xl bg-green-500/10 shadow-[inset_0_0_30px_rgba(34,197,94,0.2)]">$750*</td>
+                            <td className="px-6 py-6 text-center text-green-500 font-black text-2xl bg-green-500/10 shadow-[inset_0_0_30px_rgba(34,197,94,0.2)]">$700*</td>
                         </tr>
                     </tbody>
                 </table>

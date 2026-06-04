@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
+import { useRef } from "react"
 import Link from "next/link"
 import { FiCheckCircle, FiBriefcase, FiTarget, FiArrowRight } from "react-icons/fi"
 import { BsShieldFillCheck } from "react-icons/bs"
@@ -79,20 +80,39 @@ const whyChooseUs = [
 ]
 
 export default function VisaPathwaysContent() {
+  const containerRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  })
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.8, 0.2])
+
   return (
     <div className="w-full bg-slate-50 min-h-screen font-sans overflow-hidden pt-12 md:pt-16">
-      
+
       {/* DISCALIMER BANNER REMOVED AS REQUESTED - PLACED MORE SUBTLY IN CONTENT */}
 
       {/* HERO SECTION */}
-      <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden bg-linear-to-br from-gray-900 via-blue-950 to-purple-950 text-white mx-4 md:mx-8 rounded-[40px]">
+      <section ref={containerRef} className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden bg-gray-900 text-white mx-4 md:mx-8 rounded-[40px] shadow-2xl border border-white/10">
         
+        {/* Parallax Hero Background */}
+        <motion.div 
+          style={{ y, opacity, backgroundImage: 'url(/images/hero_visa_bg.png)' }} 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        />
+        
+        {/* Overlay Gradients */}
+        <div className="absolute inset-0 z-0 bg-linear-to-b from-gray-900/60 via-gray-900/40 to-gray-900/90" />
+        <div className="absolute inset-0 z-0 bg-linear-to-r from-blue-950/30 to-purple-950/30" />
+
         {/* Animated Background Blobs */}
-        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }} transition={{ repeat: Infinity, duration: 8 }} className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px]" />
-        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.25, 0.1] }} transition={{ repeat: Infinity, duration: 10, delay: 2 }} className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-600 rounded-full blur-[150px]" />
+        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }} transition={{ repeat: Infinity, duration: 8 }} className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px] z-0 pointer-events-none" />
+        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.25, 0.1] }} transition={{ repeat: Infinity, duration: 10, delay: 2 }} className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-600 rounded-full blur-[150px] z-0 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          
+
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -100,17 +120,17 @@ export default function VisaPathwaysContent() {
           >
             US Career Placement Experts
           </motion.div>
-          
+
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6"
           >
-            Navigate Your US Career Journey <br className="hidden md:block"/>
+            Navigate Your US Career Journey <br className="hidden md:block" />
             with the <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-400">Right Visa Strategy</span>
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -119,7 +139,7 @@ export default function VisaPathwaysContent() {
           >
             We don’t provide visas — we help you <strong className="text-white">secure jobs aligned with your visa status</strong> and move forward securely in your career.
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -133,108 +153,72 @@ export default function VisaPathwaysContent() {
             </Link>
           </motion.div>
 
-          {/* VIDEO PLACEHOLDER */}
+          {/* INTERACTIVE VISA PATHWAYS DIAGRAM */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="mt-16 w-full max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 aspect-video bg-gray-800 flex items-center justify-center relative group cursor-pointer"
+            className="mt-16 w-full max-w-7xl mx-auto rounded-[40px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10 bg-gray-900/60 backdrop-blur-2xl p-4 md:p-8"
           >
-            <div className="absolute inset-0 bg-linear-to-t from-gray-900/90 via-transparent to-transparent z-10"></div>
-            
-            {/* Play Button */}
-            <div className="w-20 h-20 bg-white/10 border border-white/20 backdrop-blur-xl rounded-full flex items-center justify-center z-20 group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300">
-              <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[22px] border-l-white border-b-[12px] border-b-transparent ml-2"></div>
+            <div className="text-center mb-8">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-2">Visa Strategy Visualized</h3>
+              <p className="text-gray-300">Choose your visa pathway and discover how we secure your future</p>
             </div>
             
-            <div className="absolute bottom-6 left-8 z-20 text-left">
-              <h3 className="text-xl font-bold text-white mb-1">Visa Strategy Masterclass</h3>
-              <p className="text-gray-300 text-sm">Watch how we navigate US job placements</p>
+            <div className="flex flex-col lg:flex-row gap-4 h-[800px] lg:h-[500px]">
+              {visaTypes.map((visa, idx) => {
+                const bgImages = {
+                  'opt': '/images/opt_visa_bg.png',
+                  'stem-opt': '/images/stem_opt_visa_bg.png',
+                  'h1b': '/images/h1b_visa_bg.png',
+                  'h4-ead': '/images/h4_ead_visa_bg.png'
+                };
+                return (
+                  <motion.div 
+                    key={visa.id}
+                    className="relative rounded-3xl overflow-hidden flex-1 hover:flex-[2] transition-all duration-500 ease-in-out group cursor-pointer border border-white/10"
+                  >
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+                      style={{ backgroundImage: `url(${bgImages[visa.id]})` }}
+                    />
+                    <div className="absolute inset-0 bg-gray-900/50 group-hover:bg-gray-900/20 transition-colors duration-500" />
+                    <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-gray-900/80 to-transparent opacity-90" />
+                    
+                    <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-left z-10">
+                      <div className="flex items-center gap-4 mb-4 group-hover:mb-2 transition-all">
+                        <div className="bg-white/20 backdrop-blur-md w-12 h-12 rounded-xl flex items-center justify-center border border-white/30 text-white shrink-0">
+                          {visa.icon}
+                        </div>
+                        <h4 className="text-xl md:text-2xl font-bold text-white leading-tight">{visa.title}</h4>
+                      </div>
+                      
+                      <div className="overflow-hidden max-h-0 group-hover:max-h-[300px] transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+                        <p className="text-cyan-300 font-semibold mb-3">{visa.goal}</p>
+                        <ul className="space-y-2">
+                          {visa.features.map((feature, i) => (
+                            <li key={i} className="flex items-start gap-2 text-gray-200 text-sm">
+                              <FiCheckCircle className="text-cyan-400 mt-1 shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
             </div>
           </motion.div>
         </div>
       </section>
-      
-      {/* VISA TYPES GRID */}
-      <section className="py-24 px-6 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Our Support Across Visa Types</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">Mera visa jo bhi hai, we have a clear, actionable plan to get you hired securely and quickly.</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {visaTypes.map((visa, idx) => (
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              key={visa.id}
-              className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100 hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group"
-            >
-              {/* Top Gradient Bar */}
-              <div className={`absolute top-0 left-0 right-0 h-2 bg-linear-to-r ${visa.colorFrom} ${visa.colorTo} opacity-80 group-hover:opacity-100 transition-opacity`} />
-              
-              <div className="bg-gray-50 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
-                {visa.icon}
-              </div>
-              
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">{visa.title}</h3>
-              
-              <ul className="space-y-3 mb-8">
-                {visa.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3 text-gray-600">
-                    <FiCheckCircle className="text-green-500 mt-1 shrink-0" />
-                    <span className="leading-snug">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              
-              <div className="mt-auto bg-slate-50 border border-slate-100 rounded-xl p-4">
-                <p className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                  <FiTarget className="text-blue-500" /> GOAL:
-                </p>
-                <p className="text-sm text-gray-600 mt-1">{visa.goal}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
-      {/* HOW WE WORK (Workflow) */}
-      <section className="py-24 bg-linear-to-b from-gray-900 to-gray-950 text-white px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">How We Work</h2>
-            <p className="text-xl text-gray-400">A seamless transition from evaluation to your first day.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            {workflows.map((item, idx) => (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.15 }}
-                key={idx}
-                className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-6 border border-gray-700 relative"
-              >
-                <div className="text-5xl font-black text-white/5 absolute top-4 right-4">{item.step}</div>
-                <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg border border-blue-500/30 mb-6">
-                  {item.step}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3 relative z-10">{item.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed relative z-10">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* WHY CHOOSE US & CTA */}
       <section className="py-24 px-6 max-w-7xl mx-auto relative">
         <div className="flex flex-col lg:flex-row gap-12 items-center bg-white rounded-3xl p-8 lg:p-16 shadow-2xl border border-gray-100 relative overflow-hidden">
-          
+
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-100 rounded-full blur-[80px] -z-10" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-100 rounded-full blur-[80px] -z-10" />
@@ -243,12 +227,12 @@ export default function VisaPathwaysContent() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Why Choose Us?</h2>
             <div className="space-y-4">
               {whyChooseUs.map((reason, idx) => (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  key={idx} 
+                  key={idx}
                   className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-100"
                 >
                   <div className="w-10 h-10 rounded-full bg-linear-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white shrink-0">
@@ -258,7 +242,7 @@ export default function VisaPathwaysContent() {
                 </motion.div>
               ))}
             </div>
-            
+
             <div className="mt-8 flex items-center gap-3 text-gray-400 bg-gray-50/50 p-4 rounded-xl border border-gray-100 italic">
               <FiTarget className="text-blue-500 shrink-0" />
               <p className="text-sm">
@@ -266,14 +250,14 @@ export default function VisaPathwaysContent() {
               </p>
             </div>
           </div>
-          
+
           <div className="lg:w-1/2 text-center lg:text-left relative z-10">
             <h3 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">Start Your Journey Today</h3>
             <p className="text-xl text-gray-600 mb-10">
-               Get placed faster with a strategy tailored specifically to your visa status.
+              Get placed faster with a strategy tailored specifically to your visa status.
             </p>
             <Link href="/pricing">
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-[0_10px_30px_rgba(0,0,0,0.2)] flex items-center justify-center gap-3 mx-auto lg:mx-0"
@@ -282,7 +266,7 @@ export default function VisaPathwaysContent() {
               </motion.button>
             </Link>
           </div>
-          
+
         </div>
       </section>
 
