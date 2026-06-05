@@ -3,7 +3,7 @@ import Footer from "../../src/components/Footer"
 import PricingFullContent from "../../src/components/PricingFullContent"
 
 export const metadata = {
-    title: "Pricing | Averion Group",
+    title: "Pricing | Averion Careers",
     description: "Simple pricing for powerful results. Choose the plan that accelerates your tech career."
 }
 

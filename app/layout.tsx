@@ -12,8 +12,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Averion Group | Premium Support",
-  description: "Averion Group Staffing Solutions",
+  title: "Averion Careers | Premium Support",
+  description: "Averion Careers Staffing Solutions",
 };
 
 export const viewport: Viewport = {

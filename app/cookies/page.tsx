@@ -3,8 +3,8 @@ import Footer from "@/src/components/Footer"
 import CookiesContent from "@/src/components/CookiesContent"
 
 export const metadata = {
-  title: "Cookies Policy | Averion Group",
-  description: "Details on how Averion Group uses cookies and tracking technologies."
+  title: "Cookies Policy | Averion Careers",
+  description: "Details on how Averion Careers uses cookies and tracking technologies."
 }
 
 export default function CookiesPage() {

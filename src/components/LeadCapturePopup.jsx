@@ -17,7 +17,7 @@ export default function LeadCapturePopup() {
     useEffect(() => {
         // Give a slight delay before showing the popup for dramatic effect and to avoid instant block
         const timer = setTimeout(() => {
-            const hasSubmitted = localStorage.getItem("averion_lead_captured")
+            const hasSubmitted = localStorage.getItem("averion_careers_lead_captured")
             // Temporarily ignore lockdown if running in dev and already closed once
             // Actually, we enforce it to be true to prompt unless submitted.
             if (!hasSubmitted) {
@@ -49,7 +49,7 @@ export default function LeadCapturePopup() {
 
             if (response.ok) {
                 // Success!
-                localStorage.setItem("averion_lead_captured", "true")
+                localStorage.setItem("averion_careers_lead_captured", "true")
                 setIsOpen(false)
                 document.body.style.overflow = "auto" // Restore scrolling
             } else {

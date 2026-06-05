@@ -246,7 +246,7 @@ export default function VisaPathwaysContent() {
             <div className="mt-8 flex items-center gap-3 text-gray-400 bg-gray-50/50 p-4 rounded-xl border border-gray-100 italic">
               <FiTarget className="text-blue-500 shrink-0" />
               <p className="text-sm">
-                <b>Note:</b> We specialize in job placement for your current visa status. Averion Group does not provide visa sponsorship directly.
+                <b>Note:</b> We specialize in job placement for your current visa status. Averion Careers does not provide visa sponsorship directly.
               </p>
             </div>
           </div>

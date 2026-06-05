@@ -23,7 +23,7 @@ export default function Footer() {
                     className="relative text-center"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-3">
-                        Try <span className="text-yellow-300">Averion Group</span> today
+                        Try <span className="text-yellow-300">Averion Careers</span> today
                     </h2>
                     <p className="text-purple-200 mb-8 text-base italic">
                         Transparent pricing. No hidden fees.
@@ -45,7 +45,7 @@ export default function Footer() {
                         {/* Brand Column */}
                         <div>
                             <h3 className="text-2xl font-bold text-white mb-4">
-                                Averion <span className="text-purple-400">Group</span>
+                                Averion <span className="text-purple-400">Careers</span>
                             </h3>
                             <p className="text-gray-400 text-sm leading-relaxed mb-6">
                                 Empowering careers and connecting top talent with leading companies. Your dream job is just one launch away.
@@ -105,7 +105,7 @@ export default function Footer() {
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-600/20 text-purple-400 shrink-0">
                                         <HiOutlineMail size={16} />
                                     </span>
-                                    <a href="mailto:hello@averiongroup.com" className="hover:text-purple-400 transition-colors">hello@averiongroup.com</a>
+                                    <a href="mailto:hello@averioncareers.com" className="hover:text-purple-400 transition-colors">hello@averioncareers.com</a>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-600/20 text-red-400 shrink-0 mt-0.5">
@@ -123,7 +123,7 @@ export default function Footer() {
                 <div className="border-t border-gray-800/50 bg-gray-900/50 backdrop-blur-lg">
                     <div className="max-w-7xl mx-auto px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-sm text-gray-400">
-                            © {new Date().getFullYear()} <span className="font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Averion Group</span>. All rights reserved.
+                            © {new Date().getFullYear()} <span className="font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Averion Careers</span>. All rights reserved.
                         </p>
                         <nav className="flex flex-wrap justify-center gap-6 text-sm font-medium text-gray-400">
                             <Link href="/pricing" className="hover:text-purple-400 hover:scale-105 transition-all duration-300">Pricing</Link>

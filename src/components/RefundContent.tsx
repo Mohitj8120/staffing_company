@@ -59,7 +59,7 @@ const RefundContent = () => {
                         <p>
                             Negotiated success fees (e.g., the 18% or 25% post-employment percentages) are only payable after 
                             you have successfully secured an offer letter and completed the 90-day post-employment period. 
-                            These fees are based on performance and results delivered by Averion Group and are therefore 
+                            These fees are based on performance and results delivered by Averion Careers and are therefore 
                             non-refundable once the target outcome (job placement) has been achieved.
                         </p>
                     </motion.div>

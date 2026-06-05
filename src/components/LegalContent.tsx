@@ -61,7 +61,7 @@ export default function LegalContent({ title, lastUpdated, children }: LegalCont
                     transition={{ delay: 0.4 }}
                     className="mt-12 text-center text-gray-400 text-sm"
                 >
-                    If you have any questions regarding our policies, please contact us at <a href="mailto:legal@averiongroup.com" className="text-purple-600 font-bold hover:underline">legal@averiongroup.com</a>
+                    If you have any questions regarding our policies, please contact us at <a href="mailto:legal@averioncareers.com" className="text-purple-600 font-bold hover:underline">legal@averioncareers.com</a>
                 </motion.div>
             </div>
 

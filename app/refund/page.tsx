@@ -3,8 +3,8 @@ import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 
 export const metadata = {
-  title: "Refund Policy | Averion Group",
-  description: "Read about Averion Group's refund policy and subscription cancellation terms.",
+  title: "Refund Policy | Averion Careers",
+  description: "Read about Averion Careers's refund policy and subscription cancellation terms.",
 };
 
 export default function RefundPage() {

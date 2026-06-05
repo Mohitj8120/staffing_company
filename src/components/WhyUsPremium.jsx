@@ -27,7 +27,7 @@ const blocks = [
     },
     {
         title: "Interview Questions — Straight from the Company",
-        desc: "We don't give you generic 'Top 50 Interview Questions' from the internet. Once you receive a company call, inform us immediately. We connect with the company and extract the latest question sheet for the exact position you're interviewing for. The questions in your interview will come from this sheet. You'll walk in already knowing what they're going to ask — that's the Averion Group advantage.",
+        desc: "We don't give you generic 'Top 50 Interview Questions' from the internet. Once you receive a company call, inform us immediately. We connect with the company and extract the latest question sheet for the exact position you're interviewing for. The questions in your interview will come from this sheet. You'll walk in already knowing what they're going to ask — that's the Averion Careers advantage.",
         color: "from-indigo-500 to-purple-500",
         image: "/image4.png"
     },
@@ -45,7 +45,7 @@ const blocks = [
     },
     {
         title: "What Others Do vs What We Do",
-        desc: "Let's be honest about what typical staffing agencies actually do — they assign someone who spends 10 minutes editing your LinkedIn, sends out random connection requests, and bulk-applies to jobs through 'Easy Apply'. You get a flood of emails saying 'Applied', but you never get an interview call because it's all automated noise.\n\nWe don't waste your time with random clicks. We have direct, official tie-ups with companies where your resume is sent directly to the internal hiring team. We don't just 'apply' — we bypass the queue and get your profile on the right desk immediately. That's the Averion Group difference.",
+        desc: "Let's be honest about what typical staffing agencies actually do — they assign someone who spends 10 minutes editing your LinkedIn, sends out random connection requests, and bulk-applies to jobs through 'Easy Apply'. You get a flood of emails saying 'Applied', but you never get an interview call because it's all automated noise.\n\nWe don't waste your time with random clicks. We have direct, official tie-ups with companies where your resume is sent directly to the internal hiring team. We don't just 'apply' — we bypass the queue and get your profile on the right desk immediately. That's the Averion Careers difference.",
         color: "from-red-500 to-pink-600",
         image: "/image7.png"
     }
@@ -76,7 +76,7 @@ function CostComparisonTable() {
                         <tr className="bg-white/5">
                             <th className="px-6 py-5 text-white/40 font-black uppercase text-[10px] tracking-[0.2em]">Fee Structure</th>
                             <th className="px-6 py-5 text-red-500 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-red-500/10">Other Agencies</th>
-                            <th className="px-6 py-5 text-green-400 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-green-500/10 shadow-[inset_0_0_20px_rgba(34,197,94,0.1)]">Averion Group</th>
+                            <th className="px-6 py-5 text-green-400 font-black uppercase text-[10px] tracking-[0.2em] text-center bg-green-500/10 shadow-[inset_0_0_20px_rgba(34,197,94,0.1)]">Averion Careers</th>
                         </tr>
                     </thead>
                     <tbody className="text-white/80">

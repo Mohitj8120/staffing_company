@@ -37,7 +37,7 @@ function SignInContent() {
                         <HiShieldCheck className="text-white w-10 h-10" />
                     </div>
                     <h1 className="text-4xl font-black text-white mb-4 tracking-tight">Secure Access</h1>
-                    <p className="text-gray-400 font-medium">Join Averion Group to manage your placements and support tools.</p>
+                    <p className="text-gray-400 font-medium">Join Averion Careers to manage your placements and support tools.</p>
                 </div>
 
                 <div className="space-y-4">
