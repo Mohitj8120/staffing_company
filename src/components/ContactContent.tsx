@@ -73,7 +73,7 @@ const ContactContent = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-white font-bold text-lg mb-1">Email Us</h4>
-                                    <p className="text-gray-400">hello@averioncareers.com</p>
+                                    <a href="mailto:Inquiry@averioncareers.com" className="text-gray-400 hover:text-purple-400 transition-colors">Inquiry@averioncareers.com</a>
                                 </div>
                             </div>
 
@@ -83,7 +83,7 @@ const ContactContent = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-white font-bold text-lg mb-1">WhatsApp</h4>
-                                    <p className="text-gray-400">+91 98765 43210</p>
+                                    <a href="https://wa.me/15068055727" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-green-400 transition-colors">+1 506 805 5727</a>
                                 </div>
                             </div>
 

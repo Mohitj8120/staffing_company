@@ -105,7 +105,7 @@ export default function Footer() {
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-600/20 text-purple-400 shrink-0">
                                         <HiOutlineMail size={16} />
                                     </span>
-                                    <a href="mailto:hello@averioncareers.com" className="hover:text-purple-400 transition-colors">hello@averioncareers.com</a>
+                                    <a href="mailto:Inquiry@averioncareers.com" className="hover:text-purple-400 transition-colors">Inquiry@averioncareers.com</a>
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-600/20 text-red-400 shrink-0 mt-0.5">
