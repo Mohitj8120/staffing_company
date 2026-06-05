@@ -5,6 +5,7 @@ import { HiLightningBolt, HiBadgeCheck, HiGlobeAlt, HiChevronRight, HiSparkles, 
 import { useState, useRef } from "react"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 const negotiateOptions = [
     {
@@ -354,7 +355,7 @@ export default function NegotiationSection() {
                     whileInView={{ opacity: 1 }}
                     className="mt-20 text-center text-white/30 font-bold text-sm tracking-widest uppercase"
                 >
-                    Still undecided? <span className="text-purple-400 cursor-pointer hover:text-white transition-colors underline decoration-purple-400/30 underline-offset-8">Talk to our career expert</span>
+                    Still undecided? <Link href="/contact" className="text-purple-400 cursor-pointer hover:text-white transition-colors underline decoration-purple-400/30 underline-offset-8">Talk to our career expert</Link>
                 </motion.p>
             </div>
 
