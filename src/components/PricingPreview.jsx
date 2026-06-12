@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { HiCheckCircle, HiStar, HiSparkles } from "react-icons/hi"
+import { FaWhatsapp } from "react-icons/fa6"
 import { useRef, useEffect, useState } from "react"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -76,92 +77,7 @@ const plans = [
     }
 ]
 
-const RazorpayButton = ({ buttonId, children, isSelected, onSelect }) => {
-    const { data: session } = useSession();
-    const router = useRouter();
-    const containerRef = useRef(null);
-    const rzpButtonRef = useRef(null);
-
-    useEffect(() => {
-        if (!containerRef.current) return;
-
-        containerRef.current.innerHTML = '';
-
-        const script = document.createElement('script');
-        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-        script.setAttribute('data-payment_button_id', buttonId);
-        script.async = true;
-
-        const form = document.createElement('form');
-        form.appendChild(script);
-        
-        // Use opacity and absolute positioning instead of display:none
-        form.style.position = 'absolute';
-        form.style.opacity = '0';
-        form.style.pointerEvents = 'none';
-        form.style.width = '1px';
-        form.style.height = '1px';
-        form.style.overflow = 'hidden';
-        
-        containerRef.current.appendChild(form);
-
-        const findButton = () => {
-            const btn = containerRef.current.querySelector('button');
-            if (btn) {
-                rzpButtonRef.current = btn;
-                return true;
-            }
-            return false;
-        };
-
-        const observer = new MutationObserver(() => {
-            if (findButton()) observer.disconnect();
-        });
-
-        observer.observe(containerRef.current, { childList: true, subtree: true });
-
-        const interval = setInterval(() => {
-            if (findButton()) clearInterval(interval);
-        }, 500);
-
-        return () => {
-            observer.disconnect();
-            clearInterval(interval);
-        };
-    }, [buttonId]);
-
-    const handleTrigger = (e) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        if (!isSelected) {
-            onSelect();
-            return;
-        }
-
-        if (!session) {
-            router.push('/auth/signin');
-            return;
-        }
-        
-        if (rzpButtonRef.current) {
-            rzpButtonRef.current.click();
-        } else {
-            console.warn("Razorpay button is initializing, please try again in a second.");
-        }
-    };
-
-    return (
-        <div className="w-full relative">
-            <div ref={containerRef} className="absolute inset-0 pointer-events-none opacity-0" />
-            <div onClick={handleTrigger} className="cursor-pointer">
-                {children}
-            </div>
-        </div>
-    );
-};
+// RazorpayButton component removed in favor of WhatsApp checkout redirect
 
 export default function PricingPreview() {
     const { data: session } = useSession()
@@ -266,49 +182,36 @@ export default function PricingPreview() {
                                 </div>
 
                                 <div className="px-8 pb-8 mt-auto">
-                                    {plan.name === 'Marketing Only' ? (
-                                        <RazorpayButton 
-                                            buttonId="pl_So2gTMvs2tajA1"
-                                            isSelected={isSelected}
-                                            onSelect={() => setSelectedPlanName(plan.name)}
-                                        >
-                                            <button 
-                                                className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
-                                                ${isSelected 
-                                                    ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
-                                                    : 'bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200'
-                                                }
-                                            `}>
-                                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                                </span>
-                                            </button>
-                                        </RazorpayButton>
-                                    ) : (
-                                        <button 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (!isSelected) {
-                                                    setSelectedPlanName(plan.name);
-                                                } else if (!session) {
-                                                    router.push('/auth/signin');
-                                                } else if (plan.name === 'Proxy Tool Only') {
-                                                    window.location.href = 'https://rzp.io/rzp/VmmFnUpJ';
-                                                } else {
-                                                    router.push('/pricing');
-                                                }
-                                            }}
-                                            className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden relative
-                                                ${isSelected 
-                                                    ? 'bg-slate-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.2)]' 
-                                                    : 'bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200'
-                                                }
-                                            `}>
-                                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                                </span>
-                                            </button>
-                                    )}
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (!isSelected) {
+                                                setSelectedPlanName(plan.name);
+                                            } else {
+                                                const whatsappText = `Hi! I'm interested in the ${plan.name} package ($${plan.price}) and want to start my career now. Please guide me on how to pay.`;
+                                                window.open(`https://wa.me/15068055727?text=${encodeURIComponent(whatsappText)}`, '_blank');
+                                            }
+                                        }}
+                                        className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-wider transition-all duration-300 overflow-hidden relative group/btn
+                                            ${isSelected 
+                                                ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 text-white shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_30px_rgba(16,185,129,0.4)]' 
+                                                : 'bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200'
+                                            }
+                                        `}>
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                {isSelected ? (
+                                                    <>
+                                                        <FaWhatsapp className="text-lg animate-pulse" />
+                                                        <span>Pay on WhatsApp & Start Career Now</span>
+                                                    </>
+                                                ) : (
+                                                    'Select Plan'
+                                                )}
+                                            </span>
+                                            {isSelected && (
+                                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                                            )}
+                                    </button>
 
                                     <button 
                                         onClick={(e) => {

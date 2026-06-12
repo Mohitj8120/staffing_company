@@ -5,6 +5,7 @@ import Link from "next/link"
 import { FiCheckCircle, FiShield, FiEyeOff, FiMonitor, FiArrowRight, FiUnlock } from "react-icons/fi"
 import { BsCpuFill, BsLightningChargeFill } from "react-icons/bs"
 import { FaGhost } from "react-icons/fa"
+import { FaWhatsapp } from "react-icons/fa6"
 
 const features = [
   {
@@ -49,7 +50,7 @@ export default function ProxyToolContent() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-rose-500/50 bg-rose-500/10 text-rose-300 font-semibold mb-8 tracking-wide shadow-[0_0_15px_rgba(225,29,72,0.4)]"
           >
-            <FaGhost className="text-xl" /> Undetectable Interview Proxy Tool
+            <FaGhost className="text-xl" /> Garuda - Undetectable Interview Copilot
           </motion.div>
 
           <motion.h1
@@ -68,7 +69,7 @@ export default function ProxyToolContent() {
             transition={{ delay: 0.4 }}
             className="text-lg md:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 font-light leading-relaxed"
           >
-            Our intelligent AI Proxy listens to your interviewer and feeds you <strong className="text-white">real-time, highly accurate answers</strong> directly on your screen—completely invisible to screen monitoring.
+            Our intelligent Garuda AI listens to your interviewer and feeds you <strong className="text-white">real-time, highly accurate answers</strong> directly on your screen—completely invisible to screen monitoring.
           </motion.p>
 
           <motion.div
@@ -323,7 +324,7 @@ export default function ProxyToolContent() {
             <BsLightningChargeFill /> Pay Per Interview Package
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Proxy Tool Access</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Garuda Access</h2>
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
             Get exclusive access to the smartest interview preparation tool. Stop paying high upfront placement fees and easily secure the job yourself.
           </p>
@@ -340,14 +341,19 @@ export default function ProxyToolContent() {
             </div>
           </div>
 
-          <Link href="/pricing">
-            <button className="w-full sm:w-auto bg-white text-gray-950 hover:bg-gray-200 px-12 py-5 rounded-2xl font-black text-xl shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all hover:scale-105">
-              Purchase Access Now
-            </button>
-          </Link>
+          <button 
+            onClick={() => {
+              const whatsappText = `Hi! I'm interested in the Garuda Access ($125 for 2 Interviews) and want to start my career now. Please guide me on how to pay.`;
+              window.open(`https://wa.me/15068055727?text=${encodeURIComponent(whatsappText)}`, '_blank');
+            }}
+            className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 hover:from-emerald-500 hover:via-teal-400 hover:to-emerald-500 text-white px-12 py-5 rounded-2xl font-black text-xl shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_40px_rgba(16,185,129,0.5)] transition-all hover:scale-105 flex items-center justify-center gap-3 mx-auto"
+          >
+            <FaWhatsapp className="text-2xl animate-pulse" />
+            Pay on WhatsApp & Start Your Career Now
+          </button>
 
           <p className="mt-8 text-sm text-gray-500 max-w-md mx-auto">
-            100% secure checkout. Your proxy tool dashboard credentials will be instantly delivered via email.
+            100% secure checkout. Your Garuda dashboard credentials will be instantly delivered via email.
           </p>
         </motion.div>
       </section>

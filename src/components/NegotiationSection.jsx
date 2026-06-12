@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { HiLightningBolt, HiBadgeCheck, HiGlobeAlt, HiChevronRight, HiSparkles, HiPlusCircle, HiCheckCircle } from "react-icons/hi"
+import { FaWhatsapp } from "react-icons/fa6"
 import { useState, useRef } from "react"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -26,7 +27,8 @@ const negotiateOptions = [
         ],
         gradient: "from-blue-600 via-cyan-500 to-indigo-600",
         icon: <HiLightningBolt className="w-8 h-8 text-white" />,
-        popular: false
+        popular: false,
+        comingSoon: true
     },
     {
         id: "one-time-fixed",
@@ -46,7 +48,8 @@ const negotiateOptions = [
         ],
         gradient: "from-purple-600 via-fuchsia-500 to-pink-600",
         icon: <HiBadgeCheck className="w-8 h-8 text-white" />,
-        popular: true
+        popular: true,
+        comingSoon: true
     },
     {
         id: "proxy-tool-only",
@@ -168,13 +171,19 @@ export default function NegotiationSection() {
                                     {/* Background glow on hover/select */}
                                     <div className={`absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br ${plan.gradient} ${isSelected ? 'opacity-30' : 'opacity-0 group-hover:opacity-20'} blur-[80px] transition-opacity duration-700 rounded-full`} />
 
-                                    {plan.popular && !isSelected && (
+                                    {plan.comingSoon ? (
+                                        <div className="absolute top-10 right-10">
+                                            <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-orange-500/30 animate-pulse">
+                                                Coming Soon
+                                            </div>
+                                        </div>
+                                    ) : (plan.popular && !isSelected && (
                                         <div className="absolute top-10 right-10">
                                             <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-purple-500/30">
                                                 Most Popular
                                             </div>
                                         </div>
-                                    )}
+                                    ))}
 
                                     <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center mb-10 mt-6 shadow-2xl relative overflow-hidden transition-transform duration-500 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}>
                                         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -269,23 +278,30 @@ export default function NegotiationSection() {
                                     <button 
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            if (!session) {
-                                                router.push('/auth/signin');
-                                            } else {
-                                                // Handle actual payment here
+                                            if (plan.comingSoon) return;
+                                            if (!isSelected) {
+                                                handleSelectPlan(plan.id);
                                             }
                                         }}
+                                        disabled={plan.comingSoon}
                                         className={`w-full py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] transition-all duration-500 relative overflow-hidden group/btn shadow-2xl
-                                        ${isSelected 
-                                            ? 'bg-white text-black hover:shadow-purple-500/40' 
-                                            : 'bg-white/10 text-white/40 border border-white/5 cursor-not-allowed'
+                                        ${plan.comingSoon
+                                            ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                                            : isSelected 
+                                                ? 'bg-white text-black hover:shadow-purple-500/40' 
+                                                : 'bg-white/10 text-white/40 border border-white/5'
                                         }
                                     `}>
                                         <span className="relative z-10 flex items-center justify-center gap-3">
-                                            {isSelected ? (session ? 'Proceed to Pay & Secure Job' : 'Login to Proceed') : 'Select Plan'}
-                                            {isSelected && <HiSparkles className="transition-transform duration-500 group-hover/btn:rotate-45 text-purple-600" />}
+                                            {plan.comingSoon 
+                                                ? 'Coming Soon'
+                                                : isSelected 
+                                                    ? 'Selected' 
+                                                    : 'Select Plan'
+                                            }
+                                            {isSelected && !plan.comingSoon && <HiSparkles className="transition-transform duration-500 group-hover/btn:rotate-45 text-purple-600" />}
                                         </span>
-                                        {isSelected && (
+                                        {isSelected && !plan.comingSoon && (
                                             <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-blue-100 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-700 ease-expo" />
                                         )}
                                     </button>
@@ -331,19 +347,27 @@ export default function NegotiationSection() {
                                 <button 
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (!session) {
-                                            router.push('/auth/signin');
+                                        if (!isSelected) {
+                                            handleSelectPlan(plan.id);
                                         } else {
-                                            // Handle actual payment here
+                                            const whatsappText = `Hi! I'm interested in the ${plan.title} package ($${plan.price}) and want to start my career now. Please guide me on how to pay.`;
+                                            window.open(`https://wa.me/15068055727?text=${encodeURIComponent(whatsappText)}`, '_blank');
                                         }
                                     }}
-                                    className={`px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500
+                                    className={`px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2
                                     ${isSelected 
-                                        ? 'bg-white text-black shadow-lg' 
+                                        ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 text-white shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_30px_rgba(16,185,129,0.4)] hover:scale-105' 
                                         : 'bg-white/10 text-white/40 border border-white/10'
                                     }
                                 `}>
-                                    {isSelected ? (session ? 'Pay & Deploy Tool' : 'Login to Pay') : 'Select Tool'}
+                                    {isSelected ? (
+                                        <>
+                                            <FaWhatsapp className="text-base animate-pulse" />
+                                            <span>Pay on WhatsApp & Start Career Now</span>
+                                        </>
+                                    ) : (
+                                        'Select Tool'
+                                    )}
                                 </button>
                             </motion.div>
                          );

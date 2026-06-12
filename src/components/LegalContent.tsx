@@ -19,7 +19,7 @@ export default function LegalContent({ title, lastUpdated, children }: LegalCont
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-[32px] p-8 md:p-12 shadow-xl shadow-gray-200 border border-gray-100 mb-12 relative overflow-hidden"
+                    className="bg-white rounded-[cd32px] p-8 md:p-12 shadow-xl shadow-gray-200 border border-gray-100 mb-12 relative overflow-hidden"
                 >
                     {/* Background Detail */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2 opacity-50" />

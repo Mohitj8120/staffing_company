@@ -10,6 +10,7 @@ import Footer from "../../src/components/Footer"
 export default function ProfilePage() {
     const { data: session, status } = useSession()
     const [isCancelling, setIsCancelling] = useState(false)
+    const [imageError, setImageError] = useState(false)
 
     if (status === "loading") {
         return (
@@ -61,11 +62,18 @@ export default function ProfilePage() {
                             className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-3xl sticky top-32"
                         >
                             <div className="relative w-24 h-24 mb-6 group">
-                                <img 
-                                    src={session.user?.image || ""} 
-                                    alt="Profile" 
-                                    className="w-full h-full rounded-3xl object-cover ring-2 ring-purple-500/20 group-hover:ring-purple-500/50 transition-all duration-500" 
-                                />
+                                {session.user?.image && !imageError ? (
+                                    <img 
+                                        src={session.user.image} 
+                                        alt="Profile" 
+                                        className="w-full h-full rounded-3xl object-cover ring-2 ring-purple-500/20 group-hover:ring-purple-500/50 transition-all duration-500" 
+                                        onError={() => setImageError(true)}
+                                    />
+                                ) : (
+                                    <div className="w-full h-full rounded-3xl bg-purple-600/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-3xl font-black ring-2 ring-purple-500/20 group-hover:ring-purple-500/50 transition-all duration-500">
+                                        {(session.user?.name || 'G').charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                                 <div className="absolute -bottom-2 -right-2 bg-emerald-500 p-1.5 rounded-xl border-4 border-[#030014]">
                                     <HiShieldCheck className="text-white w-4 h-4" />
                                 </div>

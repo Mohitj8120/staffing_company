@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { HiCheck, HiOutlineSparkles, HiOutlineQuestionMarkCircle } from "react-icons/hi"
+import { FaWhatsapp } from "react-icons/fa6"
 import { useState, useRef, useEffect } from "react"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -98,92 +99,7 @@ const faqs = [
     }
 ]
 
-const RazorpayButton = ({ buttonId, children, isSelected, onSelect }) => {
-    const { data: session } = useSession();
-    const containerRef = useRef(null);
-    const rzpButtonRef = useRef(null);
-    const router = useRouter();
-
-    useEffect(() => {
-        if (!containerRef.current) return;
-
-        containerRef.current.innerHTML = '';
-
-        const script = document.createElement('script');
-        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-        script.setAttribute('data-payment_button_id', buttonId);
-        script.async = true;
-
-        const form = document.createElement('form');
-        form.appendChild(script);
-        
-        // Use opacity and absolute positioning instead of display:none
-        form.style.position = 'absolute';
-        form.style.opacity = '0';
-        form.style.pointerEvents = 'none';
-        form.style.width = '1px';
-        form.style.height = '1px';
-        form.style.overflow = 'hidden';
-        
-        containerRef.current.appendChild(form);
-
-        const findButton = () => {
-            const btn = containerRef.current.querySelector('button');
-            if (btn) {
-                rzpButtonRef.current = btn;
-                return true;
-            }
-            return false;
-        };
-
-        const observer = new MutationObserver(() => {
-            if (findButton()) observer.disconnect();
-        });
-
-        observer.observe(containerRef.current, { childList: true, subtree: true });
-
-        const interval = setInterval(() => {
-            if (findButton()) clearInterval(interval);
-        }, 500);
-
-        return () => {
-            observer.disconnect();
-            clearInterval(interval);
-        };
-    }, [buttonId]);
-
-    const handleTrigger = (e) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        if (!isSelected) {
-            onSelect();
-            return;
-        }
-
-        if (!session) {
-            router.push('/auth/signin');
-            return;
-        }
-        
-        if (rzpButtonRef.current) {
-            rzpButtonRef.current.click();
-        } else {
-            console.warn("Razorpay button is initializing, please try again in a second.");
-        }
-    };
-
-    return (
-        <div className="w-full relative">
-            <div ref={containerRef} className="absolute inset-0 pointer-events-none opacity-0" />
-            <div onClick={handleTrigger} className="cursor-pointer">
-                {children}
-            </div>
-        </div>
-    );
-};
+// RazorpayButton component removed in favor of WhatsApp checkout redirect
 
 export default function PricingFullContent() {
     const { data: session } = useSession()
@@ -280,61 +196,36 @@ export default function PricingFullContent() {
                                 </ul>
 
                                 <div className="mt-auto">
-                                    {plan.id === 'marketing' ? (
-                                        <button 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (!isSelected) {
-                                                    setSelectedPlanId(plan.id);
-                                                } else if (!session) {
-                                                    router.push('/auth/signin');
-                                                } else {
-                                                    window.location.href = 'https://rzp.io/rzp/G1C6QbLF';
-                                                }
-                                            }}
-                                            className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
-                                                ${isSelected 
-                                                    ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
-                                                    : 'bg-white/10 text-white/60 border border-white/10 hover:bg-white/20'
-                                                }
-                                            `}>
-                                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                                {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                            </span>
-                                            {isSelected && (
-                                                <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                            )}
-                                        </button>
-                                    ) : (
-                                        <button 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (!isSelected) {
-                                                    setSelectedPlanId(plan.id);
-                                                } else if (!session) {
-                                                    router.push('/auth/signin');
-                                                } else if (plan.id === 'proxy') {
-                                                    window.location.href = 'https://rzp.io/rzp/VmmFnUpJ';
-                                                } else if (plan.id === 'combo') {
-                                                    window.location.href = 'https://rzp.io/rzp/m4VtFPNl';
-                                                } else if (plan.id === 'unlimited') {
-                                                    window.location.href = 'https://rzp.io/rzp/1oqfXSO7';
-                                                }
-                                            }}
-                                            className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group relative overflow-hidden
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (!isSelected) {
+                                                setSelectedPlanId(plan.id);
+                                            } else {
+                                                const whatsappText = `Hi! I'm interested in the ${plan.name} package ($${plan.price}) and want to start my career now. Please guide me on how to pay.`;
+                                                window.open(`https://wa.me/15068055727?text=${encodeURIComponent(whatsappText)}`, '_blank');
+                                            }
+                                        }}
+                                        className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 group/btn relative overflow-hidden text-xs uppercase tracking-wider
                                             ${isSelected 
-                                                ? 'bg-white text-purple-900 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
+                                                ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' 
                                                 : 'bg-white/10 text-white/60 border border-white/10 hover:bg-white/20'
                                             }
                                         `}>
-                                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                                {isSelected ? (session ? 'Pay & Start Your Career' : 'Login to Pay') : 'Select Plan'}
-                                            </span>
-                                            {isSelected && (
-                                                <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                            {isSelected ? (
+                                                <>
+                                                    <FaWhatsapp className="text-lg animate-pulse" />
+                                                    <span>Pay on WhatsApp & Start Career Now</span>
+                                                </>
+                                            ) : (
+                                                'Select Plan'
                                             )}
-                                        </button>
-                                    )}
+                                        </span>
+                                        {isSelected && (
+                                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                                        )}
+                                    </button>
 
                                     <button 
                                         onClick={(e) => {

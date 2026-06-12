@@ -12,6 +12,7 @@ export default function Navbar() {
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isAccountOpen, setIsAccountOpen] = useState(false)
+    const [imageError, setImageError] = useState(false)
 
     const toggleMenu = () => setIsOpen(!isOpen)
     const toggleAccount = () => setIsAccountOpen(!isAccountOpen)
@@ -47,8 +48,13 @@ export default function Navbar() {
                             onClick={session ? toggleAccount : () => router.push('/auth/signin?callbackUrl=/profile')}
                             className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                         >
-                            {session?.user?.image ? (
-                                <img src={session.user.image} alt="Profile" className="w-full h-full object-cover" />
+                            {session?.user?.image && !imageError ? (
+                                <img 
+                                    src={session.user.image} 
+                                    alt="Profile" 
+                                    className="w-full h-full object-cover" 
+                                    onError={() => setImageError(true)} 
+                                />
                             ) : (
                                 <HiUserCircle className="w-8 h-8 text-purple-600" />
                             )}
@@ -126,7 +132,16 @@ export default function Navbar() {
                                 {session ? (
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full" />
+                                            {session.user.image && !imageError ? (
+                                                <img 
+                                                    src={session.user.image} 
+                                                    alt="Profile" 
+                                                    className="w-10 h-10 rounded-full object-cover" 
+                                                    onError={() => setImageError(true)}
+                                                />
+                                            ) : (
+                                                <HiUserCircle className="w-10 h-10 text-purple-600" />
+                                            )}
                                             <div>
                                                 <p className="text-sm font-bold text-gray-900">{session.user.name}</p>
                                                 <p className="text-xs text-gray-500">{session.user.email}</p>
