@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     R2_ACCESS_KEY_ID: str = ""
     R2_SECRET_ACCESS_KEY: str = ""
     R2_PUBLIC_CUSTOM_DOMAIN: str = ""
+    STRIPE_SECRET_KEY: str = ""
     
     # Custom JWT & Google OAuth Settings (₹0 Cost Auth)
     JWT_SECRET: str = "averion-super-secret-jwt-key-2026"
