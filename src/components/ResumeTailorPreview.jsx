@@ -36,6 +36,7 @@ const stepsData = [
 
 export default function ResumeTailorPreview() {
   const [activeStep, setActiveStep] = useState(0)
+  const resumeBuilderUrl = process.env.NEXT_PUBLIC_RESUME_BUILDER_URL || "http://localhost:5173/"
 
   // Autoplay slides every 6 seconds unless user interacts
   useEffect(() => {
@@ -281,7 +282,7 @@ export default function ResumeTailorPreview() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" className="inline-block">
+            <a href={resumeBuilderUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
               <button className="group bg-gradient-to-r from-purple-700 to-blue-700 hover:from-purple-800 hover:to-blue-800 text-white px-10 py-5 rounded-[20px] font-extrabold text-lg flex items-center gap-3 transition-all shadow-xl shadow-purple-500/20 hover:shadow-purple-500/40 hover:scale-[1.03]">
                 Try AI Resume Tailor Now <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>

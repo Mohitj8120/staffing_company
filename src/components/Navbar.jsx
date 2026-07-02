@@ -13,6 +13,7 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
     const [isAccountOpen, setIsAccountOpen] = useState(false)
     const [imageError, setImageError] = useState(false)
+    const resumeBuilderUrl = process.env.NEXT_PUBLIC_RESUME_BUILDER_URL || "http://localhost:5173/"
 
     const toggleMenu = () => setIsOpen(!isOpen)
     const toggleAccount = () => setIsAccountOpen(!isAccountOpen)
@@ -36,7 +37,7 @@ export default function Navbar() {
                     <Link href="/#home" className="hover:text-purple-600 transition-colors">Home</Link>
                     <Link href="/visa-pathways" className="hover:text-purple-600 transition-colors">Visa Pathways</Link>
                     <Link href="/proxy-tool" className="hover:text-purple-600 transition-colors">AI Interview Tool</Link>
-                    <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition-colors">AI Resume Tailoring</a>
+                    <a href={resumeBuilderUrl} target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition-colors">AI Resume Tailoring</a>
                     <Link href="/pricing" className="hover:text-purple-600 transition-colors">Pricing</Link>
                     <Link href="/contact" className="hover:text-purple-600 transition-colors">Contact</Link>
                     <Link href="/#faq" className="hover:text-purple-600 transition-colors">FAQ</Link>
@@ -124,7 +125,7 @@ export default function Navbar() {
                             <Link href="/#home" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">Home</Link>
                             <Link href="/visa-pathways" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">Visa Pathways</Link>
                             <Link href="/proxy-tool" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">AI Interview Tool</Link>
-                            <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 block">AI Resume Tailoring</a>
+                            <a href={resumeBuilderUrl} target="_blank" rel="noopener noreferrer" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 block">AI Resume Tailoring</a>
                             <Link href="/pricing" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">Pricing</Link>
                             <Link href="/contact" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">Contact</Link>
                             <Link href="/#faq" onClick={toggleMenu} className="hover:text-purple-600 transition-colors py-2 border-b border-gray-100">FAQ</Link>
