@@ -1,0 +1,27 @@
+{
+    "appId": "com.microsoft.windowshost.runtime",
+    "productName": "Garuda",
+    "directories": {
+        "output": "release"
+    },
+    "files": [
+        "main.js",
+        "preload.js",
+        "dist/**/*",
+        "assets/**/*",
+        "node_modules/**/*"
+    ],
+    "win": {
+        "target": ["nsis"],
+        "icon": "assets/icon.ico",
+        "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+        "oneClick": true,
+        "perMachine": false,
+        "allowToChangeInstallationDirectory": false,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "Garuda"
+    }
+}

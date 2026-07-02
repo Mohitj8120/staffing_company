@@ -53,3 +53,9 @@ venv/
 /resume-ai/frontend/dist/
 /resume-ai/frontend/.env.local
 
+# proxy-tool folders
+/proxy-tool/node_modules/
+/proxy-tool/dist/
+/proxy-tool/release/
+
+

@@ -1,0 +1,37 @@
+{
+  "name": "windows-runtime-host",
+  "version": "1.0.0",
+  "description": "Garuda Service",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build:renderer": "vite build",
+    "build": "vite build && electron-builder",
+    "lint": "eslint src/"
+  },
+  "author": "CareerLaunch",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "electron-store": "^8.1.0",
+    "ffmpeg-static": "^5.3.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "groq-sdk": "^1.1.1",
+    "nodejs-whisper": "^0.2.9",
+    "openai": "^4.73.0",
+    "pdf-parse": "^1.1.1",
+    "react-markdown": "^10.1.0",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^6.0.0",
+    "wait-on": "^8.0.0"
+  }
+}
