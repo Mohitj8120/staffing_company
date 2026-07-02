@@ -10,6 +10,7 @@ import PricingPreview from "../src/components/PricingPreview"
 import FAQ from "../src/components/FAQ"
 import Footer from "../src/components/Footer"
 import VisaPathwaysPreview from "../src/components/VisaPathwaysPreview"
+import ResumeTailorPreview from "../src/components/ResumeTailorPreview"
 
 export default function Home() {
 
@@ -21,6 +22,7 @@ export default function Home() {
                 <HeroVideo />
                 <Partners />
                 <VisaPathwaysPreview />
+                <ResumeTailorPreview />
                 <ServicesSection />
                 <PlacementGraph />
                 <WhyUsPremium />
