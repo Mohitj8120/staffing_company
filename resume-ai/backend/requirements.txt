@@ -17,4 +17,3 @@ psycopg2-binary>=2.9.0
 sentry-sdk[fastapi]>=2.0.0
 pyjwt>=2.0.0
 sqlalchemy>=2.0.0
-stripe>=15.0.0

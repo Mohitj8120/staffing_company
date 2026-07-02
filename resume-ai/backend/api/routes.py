@@ -520,61 +520,7 @@ async def download_zip(filename: str, company: Optional[str] = "Company", candid
         }
     )
 
-import stripe
 
-stripe.api_key = settings.STRIPE_SECRET_KEY if hasattr(settings, 'STRIPE_SECRET_KEY') else "sk_test_placeholder"
-
-@router.post("/checkout")
-async def create_checkout_session(current_user: User = Depends(get_current_user)):
-    try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {
-                        'name': '10 Resume Credits',
-                    },
-                    'unit_amount': 500, # $5.00
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url='http://localhost:5173/dashboard?success=true',
-            cancel_url='http://localhost:5173/dashboard?canceled=true',
-            client_reference_id=current_user.clerk_id
-        )
-        return {"url": session.url}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-from fastapi import Request
-
-@router.post("/webhook")
-async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
-    payload = await request.body()
-    sig_header = request.headers.get("stripe-signature")
-    
-    # In production, verify signature
-    # endpoint_secret = 'whsec_...'
-    # event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-    
-    try:
-        event = stripe.Event.construct_from(json.loads(payload), stripe.api_key)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail="Invalid payload")
-        
-    if event.type == 'checkout.session.completed':
-        session = event.data.object
-        clerk_id = session.client_reference_id
-        
-        # Add 10 credits
-        user = db.query(User).filter(User.clerk_id == clerk_id).first()
-        if user:
-            user.credits += 10
-            db.commit()
-            
-    return {"status": "success"}
 
 @router.get("/sentry-debug")
 async def trigger_error():
