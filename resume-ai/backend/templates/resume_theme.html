@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Font Subsetting: latin-only subset reduces font payload from ~2MB to ~150KB per PDF */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap&subset=latin');
+
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --bg-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px 40px;
+            font-size: 10pt;
+            line-height: 1.5;
+            background: var(--bg-color);
+        }
+        
+        /* Compact Mode for 1-Page Constraint */
+        body.compact-mode {
+            padding: 25px 35px;
+            font-size: 9.5pt;
+            line-height: 1.45;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22pt;
+            font-weight: 800;
+            margin-bottom: 4px;
+            margin-top: 0;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+        body.compact-mode h1 { font-size: 22pt; margin-bottom: 2px; }
+
+        .subtitle {
+            text-align: center;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 12px;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+        body.compact-mode .subtitle { font-size: 11pt; margin-bottom: 8px; }
+
+        .contact-info {
+            text-align: center;
+            font-size: 9.5pt;
+            margin-bottom: 30px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        body.compact-mode .contact-info { font-size: 9pt; margin-bottom: 15px; }
+
+        .contact-info a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .section-title {
+            font-size: 12pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 4px;
+            page-break-after: avoid;
+        }
+        body.compact-mode .section-title { margin-top: 12px; margin-bottom: 8px; font-size: 11pt; }
+
+        .summary-text {
+            margin-top: 8px;
+            margin-bottom: 20px;
+            text-align: justify;
+            color: var(--text-main);
+            font-size: 10pt;
+        }
+
+        .item-block {
+            margin-bottom: 14px;
+        }
+        body.compact-mode .item-block { margin-bottom: 12px; }
+
+        .item-header-group {
+            page-break-inside: avoid;
+            page-break-after: avoid;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 10px;
+        }
+        body.compact-mode .item-header { margin-top: 8px; }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 11pt;
+            color: var(--primary);
+        }
+        body.compact-mode .item-title { font-size: 10.5pt; }
+
+        .item-date {
+            font-weight: 600;
+            font-size: 9.5pt;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        body.compact-mode .item-date { font-size: 9.5pt; }
+
+        .item-subtitle {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 10pt;
+            color: var(--text-main);
+            font-style: italic;
+        }
+        body.compact-mode .item-subtitle { font-size: 9.5pt; margin-bottom: 4px; }
+
+        .tech-stack {
+            font-weight: 500;
+            margin-top: 6px;
+            margin-bottom: 8px;
+            font-size: 9.5pt;
+            color: var(--text-main);
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        body.compact-mode .tech-stack { font-size: 9pt; padding: 3px 6px; margin-top: 4px; margin-bottom: 6px; }
+        
+        .tech-stack-label {
+            font-weight: 700;
+            color: var(--accent);
+            margin-right: 4px;
+        }
+
+        ul {
+            margin-top: 6px;
+            margin-bottom: 12px;
+            padding-left: 18px;
+        }
+        body.compact-mode ul { margin-top: 4px; margin-bottom: 8px; padding-left: 16px; }
+
+        li {
+            margin-bottom: 4px;
+            text-align: left;
+            color: var(--text-main);
+        }
+        body.compact-mode li { font-size: 9.5pt; margin-bottom: 3px; }
+
+        li::marker {
+            color: var(--accent);
+        }
+
+        .skills-container {
+            margin-top: 12px;
+        }
+        body.compact-mode .skills-container { margin-top: 8px; }
+
+        .skills-table {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        body.compact-mode .skills-table { gap: 6px; }
+
+        .skills-row {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .skill-category {
+            font-weight: 700;
+            color: var(--primary);
+            flex: 0 0 130px;
+            padding-right: 12px;
+            font-size: 9.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        body.compact-mode .skill-category { font-size: 9pt; flex: 0 0 120px; }
+
+        .skill-list {
+            flex: 1;
+            color: var(--text-main);
+            font-size: 10pt;
+        }
+        body.compact-mode .skill-list { font-size: 9.5pt; }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        .skills-grid li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 0;
+        }
+
+        .skills-grid li::before {
+            content: "•";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        /* Prevent breaking inside items */
+        .prevent-break {
+            page-break-inside: avoid;
+        }
+        
+        .edu-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+    </style>
+</head>
+<body class="{% if page_count == '1' %}compact-mode{% endif %}">
+
+    <h1>{{ data.personal.name }}</h1>
+    
+    {% if data.personal.title %}
+    <div class="subtitle">{{ data.personal.title }}</div>
+    {% endif %}
+
+    <div class="contact-info">
+        {% set contacts = [] %}
+        {% if data.personal.email %}
+            {% set contacts = contacts + ['<a href="mailto:' ~ data.personal.email ~ '">' ~ data.personal.email ~ '</a>'] %}
+        {% endif %}
+        {% if data.personal.phone %}
+            {% set contacts = contacts + [data.personal.phone] %}
+        {% endif %}
+        {% if data.personal.linkedin %}
+            {% set contacts = contacts + ['<a href="' ~ data.personal.linkedin ~ '">LinkedIn</a>'] %}
+        {% endif %}
+        {% if data.personal.github %}
+            {% set contacts = contacts + ['<a href="' ~ data.personal.github ~ '">GitHub</a>'] %}
+        {% endif %}
+        {% if data.personal.portfolio %}
+            {% set contacts = contacts + ['<a href="' ~ data.personal.portfolio ~ '">Portfolio</a>'] %}
+        {% endif %}
+        {{ contacts | join(' • ') | safe }}
+    </div>
+
+    <!-- 1. Summary -->
+    {% if data.summary and page_count != '1' %}
+    <div class="section-title">Summary</div>
+    <div class="summary-text prevent-break">
+        {{ data.summary }}
+    </div>
+    {% endif %}
+
+    <!-- 2. Experience -->
+    {% if data.experience %}
+    <div class="section-title">Experience</div>
+    {% for exp in data.experience %}
+    <div class="item-block">
+        <div class="item-header-group">
+            <div class="item-header">
+                <div class="item-title">{{ exp.title }}</div>
+                <div class="item-date">{{ exp.duration }}</div>
+            </div>
+            <div class="item-subtitle">{{ exp.company }}</div>
+        </div>
+        <ul>
+            {% for pt in exp.points %}
+            <li>{{ pt }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- 3. Education -->
+    {% if data.education %}
+    <div class="section-title">Education</div>
+    {% for edu in data.education %}
+    <div class="prevent-break item-block">
+        <div class="item-header" style="margin-top: 0;">
+            <div class="item-title">{{ edu.degree }}</div>
+            {% if edu.year %}<div class="item-date">{{ edu.year }}</div>{% endif %}
+        </div>
+        <div class="item-subtitle" style="margin-bottom: 0;">{{ edu.college }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- 4. Skills -->
+    {% if data.skills %}
+    <div class="prevent-break">
+        <div class="section-title">Skills</div>
+        <div class="skills-container">
+            {% if data.skills|length > 0 and data.skills[0] is string %}
+                <ul class="skills-grid">
+                    {% for skill in data.skills %}
+                    <li>{{ skill }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="skills-table">
+                {% for skill_cat in data.skills %}
+                <div class="skills-row">
+                    <div class="skill-category">{{ skill_cat.category }}</div>
+                    <div class="skill-list">{{ skill_cat.skill_names }}</div>
+                </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 5. Projects -->
+    {% if data.projects %}
+    <div class="section-title">Projects</div>
+    {% for proj in data.projects %}
+    <div class="item-block">
+        <div class="item-header-group">
+            <div class="item-header">
+                <span class="item-title">{{ proj.title }}</span>
+            </div>
+            {% if proj.tech_stack %}
+            <div class="tech-stack"><span class="tech-stack-label">Tech Stack:</span> {{ proj.tech_stack }}</div>
+            {% endif %}
+        </div>
+        
+        {% if proj.points %}
+        <ul>
+            {% for pt in proj.points %}
+            <li>{{ pt }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- 6. Certifications -->
+    {% if data.certifications %}
+    <div class="section-title">Certifications</div>
+    <ul style="margin-top: 10px;">
+        {% if data.certifications|length > 0 and data.certifications[0] is string %}
+            {% for cert in data.certifications %}
+            <li class="prevent-break">{{ cert }}</li>
+            {% endfor %}
+        {% else %}
+            {% for cert in data.certifications %}
+            <li class="prevent-break">
+                {% if cert.link %}<a href="{{ cert.link }}" style="color: var(--accent); text-decoration: none;"><strong>{{ cert.name }}</strong></a>{% else %}<strong>{{ cert.name }}</strong>{% endif %} 
+                {% if cert.issuer %}— {{ cert.issuer }}{% endif %} 
+                {% if cert.date %}| <span style="color: var(--text-muted); font-style: italic;">{{ cert.date }}</span>{% endif %}
+            </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+    {% endif %}
+
+</body>
+</html>

@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python runtime
+__pycache__/
+*.pyc
+*.db
+*.log
+venv/
+
+# temporary resume-ai folders
+/resume-ai/backend/data/
+/resume-ai/backend/temp/
+/resume-ai/frontend/dist/
+/resume-ai/frontend/.env.local
+

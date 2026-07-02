@@ -1,0 +1,3 @@
+@echo off
+echo Starting Ultimate AI Resume Builder...
+npm start

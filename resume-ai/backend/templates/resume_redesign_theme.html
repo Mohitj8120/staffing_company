@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Font Subsetting: latin-only subset reduces font payload from ~2MB to ~150KB per PDF */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap&subset=latin');
+
+        :root {
+            --primary: #0F172A; /* Deep Slate */
+            --accent: #2563EB;  /* Premium Blue */
+            --text-main: #1E293B;
+            --text-muted: #475569;
+            --border: #E2E8F0;
+            --bg-light: #F1F5F9;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 35px 45px;
+            color: var(--text-main);
+            background: #FFFFFF;
+            font-size: 10pt;
+            line-height: 1.5;
+            border-top: 6px solid var(--accent);
+        }
+
+        /* Compact Mode for 1-Page Constraint */
+        body.compact-mode {
+            padding: 25px 35px;
+            font-size: 9.5pt;
+            line-height: 1.45;
+            border-top: 5px solid var(--accent);
+        }
+
+        /* Header Layout (Centered, clean) */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        body.compact-mode header { margin-bottom: 15px; padding-bottom: 10px; }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26pt;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0 0 4px 0;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+        body.compact-mode h1 { font-size: 24pt; margin-bottom: 2px; }
+
+        .job-title {
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        body.compact-mode .job-title { font-size: 10.5pt; margin-bottom: 6px; }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 18px;
+            font-size: 9pt;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        body.compact-mode .contact-info { font-size: 9pt; gap: 8px 15px; }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .contact-item a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        
+        .contact-icon {
+            color: var(--accent);
+            margin-right: 4px;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        body.compact-mode .contact-icon { font-size: 9.5pt; }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            padding: 4px 10px;
+            background-color: var(--bg-light);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            page-break-after: avoid;
+        }
+        body.compact-mode .section-title { margin-top: 14px; margin-bottom: 8px; font-size: 10.5pt; padding: 4px 10px; }
+
+        /* Summary */
+        .summary-text {
+            text-align: justify;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            font-size: 9.5pt;
+        }
+
+        /* Experience & Projects */
+        .item-block {
+            margin-bottom: 14px;
+        }
+        body.compact-mode .item-block { margin-bottom: 12px; }
+
+        .item-header-group {
+            page-break-inside: avoid;
+            page-break-after: avoid;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2px;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 10pt;
+            color: var(--primary);
+        }
+        body.compact-mode .item-title { font-size: 10pt; }
+
+        .item-date {
+            font-weight: 600;
+            font-size: 9pt;
+            color: var(--text-muted);
+        }
+        body.compact-mode .item-date { font-size: 9pt; }
+
+        .item-subtitle {
+            font-weight: 600;
+            font-size: 9.5pt;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        body.compact-mode .item-subtitle { font-size: 9.5pt; margin-bottom: 4px; }
+
+        ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        body.compact-mode ul { padding-left: 16px; }
+
+        li {
+            margin-bottom: 3px;
+            color: var(--text-main);
+            text-align: left;
+            font-size: 9.5pt;
+            line-height: 1.4;
+        }
+        body.compact-mode li { font-size: 9.5pt; margin-bottom: 3px; line-height: 1.4; }
+
+        li::marker {
+            color: var(--accent);
+        }
+
+        /* Skills */
+        .skills-container {
+            margin-bottom: 16px;
+            font-size: 9.5pt;
+        }
+        body.compact-mode .skills-container { margin-bottom: 12px; font-size: 9.5pt; }
+        
+        .skill-category {
+            margin-bottom: 4px;
+        }
+        body.compact-mode .skill-category { margin-bottom: 2px; }
+        
+        .skill-category strong {
+            color: var(--primary);
+        }
+
+        /* Education */
+        .edu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+        body.compact-mode .edu-item { margin-bottom: 6px; }
+        
+        .edu-details {
+            flex: 1;
+        }
+        
+        .edu-degree {
+            font-weight: 700;
+            font-size: 10pt;
+            color: var(--primary);
+        }
+        body.compact-mode .edu-degree { font-size: 9pt; }
+        
+        .edu-school {
+            font-weight: 500;
+            font-size: 9.5pt;
+            color: var(--text-muted);
+        }
+        body.compact-mode .edu-school { font-size: 8.5pt; }
+
+        /* Utilities */
+        .prevent-break {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+<body class="{% if page_count == '1' %}compact-mode{% endif %}">
+    <!-- Header -->
+    <header>
+        <h1>{{ data.personal.name }}</h1>
+        {% if data.personal.title %}
+        <div class="job-title">{{ data.personal.title }}</div>
+        {% endif %}
+        
+        <div class="contact-info">
+            {% if data.personal.email %}
+            <div class="contact-item"><span class="contact-icon">✉</span> <a href="mailto:{{ data.personal.email }}">{{ data.personal.email }}</a></div>
+            {% endif %}
+            
+            {% if data.personal.phone %}
+            <div class="contact-item"><span class="contact-icon">✆</span> {{ data.personal.phone }}</div>
+            {% endif %}
+            
+            {% if data.personal.location %}
+            <div class="contact-item"><span class="contact-icon">⌂</span> {{ data.personal.location }}</div>
+            {% endif %}
+            
+            {% if data.personal.linkedin %}
+            <div class="contact-item"><span class="contact-icon">in</span> <a href="{{ data.personal.linkedin }}">LinkedIn</a></div>
+            {% endif %}
+            
+            {% if data.personal.github %}
+            <div class="contact-item"><span class="contact-icon">&lt;/&gt;</span> <a href="{{ data.personal.github }}">GitHub</a></div>
+            {% endif %}
+            
+            {% if data.personal.portfolio %}
+            <div class="contact-item"><span class="contact-icon">🌐</span> <a href="{{ data.personal.portfolio }}">Portfolio</a></div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Professional Summary -->
+    {% if data.summary and page_count != '1' %}
+    <h2 class="section-title">Professional Summary</h2>
+    <div class="summary-text prevent-break">
+        {{ data.summary }}
+    </div>
+    {% endif %}
+
+    <!-- Skills -->
+    {% if data.skills %}
+    <h2 class="section-title">Technical Skills</h2>
+    <div class="skills-container prevent-break">
+        {% if data.skills|length > 0 and data.skills[0] is string %}
+            <strong>Core Competencies:</strong> {{ data.skills|join(', ') }}
+        {% else %}
+            {% for skill_cat in data.skills %}
+            <div class="skill-category">
+                <strong>{{ skill_cat.category }}:</strong> {{ skill_cat.skill_names }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Experience -->
+    {% if data.experience %}
+    <h2 class="section-title">Professional Experience</h2>
+    {% for exp in data.experience %}
+    <div class="item-block">
+        <div class="item-header-group">
+            <div class="item-header">
+                <div class="item-title">{{ exp.title }}</div>
+                <div class="item-date">{{ exp.duration }}</div>
+            </div>
+            <div class="item-subtitle">{{ exp.company }}</div>
+        </div>
+        <ul>
+            {% for pt in exp.points %}
+            <li>{{ pt }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Projects -->
+    {% if data.projects %}
+    <h2 class="section-title">Key Projects</h2>
+    {% for proj in data.projects %}
+    <div class="item-block">
+        <div class="item-header-group">
+            <div class="item-header">
+                <div class="item-title">{{ proj.title }}</div>
+            </div>
+            {% if proj.tech_stack %}
+            <div class="item-subtitle" style="font-size: 8.5pt; font-style: italic; font-weight: 500;">Tech Stack: {{ proj.tech_stack }}</div>
+            {% endif %}
+        </div>
+        {% if proj.points %}
+        <ul>
+            {% for pt in proj.points %}
+            <li>{{ pt }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Education -->
+    {% if data.education %}
+    <h2 class="section-title">Education</h2>
+    {% for edu in data.education %}
+    <div class="edu-item">
+        <div class="edu-details">
+            <div class="edu-degree">{{ edu.degree }}</div>
+            <div class="edu-school">{{ edu.college }}</div>
+        </div>
+        {% if edu.year %}<div class="item-date">{{ edu.year }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Certifications -->
+    {% if data.certifications %}
+    <h2 class="section-title">Certifications</h2>
+    <div class="skills-container prevent-break" style="margin-bottom: 0;">
+        {% if data.certifications|length > 0 and data.certifications[0] is string %}
+            {{ data.certifications|join(' &bull; ') }}
+        {% else %}
+            {% for cert in data.certifications %}
+            <div class="edu-item" style="margin-bottom: 4px;">
+                <div class="edu-details">
+                    <div class="edu-degree" style="font-size: 9.5pt;">{{ cert.name }}</div>
+                    {% if cert.issuer %}<div class="edu-school" style="font-size: 9pt;">{{ cert.issuer }}</div>{% endif %}
+                </div>
+                {% if cert.date %}<div class="item-date" style="font-size: 8.5pt;">{{ cert.date }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,709 @@
+Ye approach sahi hai. Pehle complete architecture freeze karte hain. Uske baad ek bhi architecture change nahi hoga, sirf file-by-file code likhenge.
+
+Final Project Architecture (v1)
+resume-ai/
+│
+├── backend/
+│
+│   ├── app.py
+│   ├── config.py
+│   ├── requirements.txt
+│   ├── .env
+│
+│   ├── api/
+│   │      upload.py
+│   │      optimize.py
+│   │      download.py
+│   │
+│   ├── services/
+│   │      gemini_service.py
+│   │      resume_parser.py
+│   │      resume_optimizer.py
+│   │      resume_generator.py
+│   │      prompt_builder.py
+│   │
+│   ├── prompts/
+│   │      parser_prompt.txt
+│   │      optimizer_prompt.txt
+│   │
+│   ├── templates/
+│   │      resume_template.docx
+│   │
+│   ├── uploads/
+│   │      base_resume.docx
+│   │
+│   ├── outputs/
+│   │      resume.json
+│   │      optimized_resume.json
+│   │      tailored_resume.docx
+│   │      tailored_resume.pdf
+│   │
+│   ├── utils/
+│   │      json_utils.py
+│   │      pdf_converter.py
+│   │
+│   └── static/
+│
+│
+├── frontend/
+│
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+│
+└── README.md
+Complete Flow
+User
+
+↓
+
+Upload Resume.docx
+
+↓
+
+resume_parser.py
+
+↓
+
+Extract Plain Text
+
+↓
+
+Gemini Parser
+
+↓
+
+resume.json
+
+↓
+
+Paste JD
+
+↓
+
+prompt_builder.py
+
+↓
+
+optimizer_prompt
+
+↓
+
+Gemini
+
+↓
+
+optimized_resume.json
+
+↓
+
+resume_generator.py
+
+↓
+
+resume_template.docx
+
+↓
+
+tailored_resume.docx
+
+↓
+
+pdf_converter.py
+
+↓
+
+tailored_resume.pdf
+
+↓
+
+Download
+File Responsibility
+app.py
+
+Main FastAPI
+
+Runs Server
+
+config.py
+
+API Keys
+
+Folders
+
+Configurations
+
+upload.py
+
+Resume Upload
+
+optimize.py
+
+Receive JD
+
+Call Optimizer
+
+download.py
+
+Download PDF
+
+gemini_service.py
+
+Only Gemini API
+
+No Business Logic
+
+resume_parser.py
+
+Resume.docx
+
+↓
+
+Extract Text
+
+↓
+
+Gemini Parser
+
+↓
+
+resume.json
+
+prompt_builder.py
+
+Creates Prompt
+
+Resume JSON
+
+JD
+
+↓
+
+Prompt
+
+resume_optimizer.py
+
+Calls Gemini
+
+Gets
+
+optimized_resume.json
+
+resume_generator.py
+
+Reads
+
+optimized_resume.json
+
+↓
+
+Fill Template
+
+↓
+
+Resume.docx
+
+pdf_converter.py
+
+DOCX
+
+↓
+
+PDF
+
+json_utils.py
+
+Read JSON
+
+Write JSON
+
+Prompt Files
+parser_prompt.txt
+
+Resume
+
+↓
+
+JSON
+
+optimizer_prompt.txt
+
+Resume JSON
+
+JD
+
+↓
+
+Optimized Resume JSON
+
+Upload Folder
+
+Stores Original Resume
+
+Output Folder
+
+Stores
+
+resume.json
+
+optimized_resume.json
+
+Resume.docx
+
+Resume.pdf
+
+Frontend
+
+Upload Resume
+
+↓
+
+Paste JD
+
+↓
+
+Generate Button
+
+↓
+
+Download Button
+
+Internal Pipeline
+Resume
+
+↓
+
+Parser
+
+↓
+
+resume.json
+
+↓
+
+Optimizer
+
+↓
+
+optimized_resume.json
+
+↓
+
+Generator
+
+↓
+
+Resume.docx
+
+↓
+
+PDF
+
+↓
+
+Download
+Technologies
+
+Backend
+
+FastAPI
+
+AI
+
+Gemini 2.5 Flash
+
+Resume Parsing
+
+python-docx
+
+Template
+
+docxtpl
+
+PDF
+
+docx2pdf
+
+Frontend
+
+HTML
+CSS
+JavaScript
+Development Order
+Phase 1
+
+Project Setup
+
+Phase 2
+
+Gemini Connection
+
+Phase 3
+
+Resume Parser
+
+Phase 4
+
+Prompt Builder
+
+Phase 5
+
+Resume Optimizer
+
+Phase 6
+
+DOCX Generator
+
+Phase 7
+
+PDF Generator
+
+Phase 8
+
+Frontend
+
+🚀 Is architecture ke baad ek bhi file add/remove nahi hogi. Ab next message se hum strictly file-by-file complete code likhenge, starting from requirements.txt, phir config.py, phir app.py, aur isi sequence me poora project complete karenge.
+
+Main yahan rukunga, kyunki pichhle code mein ek architectural issue hai jo ab fix karna zaroori hai.
+
+Tumne pehle bola tha ki base resume ka design preserve karna hai. Lekin jo architecture ab tak banaya hai, usmein:
+
+resume.json → optimized_resume.json ban raha hai.
+Lekin resume_template.docx mein sirf {{summary}}, {{skills}} jaise placeholders se kaam nahi chalega agar tumhari original resume professionally formatted hai (tables, icons, columns, spacing, etc.).
+
+Is point par do alag approaches hain:
+
+Template-based: Ek specially prepared template jisme placeholders hon. Isme formatting preserve hogi, lekin template ko ek baar manually prepare karna padega.
+Direct document editing: Existing DOCX ko parse karke uske specific sections replace karna. Ye zyada complex hai, lekin original layout ko aur achhi tarah preserve karta hai.
+
+Ye decision Phase 4 ke code ko completely affect karta hai. Agar bina decide kiye main code de dunga to baad mein poora generator rewrite karna padega.
+
+Isliye pehle ye batao:
+
+Option A: Ek baar resume_template.docx mein placeholders daal denge (recommended, simpler).
+Option B: Existing resume DOCX ko directly modify karenge (complex, but no placeholder setup).
+option A
+
+Perfect. Option A hi professional approach hai. Isi ko Rezi, Kickresume, Teal jaise tools bhi internally similar concept se use karte hain.
+
+Ab Phase 4 start.
+
+Folder
+backend/
+│
+├── templates/
+│      resume_template.docx
+STEP 1
+
+Apni current resume open karo.
+
+Jahan text dynamically change hoga, waha placeholders daal do.
+
+Example:
+
+NAME
+
+{{name}}
+
+EMAIL
+
+{{email}}
+
+PHONE
+
+{{phone}}
+
+SUMMARY
+
+{{summary}}
+
+SKILLS
+
+{{skills}}
+
+EXPERIENCE
+
+{{experience}}
+
+PROJECTS
+
+{{projects}}
+
+EDUCATION
+
+{{education}}
+
+CERTIFICATIONS
+
+{{certifications}}
+
+Formatting mat change karna.
+
+Sirf text replace karna.
+
+File 17
+backend/services/resume_generator.py
+import os
+
+from docxtpl import DocxTemplate
+
+from config import (
+    TEMPLATE_FOLDER,
+    OUTPUT_FOLDER
+)
+
+
+def create_resume(data):
+
+    template = os.path.join(
+        TEMPLATE_FOLDER,
+        "resume_template.docx"
+    )
+
+    doc = DocxTemplate(template)
+
+    context = {
+
+        "name":
+        data["personal"]["name"],
+
+        "email":
+        data["personal"]["email"],
+
+        "phone":
+        data["personal"]["phone"],
+
+        "summary":
+        data["summary"],
+
+        "skills":
+        "\n".join(data["skills"]),
+
+        "experience":
+        "\n\n".join(
+            [
+                f'{e["title"]}\n{e["company"]}\n{e["duration"]}\n' +
+                "\n".join(
+                    ["• "+p for p in e["points"]]
+                )
+                for e in data["experience"]
+            ]
+        ),
+
+        "projects":
+        "\n\n".join(
+            [
+                f'{p["title"]}\n{p["description"]}'
+                for p in data["projects"]
+            ]
+        ),
+
+        "education":
+        "\n\n".join(
+            [
+                f'{e["degree"]}\n{e["college"]}\n{e["year"]}'
+                for e in data["education"]
+            ]
+        ),
+
+        "certifications":
+        "\n".join(
+            data["certifications"]
+        )
+
+    }
+
+    doc.render(context)
+
+    output = os.path.join(
+        OUTPUT_FOLDER,
+        "tailored_resume.docx"
+    )
+
+    doc.save(output)
+
+    return output
+File 18
+backend/utils/pdf_converter.py
+from docx2pdf import convert
+
+
+def create_pdf(
+        input_docx,
+        output_pdf
+):
+
+    convert(
+        input_docx,
+        output_pdf
+    )
+File 19
+
+Replace
+
+backend/api/download.py
+from fastapi import APIRouter
+from fastapi.responses import FileResponse
+
+import os
+
+from config import OUTPUT_FOLDER
+
+router = APIRouter()
+
+
+@router.get("/download")
+
+def download():
+
+    file = os.path.join(
+        OUTPUT_FOLDER,
+        "tailored_resume.pdf"
+    )
+
+    return FileResponse(
+
+        path=file,
+
+        filename="Resume.pdf",
+
+        media_type="application/pdf"
+
+    )
+File 20
+
+Replace
+
+backend/api/optimize.py
+from fastapi import APIRouter
+from fastapi import Form
+
+import os
+
+from config import OUTPUT_FOLDER
+
+from utils.json_utils import (
+    load_json,
+    save_json
+)
+
+from services.resume_optimizer import optimize_resume
+from services.resume_generator import create_resume
+from utils.pdf_converter import create_pdf
+
+router = APIRouter()
+
+
+@router.post("/optimize")
+
+def optimize(
+
+        jd: str = Form(...)
+
+):
+
+    resume = load_json(
+
+        os.path.join(
+
+            OUTPUT_FOLDER,
+
+            "resume.json"
+
+        )
+
+    )
+
+    optimized = optimize_resume(
+
+        resume,
+
+        jd
+
+    )
+
+    save_json(
+
+        optimized,
+
+        os.path.join(
+
+            OUTPUT_FOLDER,
+
+            "optimized_resume.json"
+
+        )
+
+    )
+
+    docx = create_resume(
+
+        optimized
+
+    )
+
+    pdf = os.path.join(
+
+        OUTPUT_FOLDER,
+
+        "tailored_resume.pdf"
+
+    )
+
+    create_pdf(
+
+        docx,
+
+        pdf
+
+    )
+
+    return {
+
+        "status":"success",
+
+        "pdf":"Resume Generated"
+
+    }
+Current Pipeline
+Upload Resume
+
+↓
+
+Resume Parser
+
+↓
+
+resume.json
+
+↓
+
+Paste JD
+
+↓
+
+Gemini
+
+↓
+
+optimized_resume.json
+
+↓
+
+DOCX Template
+
+↓
+
+tailored_resume.docx
+
+↓
+
+PDF
+
+↓
+
+Download
+✅ Phase 4 Complete
+ ye chatgpt n diya mjhe ek essa tool banana h jisse m jd ke hisab se apne base resume ko change kr saku turant to tu smjh or bana best possible way m essa smjh ye tera project h apne liye bana rha h to kesse banata.
+
+[resume-ai](directory;file:///c%3A/Users/mohit/Documents/resume%20maker/resume-ai)  [user_global](rule;user_global) 
