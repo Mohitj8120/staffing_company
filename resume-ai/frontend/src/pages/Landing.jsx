@@ -104,6 +104,14 @@ function Landing() {
     }
   }, [location.state]);
 
+  const getDownloadUrl = (url) => {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return `${API_BASE_URL}${url}`;
+  };
+
   const handleUploadComplete = (id, data) => {
     setFileId(id);
     setResumeData(data);
@@ -402,7 +410,7 @@ function Landing() {
                 
                 <div className="step3-downloads">
                   {urls.docx && (
-                    <a href={`${API_BASE_URL}${urls.docx}`} download style={{ textDecoration: 'none' }}>
+                    <a href={getDownloadUrl(urls.docx)} download style={{ textDecoration: 'none' }}>
                       <button className="primary-btn download-btn">
                         <DownloadCloud size={22} />
                         Download DOCX
@@ -410,14 +418,14 @@ function Landing() {
                     </a>
                   )}
                   {urls.zip ? (
-                    <a href={`${API_BASE_URL}${urls.zip}`} download style={{ textDecoration: 'none' }}>
+                    <a href={getDownloadUrl(urls.zip)} download style={{ textDecoration: 'none' }}>
                       <button className="primary-btn download-btn download-btn-secondary">
                         <DownloadCloud size={22} />
                         Download Folder (ZIP)
                       </button>
                     </a>
                   ) : urls.pdf ? (
-                    <a href={`${API_BASE_URL}${urls.pdf}`} download style={{ textDecoration: 'none' }}>
+                    <a href={getDownloadUrl(urls.pdf)} download style={{ textDecoration: 'none' }}>
                       <button className="primary-btn download-btn download-btn-secondary">
                         <DownloadCloud size={22} />
                         Download PDF
