@@ -70,9 +70,17 @@ def generate_with_fallback(model_name: str, **kwargs):
                         
         except Exception as e:
             error_str = str(e)
-            if "429" in error_str or "quota" in error_str.lower() or "RESOURCE_EXHAUSTED" in error_str:
-                print(f"API Key {key_idx + 1}/{len(api_keys)} exhausted! Disabling for 60s and rotating to next least busy key...")
-                disable_key_idx(key_idx, 60.0)
+            err_lower = error_str.lower()
+            if (
+                "429" in error_str 
+                or "quota" in err_lower 
+                or "resource_exhausted" in err_lower 
+                or "depleted" in err_lower 
+                or "prepayment" in err_lower 
+                or "billing" in err_lower
+            ):
+                print(f"API Key {key_idx + 1}/{len(api_keys)} exhausted/disabled (error: {error_str}). Disabling for 3600s and rotating to next key...")
+                disable_key_idx(key_idx, 3600.0)
                 attempts += 1
                 time.sleep(0.5)
                 continue
