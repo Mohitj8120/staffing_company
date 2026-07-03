@@ -398,11 +398,23 @@ def remove_file(path: str):
     except Exception as e:
         print(f"Zero-Storage: Error auto-deleting temporary file {path}: {e}")
 
-def ensure_pdf_exists(filename: str, db: Session) -> str:
+def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None) -> str:
     """
     Checks if a PDF/DOCX file exists locally. If not, attempts to download it from R2.
     If R2 lookup fails, compiles and renders the PDF/DOCX dynamically on-the-fly from optimization history.
     """
+    if company:
+        file_path = os.path.join(settings.DATA_DIR, "resumes", company, filename)
+        if os.path.exists(file_path):
+            return file_path
+            
+        # Try to download from R2 using the company path
+        from services.r2_service import download_file_from_r2
+        r2_key = f"resumes/{company}/{filename}"
+        if download_file_from_r2(r2_key, file_path):
+            if os.path.exists(file_path):
+                return file_path
+
     file_path = os.path.join(settings.TEMP_DIR, filename)
     if os.path.exists(file_path):
         return file_path
@@ -461,16 +473,16 @@ def ensure_pdf_exists(filename: str, db: Session) -> str:
     return file_path
 
 @router.get("/download/{filename}")
-async def download_file(filename: str, background_tasks: BackgroundTasks, download_name: Optional[str] = None, db: Session = Depends(get_db)):
-    file_path = ensure_pdf_exists(filename, db)
+async def download_file(filename: str, background_tasks: BackgroundTasks, download_name: Optional[str] = None, company: Optional[str] = None, db: Session = Depends(get_db)):
+    file_path = ensure_pdf_exists(filename, db, company)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
         
     media_type = "application/pdf" if filename.endswith('.pdf') else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     final_download_name = download_name if download_name else f"Optimized_{filename.split('_')[-1]}"
     
-    # Queue background task to delete the temporary file after the download completes
-    background_tasks.add_task(remove_file, file_path)
+    # We do NOT run the background task to delete the file anymore,
+    # as we want to keep it on the server inside the company folder.
     
     return FileResponse(
         path=file_path,

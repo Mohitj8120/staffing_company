@@ -27,37 +27,54 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
         # Optimize with Gemini (offload to thread since it's a synchronous blocking operation)
         optimized_data = await asyncio.to_thread(optimize_resume, data, jd, mode, page_count)
         
-        # Format the desired filename
-        title = optimized_data.get("personal", {}).get("title", "resume")
-        formatted_title = re.sub(r'[^a-zA-Z0-9\s]', ' ', title).strip()
-        formatted_title = re.sub(r'\s+', '_', formatted_title).lower()
-        if not formatted_title:
-            formatted_title = "resume"
-        
-        # Get the candidate's name
+        # Format candidate and company names
         person_name = optimized_data.get("personal", {}).get("name", "candidate")
         person_name = re.sub(r'[^a-zA-Z0-9\s]', '', person_name).strip().replace(' ', '_').lower()
         if not person_name:
             person_name = "candidate"
-        
-        desired_name = f"{person_name}_{formatted_title}.pdf"
-        encoded_name = urllib.parse.quote(desired_name)
-        
-        pdf_filename = f"{file_id}_tailored.pdf"
-        pdf_url = f"/api/download/{pdf_filename}?download_name={encoded_name}"
-        
-        docx_filename = f"{file_id}_tailored.docx"
-        encoded_docx_name = urllib.parse.quote(f"{person_name}_{formatted_title}.docx")
-        docx_url = f"/api/download/{docx_filename}?download_name={encoded_docx_name}"
             
         company_name = optimized_data.get("target_company", "Company").strip()
         if not company_name:
             company_name = "Company"
-            
         company_name = re.sub(r'[^a-zA-Z0-9\s-]', '', company_name).strip()
         
-        zip_url = f"/api/download_zip/{pdf_filename}?company={urllib.parse.quote(company_name)}&candidate={urllib.parse.quote(person_name)}"
-            
+        # Pre-generate the PDF immediately using Playwright
+        pdf_filename = f"{file_id}_tailored.pdf"
+        local_pdf_path = os.path.join(settings.TEMP_DIR, pdf_filename)
+        
+        print(f"Direct PDF: Compiling optimized PDF for {person_name} ({company_name})...")
+        await asyncio.to_thread(
+            generate_stunning_pdf,
+            optimized_data,
+            pdf_filename,
+            mode,
+            page_count
+        )
+        
+        # Save locally in company folder structure permanently
+        import shutil
+        company_dir = os.path.join(settings.DATA_DIR, "resumes", company_name)
+        os.makedirs(company_dir, exist_ok=True)
+        
+        saved_pdf_filename = f"{person_name}_Resume.pdf"
+        saved_pdf_path = os.path.join(company_dir, saved_pdf_filename)
+        shutil.copy(local_pdf_path, saved_pdf_path)
+        print(f"Direct PDF: Saved tailored PDF locally to {saved_pdf_path}")
+        
+        # Upload to R2 if credentials are set
+        r2_key = f"resumes/{company_name}/{saved_pdf_filename}"
+        pdf_url = f"/api/download/{saved_pdf_filename}?company={urllib.parse.quote(company_name)}"
+        
+        if settings.R2_ACCESS_KEY_ID and settings.R2_SECRET_ACCESS_KEY:
+            try:
+                from services.r2_service import upload_file_to_r2
+                r2_url = await asyncio.to_thread(upload_file_to_r2, saved_pdf_path, r2_key)
+                if r2_url:
+                    pdf_url = r2_url
+                    print(f"Direct PDF: Tailored PDF uploaded to R2: {r2_key}")
+            except Exception as r2_err:
+                print(f"Warning: Failed to upload tailored PDF to R2: {r2_err}")
+        
         from core.json_diff import compute_dict_diff
         optimized_delta = compute_dict_diff(data, optimized_data)
         
@@ -65,8 +82,8 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
             "optimized_delta": optimized_delta,
             "company_name": company_name,
             "pdf_url": pdf_url,
-            "zip_url": zip_url,
-            "docx_url": docx_url
+            "zip_url": None,
+            "docx_url": None
         }
         
         # Deduct credit if user is free and not admin
@@ -76,7 +93,7 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
             if user.subscription_status == "free" and not is_admin:
                 user.credits -= 1
             
-        # Update job & clean payload to save space (no longer need resume_data or jd inputs)
+        # Update job & clean payload to save space
         job = db.query(QueueJob).filter(QueueJob.id == job_id).first()
         if job:
             job.status = "completed"
