@@ -1,4 +1,7 @@
 # Nixpacks configuration to support Playwright Chromium on Railway
+[variables]
+PLAYWRIGHT_BROWSERS_PATH = "/app/ms-playwright"
+
 [phases.setup]
 aptPkgs = [
   "libnss3",
@@ -19,5 +22,5 @@ aptPkgs = [
 
 [phases.build]
 cmds = [
-  "playwright install chromium"
+  "/app/.venv/bin/playwright install chromium"
 ]
