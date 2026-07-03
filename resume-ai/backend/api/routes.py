@@ -535,15 +535,24 @@ async def download_file(filename: str, background_tasks: BackgroundTasks, downlo
         ext = ".pdf" if filename.endswith('.pdf') else ".docx"
         base_part = filename.replace(f"_Resume{ext}", "").replace(f"_tailored{ext}", "")
         candidate_name_formatted = base_part.replace("_", " ").title()
-        final_download_name = f"{candidate_name_formatted} - Resume{ext}"
+        
+        if company and company.strip() and company.strip().lower() not in ["company", "not specified in jd"]:
+            safe_company = re.sub(r'[^a-zA-Z0-9\s_-]', '', company).strip()
+            final_download_name = f"{safe_company}/{candidate_name_formatted} - Resume{ext}"
+        else:
+            final_download_name = f"{candidate_name_formatted} - Resume{ext}"
     
     # Queue background task to delete the temporary file, R2 backup, and job from DB after the download completes
     background_tasks.add_task(remove_file_and_job, file_path, job_id, company, filename)
     
+    headers = {
+        "Content-Disposition": f'attachment; filename="{final_download_name}"'
+    }
+    
     return FileResponse(
         path=file_path,
-        filename=final_download_name,
-        media_type=media_type
+        media_type=media_type,
+        headers=headers
     )
 
 import zipfile
