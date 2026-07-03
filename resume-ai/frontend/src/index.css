@@ -49,7 +49,9 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Glassmorphism Utilities */
+/* =============================================
+   GLASSMORPHISM PANEL
+   ============================================= */
 .glass-panel {
   background: var(--panel-bg);
   backdrop-filter: var(--glass-blur);
@@ -83,7 +85,9 @@ body {
   transform: translateY(-5px);
 }
 
-/* Typography */
+/* =============================================
+   TYPOGRAPHY
+   ============================================= */
 h1, h2, h3, h4, h5 {
   font-family: 'Space Grotesk', sans-serif;
   letter-spacing: -0.04em;
@@ -104,7 +108,9 @@ h1, h2, h3, h4, h5 {
   background-clip: text;
 }
 
-/* Buttons */
+/* =============================================
+   BUTTONS
+   ============================================= */
 button {
   cursor: pointer;
   font-family: 'Space Grotesk', sans-serif;
@@ -164,7 +170,9 @@ button {
   display: none;
 }
 
-/* Custom Inputs */
+/* =============================================
+   CUSTOM INPUTS
+   ============================================= */
 .custom-input {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -196,7 +204,9 @@ button {
   transform: scale(1.03);
 }
 
-/* Animations */
+/* =============================================
+   ANIMATIONS
+   ============================================= */
 @keyframes float {
   0% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
@@ -213,7 +223,9 @@ button {
   to { stroke-dashoffset: -1000; }
 }
 
-/* Dashboard Sidebar */
+/* =============================================
+   DASHBOARD SIDEBAR
+   ============================================= */
 .sidebar-btn {
   background: transparent;
   border: none;
@@ -237,4 +249,420 @@ button {
   color: var(--accent-secondary);
   border-left: 3px solid var(--accent-secondary);
   border-radius: 0 8px 8px 0;
+}
+
+/* =============================================
+   LANDING PAGE — HEADER
+   ============================================= */
+.landing-header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(5,5,8,0.9), transparent);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 1rem;
+}
+
+.landing-logo-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 20px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.landing-logo-text {
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.landing-stepper-desktop {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.stepper-label {
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.landing-auth-desktop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chrome-btn {
+  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  border: none;
+  color: #050508;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+  transition: transform 0.2s;
+  white-space: nowrap;
+}
+.chrome-btn:hover {
+  transform: scale(1.05);
+}
+
+.dashboard-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.signout-btn {
+  background: rgba(255, 75, 75, 0.1);
+  border: 1px solid rgba(255, 75, 75, 0.3);
+  color: #ff4b4b;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.mobile-menu-dropdown {
+  position: sticky;
+  top: 70px;
+  z-index: 49;
+  background: rgba(5, 5, 8, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+/* =============================================
+   LANDING PAGE — MAIN CONTENT
+   ============================================= */
+.landing-main {
+  padding: 2rem 4rem 5rem 4rem;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hero Section */
+.hero-text-section {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.hero-badge {
+  padding: 8px 20px;
+  background: rgba(0, 242, 254, 0.1);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  border-radius: 100px;
+  color: #00f2fe;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  display: inline-block;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 20px rgba(0,242,254,0.2);
+}
+
+.hero-heading {
+  font-size: 4.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.hero-br {
+  display: block;
+}
+
+.hero-subtext {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Step 3 */
+.step3-panel {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.step3-success-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-color));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 2rem auto;
+  box-shadow: 0 0 60px var(--accent-secondary-glow);
+}
+
+.step3-heading {
+  font-size: 3.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.step3-subtext {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+
+.step3-downloads {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  padding: 16px 36px;
+}
+
+.download-btn-secondary {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  box-shadow: none !important;
+}
+
+.start-over-btn {
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
+  font-size: 1rem;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.start-over-btn:hover {
+  color: var(--text-main);
+  transform: translateY(-2px);
+}
+
+/* =============================================
+   EDITOR LAYOUT
+   ============================================= */
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  height: 65vh;
+  padding: 1rem 0;
+}
+
+/* =============================================
+   DASHBOARD LAYOUT
+   ============================================= */
+.dashboard-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
+  padding: 2rem 4rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+}
+
+/* =============================================
+   MOBILE RESPONSIVE — max-width: 768px
+   ============================================= */
+@media (max-width: 768px) {
+  /* Header */
+  .landing-header {
+    padding: 1rem 1rem;
+  }
+  .landing-logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+  .landing-logo-text {
+    font-size: 1.4rem;
+  }
+  .landing-stepper-desktop {
+    display: none;
+  }
+  .landing-auth-desktop {
+    display: none;
+  }
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  /* Main Content */
+  .landing-main {
+    padding: 1.5rem 1rem 3rem 1rem;
+    min-height: calc(100vh - 80px);
+  }
+
+  /* Hero */
+  .hero-text-section {
+    margin-bottom: 2rem;
+  }
+  .hero-badge {
+    font-size: 0.65rem;
+    padding: 6px 14px;
+    letter-spacing: 1.5px;
+    margin-bottom: 1.2rem;
+  }
+  .hero-heading {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+  .hero-br {
+    display: none;
+  }
+  .hero-subtext {
+    font-size: 0.95rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Glass Panel */
+  .glass-panel {
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+  .glass-panel:hover {
+    transform: none;
+  }
+
+  /* Buttons */
+  .primary-btn {
+    padding: 14px 28px;
+    font-size: 0.95rem;
+  }
+  .primary-btn:hover {
+    transform: none;
+  }
+
+  /* Step 3 */
+  .step3-success-icon {
+    width: 80px;
+    height: 80px;
+  }
+  .step3-heading {
+    font-size: 2rem;
+  }
+  .step3-subtext {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .step3-downloads {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .download-btn {
+    font-size: 0.95rem;
+    padding: 14px 24px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Editor */
+  .editor-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 1.5rem;
+  }
+
+  /* Dashboard */
+  .dashboard-overlay {
+    padding: 1rem;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Custom Inputs */
+  .custom-input {
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+}
+
+/* =============================================
+   TABLET RESPONSIVE — max-width: 1024px
+   ============================================= */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .landing-header {
+    padding: 1.2rem 1.5rem;
+  }
+  .landing-logo-text {
+    font-size: 1.6rem;
+  }
+  .stepper-label {
+    font-size: 0.7rem;
+  }
+  .landing-stepper-desktop {
+    gap: 0.8rem;
+  }
+  .landing-auth-desktop {
+    gap: 0.6rem;
+  }
+  .landing-main {
+    padding: 2rem 2rem 4rem 2rem;
+  }
+  .hero-heading {
+    font-size: 3.5rem;
+  }
+  .dashboard-grid {
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
+  }
+  .dashboard-overlay {
+    padding: 1.5rem 2rem;
+  }
 }

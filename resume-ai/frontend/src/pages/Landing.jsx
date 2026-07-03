@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Wand2, DownloadCloud, ChevronRight, RefreshCw, Zap } from 'lucide-react';
+import { FileText, Wand2, DownloadCloud, ChevronRight, RefreshCw, Zap, Menu, X } from 'lucide-react';
 import { Link, useLocation } from "react-router-dom";
 import Scene3D from '../components/Scene3D';
 import FileUpload from '../components/FileUpload';
@@ -17,51 +17,84 @@ function Landing() {
   const [urls, setUrls] = useState({ docx: null, pdf: null });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { user, loginWithGoogle, logout, isAuthenticated } = useAuthContext();
 
-  useEffect(() => {
-    const initGoogle = () => {
-      if (window.google && !isAuthenticated) {
-        window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "335198038743-mockclientid.apps.googleusercontent.com",
-          callback: async (response) => {
-            try {
-              await loginWithGoogle(response.credential);
-            } catch (err) {
-              alert("Google Login failed: " + err.message);
-            }
-          }
-        });
-        
-        const btnContainer = document.getElementById("google-signin-button");
-        if (btnContainer) {
-          window.google.accounts.id.renderButton(
-            btnContainer,
-            { theme: "dark", size: "large", shape: "pill" }
-          );
-        }
+  // Google Sign-In — initialize ONCE, never re-run on step/isLoaded changes
+  const googleInitialized = useRef(false);
 
-        const heroBtnContainer = document.getElementById("google-signin-button-hero");
-        if (heroBtnContainer) {
-          window.google.accounts.id.renderButton(
-            heroBtnContainer,
-            { theme: "dark", size: "large", shape: "pill" }
-          );
+  useEffect(() => {
+    // Only init Google if NOT authenticated and not already initialized
+    if (isAuthenticated || googleInitialized.current) return;
+
+    const initGoogle = () => {
+      if (!window.google) return false;
+
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "335198038743-mockclientid.apps.googleusercontent.com",
+        callback: async (response) => {
+          try {
+            await loginWithGoogle(response.credential);
+          } catch (err) {
+            alert("Google Login failed: " + err.message);
+          }
         }
-      }
+      });
+
+      // Render buttons into any existing containers
+      const containers = ['google-signin-button', 'google-signin-button-hero'];
+      containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          window.google.accounts.id.renderButton(el, {
+            theme: "dark", size: "large", shape: "pill"
+          });
+        }
+      });
+
+      googleInitialized.current = true;
+      return true;
     };
 
-    initGoogle();
-    const interval = setInterval(() => {
-      if (window.google) {
-        initGoogle();
-        clearInterval(interval);
-      }
-    }, 500);
+    // Try immediately, then retry a few times if google script hasn't loaded yet
+    if (!initGoogle()) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (initGoogle() || attempts > 20) {
+          clearInterval(interval);
+        }
+      }, 300);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]); // ONLY depends on isAuthenticated — not step, isLoaded
 
-    return () => clearInterval(interval);
-  }, [isAuthenticated, step, isLoaded]);
+  // When user logs out, allow re-initialization on next render
+  useEffect(() => {
+    if (!isAuthenticated) {
+      googleInitialized.current = false;
+    }
+  }, [isAuthenticated]);
+
+  // Re-render Google buttons when containers appear (step changes)
+  useEffect(() => {
+    if (isAuthenticated || !window.google || !googleInitialized.current) return;
+
+    // Small delay to ensure DOM containers are mounted
+    const timer = setTimeout(() => {
+      const containers = ['google-signin-button', 'google-signin-button-hero'];
+      containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.childElementCount === 0) {
+          window.google.accounts.id.renderButton(el, {
+            theme: "dark", size: "large", shape: "pill"
+          });
+        }
+      });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [step, isLoaded, isAuthenticated]);
 
   const location = useLocation();
 
@@ -145,77 +178,50 @@ function Landing() {
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-              style={{ 
-                padding: '2.5rem 6rem', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                background: 'linear-gradient(to bottom, rgba(5,5,8,0.9), transparent)',
-                backdropFilter: 'blur(10px)',
-                position: 'sticky',
-                top: 0,
-                zIndex: 50
-              }}
+              className="landing-header"
             >
+              {/* Logo */}
               <motion.div 
                 whileHover={{ scale: 1.05, textShadow: '0 0 20px rgba(138,43,226,0.8)' }}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px' }}
+                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}
                 onClick={() => { setStep(1); setFileId(null); setResumeData(null); }}
               >
-                <div style={{ 
-                  width: '45px', height: '45px', 
-                  borderRadius: '14px', 
-                  background: 'linear-gradient(135deg, var(--accent-color), var(--accent-secondary))',
-                  display: 'flex', justifyContent: 'center', alignItems: 'center',
-                  boxShadow: '0 0 25px var(--accent-glow)'
-                }}>
-                  <Zap color="white" size={24} />
+                <div className="landing-logo-icon">
+                  <Zap color="white" size={20} />
                 </div>
-                <h1 style={{ fontSize: '2.5rem', margin: 0, fontWeight: 800 }} className="text-gradient">
+                <h1 className="landing-logo-text text-gradient">
                   Resume<span style={{color: 'var(--accent-secondary)'}}>AI</span>
                 </h1>
               </motion.div>
 
-              {/* Advanced Timeline Stepper */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+              {/* Timeline Stepper — Desktop */}
+              <div className="landing-stepper-desktop">
                 {steps.map((s, idx) => (
                   <React.Fragment key={s.num}>
                     <motion.div 
                       whileHover={{ scale: step >= s.num ? 1.05 : 1 }}
                       style={{ 
-                        display: 'flex', alignItems: 'center', gap: '0.8rem',
+                        display: 'flex', alignItems: 'center', gap: '0.5rem',
                         color: step >= s.num ? s.activeColor : s.color,
                         opacity: step >= s.num ? 1 : 0.4,
                         transition: 'all 0.5s ease'
                       }}
                     >
-                      <s.icon size={22} style={{ filter: step >= s.num ? `drop-shadow(0 0 8px ${s.activeColor})` : 'none' }} />
-                      <span style={{ fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', fontSize: '0.9rem' }}>{s.title}</span>
+                      <s.icon size={18} style={{ filter: step >= s.num ? `drop-shadow(0 0 8px ${s.activeColor})` : 'none' }} />
+                      <span className="stepper-label">{s.title}</span>
                     </motion.div>
                     {idx < steps.length - 1 && (
-                      <ChevronRight size={20} color={step > s.num ? 'var(--accent-secondary)' : '#333'} />
+                      <ChevronRight size={16} color={step > s.num ? 'var(--accent-secondary)' : '#333'} />
                     )}
                   </React.Fragment>
                 ))}
               </div>
 
-              {/* Auth Section */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              {/* Auth Section — Desktop */}
+              <div className="landing-auth-desktop">
                 <button 
                   onClick={() => alert("Coming soon to the Chrome Web Store! For now, please load the 'JD reader' folder unpacked via chrome://extensions/")}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
-                    border: 'none',
-                    color: '#050508',
-                    padding: '10px 20px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: 800,
-                    boxShadow: '0 0 15px rgba(0, 242, 254, 0.4)',
-                    transition: 'transform 0.2s'
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                  className="chrome-btn"
                 >
                   Add to Chrome
                 </button>
@@ -223,44 +229,85 @@ function Landing() {
                 {!isAuthenticated ? (
                   <div id="google-signin-button" style={{ minHeight: '40px' }}></div>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
                     <Link to="/dashboard" style={{ textDecoration: 'none' }}>
-                      <button 
-                        style={{ 
-                          background: 'rgba(255,255,255,0.1)',
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          color: 'white',
-                          padding: '10px 20px',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          fontWeight: 600
-                        }}
-                      >
-                        Dashboard
-                      </button>
+                      <button className="dashboard-btn">Dashboard</button>
                     </Link>
                     <button 
                       onClick={logout}
-                      className="primary-btn"
-                      style={{ 
-                        background: 'rgba(255, 75, 75, 0.1)', 
-                        border: '1px solid rgba(255, 75, 75, 0.3)', 
-                        color: '#ff4b4b',
-                        fontSize: '0.9rem',
-                        padding: '10px 20px',
-                        boxShadow: 'none'
-                      }}
+                      className="signout-btn"
                     >
                       Sign Out
                     </button>
                   </div>
                 )}
               </div>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                className="mobile-menu-toggle"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle Menu"
+              >
+                {mobileMenuOpen ? <X size={24} color="white" /> : <Menu size={24} color="white" />}
+              </button>
             </motion.header>
           )}
         </AnimatePresence>
 
-        <main style={{ padding: '2rem 5rem 6rem 5rem', minHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Mobile Menu Dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mobile-menu-dropdown"
+            >
+              {/* Stepper in mobile menu */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                {steps.map((s) => (
+                  <div key={s.num} style={{ 
+                    display: 'flex', alignItems: 'center', gap: '0.5rem',
+                    color: step >= s.num ? s.activeColor : s.color,
+                    opacity: step >= s.num ? 1 : 0.4,
+                    fontSize: '0.85rem', fontWeight: 700
+                  }}>
+                    <s.icon size={16} />
+                    <span>{s.title}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Auth buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', alignItems: 'center' }}>
+                <button 
+                  onClick={() => { alert("Coming soon to the Chrome Web Store!"); setMobileMenuOpen(false); }}
+                  className="chrome-btn"
+                  style={{ width: '100%', textAlign: 'center' }}
+                >
+                  Add to Chrome
+                </button>
+
+                {!isAuthenticated ? (
+                  <div id="google-signin-button-mobile" style={{ minHeight: '40px' }}></div>
+                ) : (
+                  <>
+                    <Link to="/dashboard" style={{ textDecoration: 'none', width: '100%' }} onClick={() => setMobileMenuOpen(false)}>
+                      <button className="dashboard-btn" style={{ width: '100%' }}>Dashboard</button>
+                    </Link>
+                    <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="signout-btn" style={{ width: '100%' }}>
+                      Sign Out
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <main className="landing-main">
           <AnimatePresence mode="wait">
             {step === 1 && isLoaded && (
               <motion.div
@@ -271,26 +318,13 @@ function Landing() {
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 style={{ width: '100%', maxWidth: '1000px' }}
               >
-                <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+                <div className="hero-text-section">
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 1 }}
                   >
-                    <span style={{ 
-                      padding: '10px 24px', 
-                      background: 'rgba(0, 242, 254, 0.1)', 
-                      border: '1px solid rgba(0, 242, 254, 0.3)',
-                      borderRadius: '100px',
-                      color: '#00f2fe',
-                      fontWeight: 700,
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
-                      fontSize: '0.85rem',
-                      display: 'inline-block',
-                      marginBottom: '2rem',
-                      boxShadow: '0 0 20px rgba(0,242,254,0.2)'
-                    }}>
+                    <span className="hero-badge">
                       Next-Generation AI Optimization
                     </span>
                   </motion.div>
@@ -299,9 +333,9 @@ function Landing() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
-                    style={{ fontSize: '5.5rem', marginBottom: '1.5rem', lineHeight: '1.1', textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+                    className="hero-heading"
                   >
-                    Craft your perfect resume <br/>
+                    Craft your perfect resume <br className="hero-br" />
                     <span className="text-gradient-accent">in seconds.</span>
                   </motion.h2>
                   
@@ -309,7 +343,7 @@ function Landing() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8, duration: 1 }}
-                    style={{ fontSize: '1.4rem', color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto' }}
+                    className="hero-subtext"
                   >
                     Upload your standard DOCX and watch our neural engine perfectly align it with your dream job. No effort, maximum impact.
                   </motion.p>
@@ -324,7 +358,7 @@ function Landing() {
                     <FileUpload onUpload={handleUploadComplete} isProcessing={isProcessing} setIsProcessing={setIsProcessing} />
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Please sign in to upload and optimize your resume.</p>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', textAlign: 'center' }}>Please sign in to upload and optimize your resume.</p>
                       <div id="google-signin-button-hero" style={{ minHeight: '40px' }}></div>
                     </div>
                   )}
@@ -358,103 +392,58 @@ function Landing() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.2 }}
                 transition={{ duration: 0.8, type: "spring", bounce: 0.5 }}
-                style={{ width: '100%', maxWidth: '800px', textAlign: 'center' }}
-                className="glass-panel"
+                className="glass-panel step3-panel"
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1, rotate: 360 }}
                   transition={{ delay: 0.4, type: "spring", stiffness: 150, damping: 15 }}
-                  style={{ 
-                    width: '120px', height: '120px', 
-                    borderRadius: '50%', 
-                    background: 'linear-gradient(135deg, var(--accent-secondary), var(--accent-color))',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    margin: '0 auto 2.5rem auto',
-                    boxShadow: '0 0 60px var(--accent-secondary-glow)'
-                  }}
+                  className="step3-success-icon"
                 >
-                  <Zap color="white" size={60} />
+                  <Zap color="white" size={50} />
                 </motion.div>
 
-                <h2 style={{ fontSize: '4.5rem', marginBottom: '1.5rem' }} className="text-gradient-accent">Masterpiece Ready.</h2>
-                <p style={{ fontSize: '1.4rem', color: 'var(--text-muted)', marginBottom: '4rem' }}>
+                <h2 className="step3-heading text-gradient-accent">Masterpiece Ready.</h2>
+                <p className="step3-subtext">
                   Your resume has been completely re-engineered for maximum ATS compliance and human impact.
                 </p>
                 
-                <div style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <div className="step3-downloads">
                   {urls.docx && (
                     <a href={`${API_BASE_URL}${urls.docx}`} download style={{ textDecoration: 'none' }}>
-                      <button className="primary-btn" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.3rem', padding: '20px 50px' }}>
-                        <DownloadCloud size={26} />
+                      <button className="primary-btn download-btn">
+                        <DownloadCloud size={22} />
                         Download DOCX
                       </button>
                     </a>
                   )}
                   {urls.zip ? (
                     <a href={`${API_BASE_URL}${urls.zip}`} download style={{ textDecoration: 'none' }}>
-                      <button 
-                        className="primary-btn" 
-                        style={{ 
-                          background: 'rgba(255,255,255,0.05)', 
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          display: 'flex', alignItems: 'center', gap: '12px',
-                          fontSize: '1.3rem', padding: '20px 50px',
-                          boxShadow: 'none'
-                        }}
-                      >
-                        <DownloadCloud size={26} />
+                      <button className="primary-btn download-btn download-btn-secondary">
+                        <DownloadCloud size={22} />
                         Download Folder (ZIP)
                       </button>
                     </a>
                   ) : urls.pdf ? (
                     <a href={`${API_BASE_URL}${urls.pdf}`} download style={{ textDecoration: 'none' }}>
-                      <button 
-                        className="primary-btn" 
-                        style={{ 
-                          background: 'rgba(255,255,255,0.05)', 
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          display: 'flex', alignItems: 'center', gap: '12px',
-                          fontSize: '1.3rem', padding: '20px 50px',
-                          boxShadow: 'none'
-                        }}
-                      >
-                        <DownloadCloud size={26} />
+                      <button className="primary-btn download-btn download-btn-secondary">
+                        <DownloadCloud size={22} />
                         Download PDF
                       </button>
                     </a>
                   ) : (
-                    <div style={{ width: '100%', color: 'var(--text-muted)', fontSize: '1.1rem', marginTop: '1rem' }}>
+                    <div style={{ width: '100%', color: 'var(--text-muted)', fontSize: '1rem', marginTop: '1rem', textAlign: 'center' }}>
                       Note: PDF conversion unavailable on this host.
                     </div>
                   )}
                 </div>
                 
-                <div style={{ marginTop: '5rem' }}>
+                <div style={{ marginTop: '3rem' }}>
                   <button 
                     onClick={() => { setStep(1); setFileId(null); setResumeData(null); }}
-                    style={{ 
-                      background: 'transparent', 
-                      color: 'var(--text-muted)', 
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      margin: '0 auto',
-                      fontSize: '1.2rem',
-                      transition: 'all 0.3s',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.color = 'var(--text-main)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.color = 'var(--text-muted)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
+                    className="start-over-btn"
                   >
-                    <RefreshCw size={20} />
+                    <RefreshCw size={18} />
                     Start Over with a new Job
                   </button>
                 </div>

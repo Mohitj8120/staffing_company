@@ -95,22 +95,12 @@ function Dashboard() {
       <Scene3D />
 
       {/* Foreground Overlay */}
-      <div 
-        style={{ 
-          position: 'absolute', 
-          top: 0, left: 0, 
-          width: '100%', height: '100%', 
-          overflowY: 'auto', 
-          overflowX: 'hidden',
-          zIndex: 10,
-          padding: '2rem 5rem'
-        }}
-      >
+      <div className="dashboard-overlay">
         <motion.header 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <div style={{ 
@@ -122,7 +112,7 @@ function Dashboard() {
             }}>
               <Zap color="white" size={24} />
             </div>
-            <h1 style={{ fontSize: '2.5rem', margin: 0, fontWeight: 800 }} className="text-gradient">
+            <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', margin: 0, fontWeight: 800 }} className="text-gradient">
               Dashboard
             </h1>
           </div>
@@ -167,7 +157,7 @@ function Dashboard() {
           </div>
         </motion.header>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '3rem' }}>
+        <div className="dashboard-grid">
           {/* Sidebar */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}

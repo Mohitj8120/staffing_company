@@ -151,7 +151,7 @@ export default function FileUpload({ onUpload, isProcessing, setIsProcessing }) 
         <motion.div 
           className={`glass-panel ${dragActive ? "drag-active" : ""}`}
           style={{ 
-            height: '350px',
+            height: 'clamp(250px, 40vw, 350px)',
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'center', 
@@ -236,13 +236,13 @@ export default function FileUpload({ onUpload, isProcessing, setIsProcessing }) 
                   boxShadow: '0 10px 30px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.1)'
                 }}
               >
-                <UploadCloud size={60} color="var(--accent-secondary)" style={{ filter: 'drop-shadow(0 0 10px var(--accent-secondary))' }} />
+                <UploadCloud size={45} color="var(--accent-secondary)" style={{ filter: 'drop-shadow(0 0 10px var(--accent-secondary))' }} />
               </motion.div>
               
-              <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem', fontWeight: 700 }}>
+              <h3 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', marginBottom: '0.8rem', fontWeight: 700 }}>
                 Drop your <span className="text-gradient-accent">Base Resume</span> here
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '2rem' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: 'clamp(0.9rem, 2vw, 1.2rem)', marginBottom: '1.5rem' }}>
                 or click to browse local files (PDF & DOCX)
               </p>
               

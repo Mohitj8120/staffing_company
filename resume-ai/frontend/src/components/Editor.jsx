@@ -111,7 +111,7 @@ export default function Editor({ fileId, baseData, onOptimize, isProcessing, set
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', height: '65vh', padding: '1rem 0' }}>
+    <div className="editor-grid">
       
       {/* Left Pane: Job Description */}
       <motion.div 

@@ -1,20 +1,53 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext(null);
 
+// Simple JWT expiry check (without library)
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload.exp) {
+      return Date.now() >= payload.exp * 1000;
+    }
+    return false; // No exp claim = treat as valid
+  } catch {
+    return true; // Malformed token = expired
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('jwt_token'));
+  const [token, setToken] = useState(() => {
+    const stored = localStorage.getItem('jwt_token');
+    // Immediately discard expired tokens at startup
+    if (stored && isTokenExpired(stored)) {
+      localStorage.removeItem('jwt_token');
+      return null;
+    }
+    return stored;
+  });
   const [loading, setLoading] = useState(true);
+  const syncAttempted = useRef(false);
 
   useEffect(() => {
+    // Prevent double-sync in StrictMode
+    if (syncAttempted.current) return;
+    syncAttempted.current = true;
+
     async function syncUser() {
       if (!token) {
         setUser(null);
         setLoading(false);
         return;
       }
+
+      // Quick client-side expiry check
+      if (isTokenExpired(token)) {
+        logout();
+        return;
+      }
+
       try {
         const response = await fetch(`${API_BASE_URL}/api/me`, {
           headers: {
@@ -24,12 +57,17 @@ export function AuthProvider({ children }) {
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
-        } else {
-          // Token expired or invalid
+        } else if (response.status === 401 || response.status === 403) {
+          // Token is truly invalid/expired — clear session
           logout();
+        } else {
+          // Server error (500, 502, etc.) — keep the session alive
+          // The user will just see a loading state briefly
+          console.warn('Server returned', response.status, '— keeping session');
         }
       } catch (err) {
-        console.error('Failed to sync user session:', err);
+        // Network error — keep token, don't logout
+        console.warn('Network error syncing session — keeping token:', err.message);
       } finally {
         setLoading(false);
       }
