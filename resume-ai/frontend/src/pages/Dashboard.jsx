@@ -12,6 +12,29 @@ function Dashboard() {
   const { user, getToken, logout, isAuthenticated, loading } = useAuthContext();
   const [userData, setUserData] = useState({ credits: 0, subscription_status: 'free' });
   const [resumes, setResumes] = useState([]);
+  const [activeTab, setActiveTab] = useState('resumes');
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  const fetchAdminUsers = async () => {
+    setAdminLoading(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAdminUsers(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -205,13 +228,29 @@ function Dashboard() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <button className="sidebar-btn active">
+              <button 
+                onClick={() => setActiveTab('resumes')}
+                className={`sidebar-btn ${activeTab === 'resumes' ? 'active' : ''}`}
+              >
                 <FileText size={20} /> My Resumes
               </button>
-              <button className="sidebar-btn">
+              
+              {user.email === "mohitjain1619@gmail.com" && (
+                <button 
+                  onClick={() => {
+                    setActiveTab('admin');
+                    fetchAdminUsers();
+                  }}
+                  className={`sidebar-btn ${activeTab === 'admin' ? 'active' : ''}`}
+                >
+                  <Zap size={20} color="var(--accent-secondary)" /> Admin Panel
+                </button>
+              )}
+              
+              <button className="sidebar-btn" onClick={() => alert("Billing settings coming soon!")}>
                 <CreditCard size={20} /> Billing Settings
               </button>
-              <button className="sidebar-btn">
+              <button className="sidebar-btn" onClick={() => alert("Preferences coming soon!")}>
                 <Settings size={20} /> Preferences
               </button>
               <button 
@@ -230,101 +269,148 @@ function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className="glass-panel" style={{ padding: '3rem' }}>
-              <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'white' }}>Credit Balance</h2>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '2rem' }}>
-                <span style={{ fontSize: '4rem', fontWeight: 800 }} className="text-gradient-accent">
-                  {userData.subscription_status === 'pro' ? '∞' : userData.credits}
-                </span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>
-                  {userData.subscription_status === 'pro' ? 'unlimited credits (Pro)' : 'credits remaining'}
-                </span>
+            {activeTab === 'admin' ? (
+              <div className="glass-panel" style={{ padding: '3rem', minHeight: '400px' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Admin Control Center</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Registered Users and Platform Usage Metrics</p>
+                
+                {adminLoading ? (
+                  <div style={{ color: 'var(--accent-secondary)', fontSize: '1.2rem', padding: '2rem 0' }}>Loading user registry...</div>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', minWidth: '600px' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
+                          <th style={{ padding: '12px', color: 'var(--accent-secondary)' }}>ID</th>
+                          <th style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Email</th>
+                          <th style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Credits</th>
+                          <th style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Plan</th>
+                          <th style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Uploaded Resumes</th>
+                          <th style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Created At</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {adminUsers.map((u) => (
+                          <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                            <td style={{ padding: '12px' }}>{u.id}</td>
+                            <td style={{ padding: '12px', fontWeight: 600 }}>{u.email}</td>
+                            <td style={{ padding: '12px', color: u.credits > 0 ? '#00f2fe' : '#ff4b4b', fontWeight: 'bold' }}>{u.credits}</td>
+                            <td style={{ padding: '12px', textTransform: 'uppercase', fontSize: '0.85rem' }}>
+                              <span style={{ 
+                                background: u.subscription_status === 'pro' ? 'rgba(0,242,254,0.15)' : 'rgba(255,255,255,0.05)',
+                                padding: '4px 8px', borderRadius: '4px', border: u.subscription_status === 'pro' ? '1px solid #00f2fe' : '1px solid rgba(255,255,255,0.1)'
+                              }}>
+                                {u.subscription_status}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px', textAlign: 'center' }}>{u.resume_count}</td>
+                            <td style={{ padding: '12px', color: 'var(--text-muted)' }}>{u.created_at}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-              <button onClick={handleCheckout} className="primary-btn" style={{ padding: '15px 30px', fontSize: '1.1rem' }}>
-                Buy More Credits
-              </button>
-            </div>
-
-            <div style={{ marginTop: '3rem' }}>
-              <h2 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '1.5rem' }}>Your Base Profiles</h2>
-              
-              {resumes.length === 0 ? (
-                <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  You haven't uploaded any base resumes yet. Use the Chrome Extension or upload one on the Home page to get started!
+            ) : (
+              <>
+                <div className="glass-panel" style={{ padding: '3rem' }}>
+                  <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'white' }}>Credit Balance</h2>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '2rem' }}>
+                    <span style={{ fontSize: '4rem', fontWeight: 800 }} className="text-gradient-accent">
+                      {userData.subscription_status === 'pro' ? '∞' : userData.credits}
+                    </span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>
+                      {userData.subscription_status === 'pro' ? 'unlimited credits (Pro)' : 'credits remaining'}
+                    </span>
+                  </div>
+                  <button onClick={handleCheckout} className="primary-btn" style={{ padding: '15px 30px', fontSize: '1.1rem' }}>
+                    Buy More Credits
+                  </button>
                 </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
-                  {resumes.map((resume, idx) => (
-                    <motion.div
-                      key={resume.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.1 }}
-                      whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
-                      onClick={() => navigate('/', { state: { fileId: resume.id, resumeData: resume.data } })}
-                      style={{
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '16px',
-                        padding: '1.5rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1rem',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-                        backdropFilter: 'blur(10px)',
-                        position: 'relative'
-                      }}
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteResume(resume.id);
-                        }}
-                        style={{
-                          position: 'absolute',
-                          top: '1rem',
-                          right: '1rem',
-                          background: 'rgba(255, 75, 75, 0.1)',
-                          border: '1px solid rgba(255, 75, 75, 0.3)',
-                          borderRadius: '8px',
-                          padding: '6px',
-                          cursor: 'pointer',
-                          color: '#ff4b4b',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          transition: 'background 0.2s',
-                          zIndex: 10
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 75, 75, 0.3)'}
-                        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 75, 75, 0.1)'}
-                        title="Delete base resume"
-                      >
-                        <Trash2 size={16} />
-                      </button>
 
-                      <div style={{ 
-                        width: '40px', height: '40px', 
-                        borderRadius: '10px', 
-                        background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
-                        display: 'flex', justifyContent: 'center', alignItems: 'center'
-                      }}>
-                        <FileText color="#050508" size={20} />
-                      </div>
-                      <div>
-                        <h4 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '2rem' }}>
-                          {resume.title || resume.filename}
-                        </h4>
-                        <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                          Uploaded {resume.date}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
+                <div style={{ marginTop: '3rem' }}>
+                  <h2 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '1.5rem' }}>Your Base Profiles</h2>
+                  
+                  {resumes.length === 0 ? (
+                    <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      You haven't uploaded any base resumes yet. Use the Chrome Extension or upload one on the Home page to get started!
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                      {resumes.map((resume, idx) => (
+                        <motion.div
+                          key={resume.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: idx * 0.1 }}
+                          whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
+                          onClick={() => navigate('/', { state: { fileId: resume.id, resumeData: resume.data } })}
+                          style={{
+                            background: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '16px',
+                            padding: '1.5rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1rem',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                            backdropFilter: 'blur(10px)',
+                            position: 'relative'
+                          }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteResume(resume.id);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '1rem',
+                              right: '1rem',
+                              background: 'rgba(255, 75, 75, 0.1)',
+                              border: '1px solid rgba(255, 75, 75, 0.3)',
+                              borderRadius: '8px',
+                              padding: '6px',
+                              cursor: 'pointer',
+                              color: '#ff4b4b',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'background 0.2s',
+                              zIndex: 10
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 75, 75, 0.3)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 75, 75, 0.1)'}
+                            title="Delete base resume"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+
+                          <div style={{ 
+                            width: '40px', height: '40px', 
+                            borderRadius: '10px', 
+                            background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
+                            display: 'flex', justifyContent: 'center', alignItems: 'center'
+                          }}>
+                            <FileText color="#050508" size={20} />
+                          </div>
+                          <div>
+                            <h4 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '2rem' }}>
+                              {resume.title || resume.filename}
+                            </h4>
+                            <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                              Uploaded {resume.date}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </motion.div>
         </div>
       </div>

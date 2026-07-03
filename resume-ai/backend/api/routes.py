@@ -639,3 +639,23 @@ async def delete_resume(file_id: str, current_user: User = Depends(get_current_u
     db.commit()
     return {"status": "success", "message": "Resume deleted successfully"}
 
+@router.get("/admin/users")
+async def get_admin_users(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.email != "mohitjain1619@gmail.com":
+        raise HTTPException(status_code=403, detail="Unauthorized admin access")
+        
+    users = db.query(User).order_by(User.id.desc()).all()
+    
+    results = []
+    for u in users:
+        resume_count = db.query(Resume).filter(Resume.user_id == u.id).count()
+        results.append({
+            "id": u.id,
+            "email": u.email,
+            "credits": u.credits,
+            "subscription_status": u.subscription_status,
+            "resume_count": resume_count,
+            "created_at": u.created_at.strftime("%Y-%m-%d %H:%M:%S") if u.created_at else "N/A"
+        })
+    return results
+
