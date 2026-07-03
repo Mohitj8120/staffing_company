@@ -168,41 +168,66 @@ def generate_tailored_docx(data: dict, output_filename: str = "tailored_resume.d
     # Format data for the template
     # The template expects specific placeholders like {{name}}, {{summary}}, {{experience}}
     
-    experience_text = "\n\n".join(
-        [
-            f'{e["title"]} | {e["company"]} | {e["duration"]}\n' +
-            "\n".join(["• " + p for p in e["points"]])
-            for e in data.get("experience", [])
-        ]
-    )
+    experience_list = []
+    for e in data.get("experience", []):
+        if not isinstance(e, dict):
+            continue
+        title = e.get("title", "")
+        company = e.get("company", "")
+        duration = e.get("duration", "")
+        points = e.get("points", [])
+        points_str = "\n".join(["• " + str(p) for p in points]) if isinstance(points, list) else ""
+        exp_str = f'{title} | {company} | {duration}\n' + points_str
+        experience_list.append(exp_str)
+    experience_text = "\n\n".join(experience_list)
     
-    projects_text = "\n\n".join(
-        [
-            f'{p["title"]}\n{p["description"]}'
-            for p in data.get("projects", [])
-        ]
-    )
+    projects_list = []
+    for p in data.get("projects", []):
+        if not isinstance(p, dict):
+            continue
+        title = p.get("title", "")
+        desc = p.get("description", p.get("summary", ""))
+        if isinstance(desc, list):
+            desc = "\n".join(["• " + str(x) for x in desc])
+        projects_list.append(f'{title}\n{desc}')
+    projects_text = "\n\n".join(projects_list)
     
-    education_text = "\n\n".join(
-        [
-            f'{e["degree"]} | {e["college"]} | {e["year"]}'
-            for e in data.get("education", [])
-        ]
-    )
+    education_list = []
+    for e in data.get("education", []):
+        if not isinstance(e, dict):
+            continue
+        degree = e.get("degree", "")
+        college = e.get("college", e.get("school", ""))
+        year = e.get("year", "")
+        education_list.append(f'{degree} | {college} | {year}')
+    education_text = "\n\n".join(education_list)
+
+    # Safely handle skills and certifications which might be string or list
+    skills = data.get("skills", [])
+    if isinstance(skills, list):
+        skills_text = "\n".join([str(s) for s in skills])
+    else:
+        skills_text = str(skills)
+
+    certs = data.get("certifications", [])
+    if isinstance(certs, list):
+        certs_text = "\n".join([str(c) for c in certs])
+    else:
+        certs_text = str(certs)
 
     context = {
-        "name": data.get("personal", {}).get("name", ""),
-        "email": data.get("personal", {}).get("email", ""),
-        "phone": data.get("personal", {}).get("phone", ""),
-        "location": data.get("personal", {}).get("location", ""),
-        "linkedin": data.get("personal", {}).get("linkedin", ""),
-        "portfolio": data.get("personal", {}).get("portfolio", ""),
+        "name": data.get("personal", {}).get("name", "") if isinstance(data.get("personal"), dict) else "",
+        "email": data.get("personal", {}).get("email", "") if isinstance(data.get("personal"), dict) else "",
+        "phone": data.get("personal", {}).get("phone", "") if isinstance(data.get("personal"), dict) else "",
+        "location": data.get("personal", {}).get("location", "") if isinstance(data.get("personal"), dict) else "",
+        "linkedin": data.get("personal", {}).get("linkedin", "") if isinstance(data.get("personal"), dict) else "",
+        "portfolio": data.get("personal", {}).get("portfolio", "") if isinstance(data.get("personal"), dict) else "",
         "summary": data.get("summary", ""),
-        "skills": "\n".join(data.get("skills", [])),
+        "skills": skills_text,
         "experience": experience_text,
         "projects": projects_text,
         "education": education_text,
-        "certifications": "\n".join(data.get("certifications", []))
+        "certifications": certs_text
     }
     
     doc.render(context)
