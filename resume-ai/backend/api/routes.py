@@ -533,9 +533,32 @@ async def download_file(filename: str, background_tasks: BackgroundTasks, downlo
         final_download_name = download_name
     else:
         ext = ".pdf" if filename.endswith('.pdf') else ".docx"
-        base_part = filename.replace(f"_Resume{ext}", "").replace(f"_tailored{ext}", "")
-        candidate_name_formatted = base_part.replace("_", " ").title()
+        suffix = f"_Resume{ext}" if f"_Resume{ext}" in filename else f"_tailored{ext}"
+        file_id = filename.replace(suffix, "")
         
+        is_uuid = False
+        try:
+            uuid.UUID(file_id)
+            is_uuid = True
+        except ValueError:
+            pass
+            
+        candidate_name_formatted = None
+        if is_uuid:
+            resume = db.query(Resume).filter(Resume.id == file_id).first()
+            if resume:
+                try:
+                    resume_data_dict = get_resume_json(resume)
+                    name = resume_data_dict.get("personal", {}).get("name")
+                    if name:
+                        candidate_name_formatted = name.strip().title()
+                except Exception as parse_err:
+                    print(f"Failed to parse resume JSON for name: {parse_err}")
+                    
+        if not candidate_name_formatted:
+            base_part = file_id.replace("_", " ").title()
+            candidate_name_formatted = base_part
+            
         if company and company.strip() and company.strip().lower() not in ["company", "not specified in jd"]:
             safe_company = re.sub(r'[^a-zA-Z0-9\s_-]', '', company).strip()
             final_download_name = f"{safe_company}/{candidate_name_formatted} - Resume{ext}"
