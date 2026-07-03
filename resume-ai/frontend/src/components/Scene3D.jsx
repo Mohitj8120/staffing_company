@@ -1,10 +1,10 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Float, Points, PointMaterial, Stars, Html } from '@react-three/drei';
-import { EffectComposer, Bloom, DepthOfField, Vignette } from '@react-three/postprocessing';
+import { Float, Points, PointMaterial, Stars } from '@react-three/drei';
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
-// Detect mobile at module level
+// Detect mobile/tablet or low-end screen size
 const isMobile = typeof window !== 'undefined' && (
   window.innerWidth <= 768 ||
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
@@ -15,8 +15,8 @@ function InteractiveParticles() {
   const { mouse, viewport } = useThree();
   
   const [positions, colors] = useMemo(() => {
-    // Reduce particles on mobile for performance
-    const count = isMobile ? 1500 : 4000;
+    // Significantly reduce particle count for buttery-smooth performance
+    const count = isMobile ? 800 : 2000;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     
@@ -44,16 +44,15 @@ function InteractiveParticles() {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     if (ref.current) {
-      ref.current.rotation.y = time * 0.05;
-      ref.current.rotation.x = time * 0.02;
+      ref.current.rotation.y = time * 0.03;
+      ref.current.rotation.x = time * 0.01;
       
-      // Skip mouse interaction on mobile (no mouse)
       if (!isMobile) {
-        const targetX = (mouse.x * viewport.width) / 50;
-        const targetY = (mouse.y * viewport.height) / 50;
+        const targetX = (mouse.x * viewport.width) / 60;
+        const targetY = (mouse.y * viewport.height) / 60;
         
-        ref.current.rotation.y += (targetX - ref.current.rotation.y) * 0.05;
-        ref.current.rotation.x += (-targetY - ref.current.rotation.x) * 0.05;
+        ref.current.rotation.y += (targetX - ref.current.rotation.y) * 0.03;
+        ref.current.rotation.x += (-targetY - ref.current.rotation.x) * 0.03;
       }
     }
   });
@@ -63,7 +62,7 @@ function InteractiveParticles() {
       <PointMaterial
         transparent
         vertexColors
-        size={isMobile ? 0.1 : 0.08}
+        size={isMobile ? 0.08 : 0.06}
         sizeAttenuation={true}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
@@ -78,24 +77,24 @@ function FloatingGeometry() {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     if (meshRef.current) {
-      meshRef.current.rotation.x = Math.sin(time / 4);
-      meshRef.current.rotation.y = Math.sin(time / 2);
+      meshRef.current.rotation.x = Math.sin(time / 5) * 0.5;
+      meshRef.current.rotation.y = Math.sin(time / 3) * 0.5;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={isMobile ? 0.8 : 1.5} floatIntensity={isMobile ? 1 : 2}>
+    <Float speed={1.5} rotationIntensity={isMobile ? 0.4 : 0.8} floatIntensity={isMobile ? 0.5 : 1.0}>
       <mesh ref={meshRef}>
-        <torusKnotGeometry args={isMobile ? [1.5, 0.3, 128, 16] : [2, 0.4, 256, 32]} />
-        <meshPhysicalMaterial 
+        {/* Reduce segments: lower poly count is faster and gives a cooler matrix/digital aesthetic */}
+        <torusKnotGeometry args={isMobile ? [1.2, 0.25, 48, 8] : [1.8, 0.35, 96, 16]} />
+        <meshStandardMaterial 
           color="#00f2fe"
-          emissive="#004d40"
-          emissiveIntensity={0.5}
-          roughness={0.1}
-          metalness={1}
-          clearcoat={1}
+          emissive="#8a2be2"
+          emissiveIntensity={1.2}
+          roughness={0.4}
+          metalness={0.8}
           transparent
-          opacity={0.15}
+          opacity={0.25}
           wireframe={true}
         />
       </mesh>
@@ -108,34 +107,32 @@ export default function Scene3D() {
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
       <Canvas 
         camera={{ position: [0, 0, 15], fov: 45 }} 
-        dpr={isMobile ? [1, 1] : [1, 2]}
-        // Reduce pixel ratio on mobile
+        // Cap dpr at 1.5 on high-res monitors. 2.0+ is a massive GPU bottleneck with zero visual difference
+        dpr={isMobile ? [1, 1] : [1, 1.5]}
+        gl={{ antialias: false, powerPreference: "high-performance" }}
       >
         <color attach="background" args={['#050508']} />
-        <fog attach="fog" args={['#050508', 10, 30]} />
+        <fog attach="fog" args={['#050508', 10, 25]} />
         
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={2} color="#00f2fe" />
-        <directionalLight position={[-10, -10, -5]} intensity={2} color="#8a2be2" />
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[10, 10, 5]} intensity={1.5} color="#00f2fe" />
+        <directionalLight position={[-10, -10, -5]} intensity={1.5} color="#8a2be2" />
         
-        <Stars radius={100} depth={50} count={isMobile ? 2000 : 5000} factor={4} saturation={0} fade speed={1} />
+        {/* Lower star count to prevent vertex overhead */}
+        <Stars radius={80} depth={40} count={isMobile ? 800 : 2500} factor={3} saturation={0} fade speed={0.8} />
         
         <InteractiveParticles />
         <FloatingGeometry />
 
-        {/* Only apply heavy post-processing on desktop */}
-        {isMobile ? (
-          <EffectComposer disableNormalPass>
-            <Bloom luminanceThreshold={0.3} mipmapBlur intensity={1.0} />
-            <Vignette eskil={false} offset={0.1} darkness={1.2} />
-          </EffectComposer>
-        ) : (
-          <EffectComposer disableNormalPass>
-            <Bloom luminanceThreshold={0.2} mipmapBlur intensity={2.0} />
-            <DepthOfField focusDistance={0} focalLength={0.03} bokehScale={3} height={480} />
-            <Vignette eskil={false} offset={0.1} darkness={1.2} />
-          </EffectComposer>
-        )}
+        {/* Removed heavy DepthOfField (blur calculations on every frame are absolute performance killers) */}
+        <EffectComposer disableNormalPass>
+          <Bloom 
+            luminanceThreshold={0.5} 
+            mipmapBlur 
+            intensity={isMobile ? 1.0 : 1.8} 
+          />
+          <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        </EffectComposer>
       </Canvas>
     </div>
   );
