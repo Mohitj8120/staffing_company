@@ -27,6 +27,10 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
         # Optimize with Gemini (offload to thread since it's a synchronous blocking operation)
         optimized_data = await asyncio.to_thread(optimize_resume, data, jd, mode, page_count)
         
+        # Carry over original page count to optimized data
+        if "original_page_count" in data:
+            optimized_data["original_page_count"] = data["original_page_count"]
+        
         # Format candidate and company names
         person_name = optimized_data.get("personal", {}).get("name", "candidate")
         person_name = re.sub(r'[^a-zA-Z0-9\s]', '', person_name).strip().replace(' ', '_').lower()
@@ -136,11 +140,22 @@ async def execute_upload_job_logic(db: Session, job_id: str, user_id: int, file_
             with open(temp_path, "rb") as f:
                 file_hash = hashlib.md5(f.read()).hexdigest()
 
-        # Extract text
+        # Extract text and original page count
+        original_page_count = 1
         if ext == ".pdf":
+            try:
+                import fitz
+                doc = fitz.open(temp_path)
+                original_page_count = len(doc)
+                doc.close()
+            except Exception as e:
+                print(f"Error reading original PDF page count: {e}")
             text = extract_text_from_pdf(temp_path)
         else:
             text = extract_text_from_docx(temp_path)
+            # Estimate pages for DOCX based on word count
+            word_count = len(text.split())
+            original_page_count = 1 if word_count < 450 else 2
         
         # Zero-Storage: Delete the original temp file immediately since text is in memory
         try:
@@ -152,6 +167,7 @@ async def execute_upload_job_logic(db: Session, job_id: str, user_id: int, file_
         
         # Parse text to JSON
         parsed_data = await asyncio.to_thread(parse_resume, text)
+        parsed_data["original_page_count"] = original_page_count
         
         # Save parsed data to DB
         title = filename

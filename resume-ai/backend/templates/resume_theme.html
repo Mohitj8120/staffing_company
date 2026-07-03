@@ -237,9 +237,49 @@
             justify-content: space-between;
             align-items: baseline;
         }
+
+        /* Compaction Levels for strict page fitting */
+        body.compact-level-1 {
+            padding: 24px 34px;
+            font-size: 9.6pt;
+            line-height: 1.42;
+        }
+        body.compact-level-1 h1 { font-size: 20pt; margin-bottom: 2px; }
+        body.compact-level-1 .section-title { margin-top: 14px; margin-bottom: 8px; font-size: 11pt; }
+        body.compact-level-1 .item-block { margin-bottom: 10px; }
+        body.compact-level-1 ul { margin-top: 4px; margin-bottom: 8px; }
+        body.compact-level-1 li { margin-bottom: 2px; }
+
+        body.compact-level-2 {
+            padding: 20px 30px;
+            font-size: 9.2pt;
+            line-height: 1.35;
+        }
+        body.compact-level-2 h1 { font-size: 18pt; margin-bottom: 2px; }
+        body.compact-level-2 .subtitle { font-size: 10.5pt; margin-bottom: 6px; }
+        body.compact-level-2 .contact-info { margin-bottom: 12px; font-size: 8.5pt; }
+        body.compact-level-2 .section-title { margin-top: 10px; margin-bottom: 6px; font-size: 10pt; padding-bottom: 2px; }
+        body.compact-level-2 .item-block { margin-bottom: 8px; }
+        body.compact-level-2 .item-header { margin-top: 6px; }
+        body.compact-level-2 ul { margin-top: 2px; margin-bottom: 4px; padding-left: 14px; }
+        body.compact-level-2 li { margin-bottom: 1px; font-size: 9pt; }
+
+        body.compact-level-3 {
+            padding: 15px 25px;
+            font-size: 8.8pt;
+            line-height: 1.28;
+        }
+        body.compact-level-3 h1 { font-size: 16pt; margin-bottom: 1px; }
+        body.compact-level-3 .subtitle { font-size: 10pt; margin-bottom: 4px; }
+        body.compact-level-3 .contact-info { margin-bottom: 8px; font-size: 8pt; }
+        body.compact-level-3 .section-title { margin-top: 8px; margin-bottom: 4px; font-size: 9.5pt; padding-bottom: 2px; }
+        body.compact-level-3 .item-block { margin-bottom: 6px; }
+        body.compact-level-3 .item-header { margin-top: 4px; }
+        body.compact-level-3 ul { margin-top: 2px; margin-bottom: 2px; padding-left: 12px; }
+        body.compact-level-3 li { margin-bottom: 1px; font-size: 8.5pt; }
     </style>
 </head>
-<body class="{% if page_count == '1' %}compact-mode{% endif %}">
+<body class="{{ compactor_class }} {% if page_count == '1' %}compact-mode{% endif %}">
 
     <h1>{{ data.personal.name }}</h1>
     

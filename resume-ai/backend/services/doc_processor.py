@@ -70,6 +70,57 @@ with sync_playwright() as p:
     )
     return process
 
+def trim_resume_data(data: dict, target_pages: int, severity: int = 1):
+    """
+    Trims resume data to help it fit into target pages.
+    severity 1: mild pruning (limit bullet points slightly, remove excess items).
+    severity 2: aggressive pruning (strict limits on items, fewer bullet points).
+    """
+    if target_pages == 1:
+        # Experience
+        if "experience" in data and isinstance(data["experience"], list):
+            # Limit number of experience roles
+            max_roles = 3 if severity > 1 else 4
+            data["experience"] = data["experience"][:max_roles]
+            for exp in data["experience"]:
+                if "points" in exp and isinstance(exp["points"], list):
+                    max_points = 3 if severity > 1 else 4
+                    exp["points"] = exp["points"][:max_points]
+        # Projects
+        if "projects" in data and isinstance(data["projects"], list):
+            max_projs = 2 if severity > 1 else 3
+            data["projects"] = data["projects"][:max_projs]
+            for proj in data["projects"]:
+                if "points" in proj and isinstance(proj["points"], list):
+                    max_points = 2 if severity > 1 else 3
+                    proj["points"] = proj["points"][:max_points]
+        # Certifications
+        if "certifications" in data and isinstance(data["certifications"], list):
+            max_certs = 3 if severity > 1 else 4
+            data["certifications"] = data["certifications"][:max_certs]
+            
+    elif target_pages == 2:
+        # Experience
+        if "experience" in data and isinstance(data["experience"], list):
+            max_roles = 4 if severity > 1 else 5
+            data["experience"] = data["experience"][:max_roles]
+            for exp in data["experience"]:
+                if "points" in exp and isinstance(exp["points"], list):
+                    max_points = 4 if severity > 1 else 5
+                    exp["points"] = exp["points"][:max_points]
+        # Projects
+        if "projects" in data and isinstance(data["projects"], list):
+            max_projs = 3 if severity > 1 else 4
+            data["projects"] = data["projects"][:max_projs]
+            for proj in data["projects"]:
+                if "points" in proj and isinstance(proj["points"], list):
+                    max_points = 3 if severity > 1 else 4
+                    proj["points"] = proj["points"][:max_points]
+        # Certifications
+        if "certifications" in data and isinstance(data["certifications"], list):
+            max_certs = 4 if severity > 1 else 6
+            data["certifications"] = data["certifications"][:max_certs]
+
 def generate_stunning_pdf(
     data: dict, 
     output_filename: str = "tailored_resume.pdf", 
@@ -78,57 +129,80 @@ def generate_stunning_pdf(
     prewarmed_process: subprocess.Popen = None
 ) -> str:
     """
-    Renders the HTML template and writes it to Playwright (either direct launch or pre-warmed).
+    Renders the HTML template and writes it to Playwright (either direct launch or pre-warmed),
+    with an adaptive loop checking the output PDF page count and compacting/trimming to fit constraints.
     """
-    template_name = "resume_redesign_theme.html" if mode == "redesign" else "resume_theme.html"
-    template_path = os.path.join(settings.BASE_DIR, "templates", template_name)
-    if not os.path.exists(template_path):
-        template_path = os.path.join(os.path.dirname(__file__), "..", "templates", template_name)
-        
-    with open(template_path, "r", encoding="utf-8") as f:
-        template_str = f.read()
-        
-    template = Template(template_str)
-    
+    # Determine the target page limit
+    target_page_count = 2 # Default fallback
     if page_count == "1":
-        if "experience" in data and isinstance(data["experience"], list):
-            data["experience"] = data["experience"][:4]
-            for exp in data["experience"]:
-                if "points" in exp and isinstance(exp["points"], list):
-                    exp["points"] = exp["points"][:4]
-        if "projects" in data and isinstance(data["projects"], list):
-            data["projects"] = data["projects"][:4]
-            for proj in data["projects"]:
-                if "points" in proj and isinstance(proj["points"], list):
-                    proj["points"] = proj["points"][:3]
-        if "certifications" in data and isinstance(data["certifications"], list):
-            data["certifications"] = data["certifications"][:4]
-                    
-    html_content = template.render(data=data, page_count=page_count)
-    
-    # Minify HTML to save memory and optimize processing speed
-    import re
-    def minify_html(html: str) -> str:
-        html = re.sub(r'<!--.*?-->', '', html, flags=re.DOTALL)
-        html = re.sub(r'[\r\n\t]+', ' ', html)
-        html = re.sub(r'\s{2,}', ' ', html)
-        return html.strip()
-    
-    html_content = minify_html(html_content)
-    
-    import subprocess
-    import sys
-    
-    # If a pre-warmed process is provided, write to its stdin
-    if prewarmed_process is not None:
-        stdout, stderr = prewarmed_process.communicate(input=html_content)
-        if prewarmed_process.returncode != 0:
-            raise Exception(f"Playwright pre-warmed PDF generation failed: {stderr}")
-        return os.path.join(settings.TEMP_DIR, output_filename)
-    
-    # Direct execution fallback
+        target_page_count = 1
+    elif page_count == "2":
+        target_page_count = 2
+    elif page_count == "auto":
+        orig_pc = data.get("original_page_count", 2)
+        try:
+            target_page_count = min(int(orig_pc), 2)
+        except:
+            target_page_count = 2
+
+    # If target is 1 page, apply an initial mild trim
+    if target_page_count == 1:
+        trim_resume_data(data, 1, severity=1)
+
+    compactor_levels = ["", "compact-level-1", "compact-level-2", "compact-level-3"]
+    current_prewarmed = prewarmed_process
     output_path = os.path.join(settings.TEMP_DIR, output_filename)
-    script = """
+    success = False
+    
+    # Try compaction and trimming iteratively
+    for severity in [0, 1, 2]:
+        if severity > 0:
+            print(f"PDF Page Fitting: Trimming data at severity {severity} to fit {target_page_count} page(s)...")
+            trim_resume_data(data, target_page_count, severity=severity)
+            
+        for level in compactor_levels:
+            # Render HTML template with current compactor level
+            template_name = "resume_redesign_theme.html" if mode == "redesign" else "resume_theme.html"
+            template_path = os.path.join(settings.BASE_DIR, "templates", template_name)
+            if not os.path.exists(template_path):
+                template_path = os.path.join(os.path.dirname(__file__), "..", "templates", template_name)
+                
+            with open(template_path, "r", encoding="utf-8") as f:
+                template_str = f.read()
+                
+            template = Template(template_str)
+            html_content = template.render(data=data, page_count=page_count, compactor_class=level)
+            
+            # Minify HTML to save memory and optimize processing speed
+            import re
+            def minify_html(html: str) -> str:
+                html = re.sub(r'<!--.*?-->', '', html, flags=re.DOTALL)
+                html = re.sub(r'[\r\n\t]+', ' ', html)
+                html = re.sub(r'\s{2,}', ' ', html)
+                return html.strip()
+            
+            html_content = minify_html(html_content)
+            
+            import subprocess
+            import sys
+            
+            # Render PDF using current Playwright process
+            if current_prewarmed is not None:
+                try:
+                    stdout, stderr = current_prewarmed.communicate(input=html_content)
+                    if current_prewarmed.returncode != 0:
+                        print(f"Warning: Playwright pre-warmed PDF generation failed: {stderr}")
+                        current_prewarmed = None
+                    else:
+                        # Success for this specific render
+                        pass
+                except Exception as e:
+                    print(f"Warning: Exception using pre-warmed process: {e}")
+                    current_prewarmed = None
+                    
+            if current_prewarmed is None:
+                # Direct execution fallback
+                script = """
 import sys
 from playwright.sync_api import sync_playwright
 sys.stdin.reconfigure(encoding='utf-8')
@@ -139,18 +213,38 @@ with sync_playwright() as p:
     page.pdf(path=sys.argv[1], format="A4", margin={"top": "20px", "right": "20px", "bottom": "20px", "left": "20px"}, print_background=True)
     browser.close()
 """
-    
-    process = subprocess.run(
-        [sys.executable, "-c", script, output_path],
-        input=html_content,
-        text=True,
-        encoding="utf-8",
-        capture_output=True
-    )
-    
-    if process.returncode != 0:
-        raise Exception(f"Playwright PDF generation failed: {process.stderr}")
-        
+                process = subprocess.run(
+                    [sys.executable, "-c", script, output_path],
+                    input=html_content,
+                    text=True,
+                    encoding="utf-8",
+                    capture_output=True
+                )
+                if process.returncode != 0:
+                    raise Exception(f"Playwright PDF generation failed: {process.stderr}")
+            
+            # Check how many pages the generated PDF actually has!
+            try:
+                doc = fitz.open(output_path)
+                actual_page_count = len(doc)
+                doc.close()
+                print(f"PDF Page Fitting check: level='{level}', severity={severity} -> rendered {actual_page_count} page(s) (target: {target_page_count})")
+                
+                if actual_page_count <= target_page_count:
+                    success = True
+                    break
+            except Exception as fitz_err:
+                print(f"Error checking PDF page count: {fitz_err}")
+                # If fitz fails, we just assume it's okay and break
+                success = True
+                break
+                
+            # If we used prewarmed_process, it is now consumed. Clear it so next loop iteration uses direct launch.
+            current_prewarmed = None
+            
+        if success:
+            break
+            
     return output_path
 
 def generate_tailored_docx(data: dict, output_filename: str = "tailored_resume.docx") -> str:

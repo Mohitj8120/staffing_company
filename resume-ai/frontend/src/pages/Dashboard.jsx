@@ -235,7 +235,7 @@ function Dashboard() {
                 <FileText size={20} /> My Resumes
               </button>
               
-              {user.email === "mohitjain1619@gmail.com" && (
+              {user && user.email && user.email.toLowerCase().trim() === "mohitjain1619@gmail.com" && (
                 <button 
                   onClick={() => {
                     setActiveTab('admin');
