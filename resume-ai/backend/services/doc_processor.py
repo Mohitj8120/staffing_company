@@ -7,6 +7,22 @@ from jinja2 import Template
 from playwright.sync_api import sync_playwright
 from core.config import settings
 import subprocess
+import copy
+
+def sanitize_contact_links(data: dict) -> dict:
+    """
+    Ensures that linkedin, github, and portfolio links in data['personal'] 
+    start with http:// or https://. Returns a copy of the data dictionary.
+    """
+    data_copy = copy.deepcopy(data)
+    if "personal" in data_copy and isinstance(data_copy["personal"], dict):
+        for field in ["linkedin", "github", "portfolio"]:
+            val = data_copy["personal"].get(field)
+            if val and isinstance(val, str):
+                val_stripped = val.strip()
+                if val_stripped and not (val_stripped.startswith("http://") or val_stripped.startswith("https://")):
+                    data_copy["personal"][field] = "https://" + val_stripped
+    return data_copy
 
 def extract_text_from_docx(file_path: str) -> str:
     """
@@ -132,6 +148,7 @@ def generate_stunning_pdf(
     Renders the HTML template and writes it to Playwright (either direct launch or pre-warmed),
     with an adaptive loop checking the output PDF page count and compacting/trimming to fit constraints.
     """
+    data = sanitize_contact_links(data)
     # Determine the target page limit
     target_page_count = 2 # Default fallback
     if page_count == "1":
@@ -252,6 +269,7 @@ def generate_tailored_docx(data: dict, output_filename: str = "tailored_resume.d
     Fills the resume_template.docx with tailored data and saves it.
     Returns the path to the saved DOCX file.
     """
+    data = sanitize_contact_links(data)
     template_path = os.path.join(settings.TEMPLATES_DIR, "resume_template.docx")
     
     if not os.path.exists(template_path):
