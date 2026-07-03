@@ -26,6 +26,63 @@ from google.auth.transport import requests
 
 router = APIRouter()
 
+def cleanup_old_jobs(db: Session):
+    try:
+        from datetime import datetime, timedelta
+        from services.r2_service import r2_client, bucket_name
+        
+        # Find all completed or failed jobs older than 15 minutes
+        cutoff = datetime.utcnow() - timedelta(minutes=15)
+        old_jobs = db.query(QueueJob).filter(
+            QueueJob.status.in_(["completed", "failed"]),
+            QueueJob.updated_at < cutoff
+        ).all()
+        
+        for job in old_jobs:
+            # 1. Delete associated R2 files
+            try:
+                result_data = json.loads(job.result) if job.result else {}
+                pdf_url = result_data.get("pdf_url")
+                if pdf_url and r2_client:
+                    filename = pdf_url.split('/')[-1].split('?')[0]
+                    parsed_qs = urllib.parse.parse_qs(urllib.parse.urlparse(pdf_url).query)
+                    company = parsed_qs.get('company', [None])[0]
+                    if company and filename:
+                        r2_key = f"resumes/{company}/{filename}"
+                        r2_client.delete_object(Bucket=bucket_name, Key=r2_key)
+                        print(f"Cleanup: Deleted old PDF from R2: {r2_key}")
+            except Exception as e:
+                print(f"Cleanup: Error deleting R2 files for job {job.id}: {e}")
+                
+            # 2. Delete local files
+            try:
+                result_data = json.loads(job.result) if job.result else {}
+                pdf_url = result_data.get("pdf_url")
+                if pdf_url:
+                    filename = pdf_url.split('/')[-1].split('?')[0]
+                    parsed_qs = urllib.parse.parse_qs(urllib.parse.urlparse(pdf_url).query)
+                    company = parsed_qs.get('company', [None])[0]
+                    if company:
+                        file_path = os.path.join(settings.DATA_DIR, "resumes", company, filename)
+                        if os.path.exists(file_path):
+                            os.remove(file_path)
+                            parent = os.path.dirname(file_path)
+                            if os.path.basename(parent) != "resumes" and os.path.exists(parent):
+                                if not os.listdir(parent):
+                                    os.rmdir(parent)
+            except Exception as e:
+                print(f"Cleanup: Error deleting local files for job {job.id}: {e}")
+                
+            # 3. Delete QueueJob from DB
+            db.delete(job)
+            print(f"Cleanup: Deleted old QueueJob {job.id} from DB")
+            
+        db.commit()
+    except Exception as e:
+        print(f"Cleanup: Error running auto-cleanup: {e}")
+        db.rollback()
+
+
 class GoogleLoginRequest(BaseModel):
     credential: str
 
@@ -251,6 +308,7 @@ async def get_resumes(current_user: User = Depends(get_current_user), db: Sessio
 
 @router.post("/optimize")
 async def optimize(
+    background_tasks: BackgroundTasks,
     file_id: str = Form(...),
     jd: str = Form(...),
     resume_data: str = Form(...), # Expecting JSON string from frontend so user can edit before optimizing
@@ -259,6 +317,7 @@ async def optimize(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    background_tasks.add_task(cleanup_old_jobs, db)
     is_admin = current_user.email == "mohitjain1619@gmail.com"
     if current_user.credits <= 0 and current_user.subscription_status == "free" and not is_admin:
         raise HTTPException(status_code=402, detail="Insufficient credits. Please upgrade your plan.")
@@ -352,9 +411,11 @@ async def optimize(
 @router.get("/queue-status/{job_id}")
 async def get_queue_status(
     job_id: str,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    background_tasks.add_task(cleanup_old_jobs, db)
     job = db.query(QueueJob).filter(QueueJob.id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -583,7 +644,14 @@ import io
 from fastapi.responses import StreamingResponse
 
 @router.get("/download_zip/{filename}")
-async def download_zip(filename: str, company: Optional[str] = "Company", candidate: Optional[str] = "Candidate", db: Session = Depends(get_db)):
+async def download_zip(
+    filename: str, 
+    background_tasks: BackgroundTasks,
+    company: Optional[str] = "Company", 
+    candidate: Optional[str] = "Candidate", 
+    job_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     file_path = ensure_pdf_exists(filename, db)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
@@ -602,13 +670,8 @@ async def download_zip(filename: str, company: Optional[str] = "Company", candid
         zip_path = f"{safe_company}/{safe_candidate}_Resume.pdf"
         zip_file.write(file_path, zip_path)
         
-    # Zero-Storage: Delete temporary PDF file immediately since it has been zipped in memory
-    try:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            print(f"Zero-Storage: Deleted temporary PDF after zipping: {file_path}")
-    except Exception as e:
-        print(f"Zero-Storage: Failed to delete temporary PDF after zipping {file_path}: {e}")
+    # Queue background task to delete the temporary file, R2 backup, and job from DB after download completes
+    background_tasks.add_task(remove_file_and_job, file_path, job_id, company, filename)
         
     zip_buffer.seek(0)
     

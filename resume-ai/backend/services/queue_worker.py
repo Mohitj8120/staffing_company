@@ -85,7 +85,7 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
             "optimized_delta": optimized_delta,
             "company_name": company_name,
             "pdf_url": pdf_url,
-            "zip_url": None,
+            "zip_url": f"/api/download_zip/{saved_pdf_filename}?company={urllib.parse.quote(company_name)}&candidate={urllib.parse.quote(person_name)}&job_id={job_id}",
             "docx_url": None
         }
         

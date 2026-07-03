@@ -417,14 +417,7 @@ function Landing() {
                       </button>
                     </a>
                   )}
-                  {urls.zip ? (
-                    <a href={getDownloadUrl(urls.zip)} download style={{ textDecoration: 'none' }}>
-                      <button className="primary-btn download-btn download-btn-secondary">
-                        <DownloadCloud size={22} />
-                        Download Folder (ZIP)
-                      </button>
-                    </a>
-                  ) : urls.pdf ? (
+                  {urls.pdf ? (
                     <a href={getDownloadUrl(urls.pdf)} download style={{ textDecoration: 'none' }}>
                       <button className="primary-btn download-btn download-btn-secondary">
                         <DownloadCloud size={22} />
@@ -435,6 +428,14 @@ function Landing() {
                     <div style={{ width: '100%', color: 'var(--text-muted)', fontSize: '1rem', marginTop: '1rem', textAlign: 'center' }}>
                       Note: PDF conversion unavailable on this host.
                     </div>
+                  )}
+                  {urls.zip && (
+                    <a href={getDownloadUrl(urls.zip)} download style={{ textDecoration: 'none' }}>
+                      <button className="primary-btn download-btn download-btn-secondary" style={{ marginTop: '0.8rem' }}>
+                        <DownloadCloud size={22} />
+                        Download Folder (ZIP)
+                      </button>
+                    </a>
                   )}
                 </div>
                 
