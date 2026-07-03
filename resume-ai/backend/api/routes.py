@@ -528,7 +528,14 @@ async def download_file(filename: str, background_tasks: BackgroundTasks, downlo
         raise HTTPException(status_code=404, detail="File not found")
         
     media_type = "application/pdf" if filename.endswith('.pdf') else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    final_download_name = download_name if download_name else f"Optimized_{filename.split('_')[-1]}"
+    
+    if download_name:
+        final_download_name = download_name
+    else:
+        ext = ".pdf" if filename.endswith('.pdf') else ".docx"
+        base_part = filename.replace(f"_Resume{ext}", "").replace(f"_tailored{ext}", "")
+        candidate_name_formatted = base_part.replace("_", " ").title()
+        final_download_name = f"{candidate_name_formatted} - Resume{ext}"
     
     # Queue background task to delete the temporary file, R2 backup, and job from DB after the download completes
     background_tasks.add_task(remove_file_and_job, file_path, job_id, company, filename)
