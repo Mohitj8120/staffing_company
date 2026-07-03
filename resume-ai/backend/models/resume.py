@@ -11,6 +11,7 @@ class Resume(Base):
     filename = Column(String)
     title = Column(String)
     data = Column(Text) # JSON string
+    file_hash = Column(String, index=True, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, index=True)
 
     owner = relationship("User")

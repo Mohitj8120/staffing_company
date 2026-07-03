@@ -46,6 +46,18 @@ try:
 except Exception as e:
     pass
 
+# Self-healing database migration: add file_hash if missing to resumes
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE resumes ADD COLUMN file_hash VARCHAR(255)"))
+        try:
+            conn.commit()
+        except:
+            pass
+        print("Self-healing: Checked/added file_hash column to resumes table.")
+except Exception as e:
+    pass
+
 # Self-healing database indexing: add indexes to resumes if missing
 try:
     with engine.connect() as conn:

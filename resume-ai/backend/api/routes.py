@@ -11,7 +11,7 @@ from core.config import settings
 from services.doc_processor import extract_text_from_docx, extract_text_from_pdf, generate_stunning_pdf
 from services.llm_service import parse_resume, optimize_resume
 from api.auth import get_current_user
-from core.database import get_db
+from core.database import SessionLocal, get_db
 from sqlalchemy.orm import Session
 from models.user import User
 from models.resume import Resume
@@ -108,6 +108,26 @@ async def upload_resume(
     with open(temp_path, "wb") as f:
         content = await file.read()
         f.write(content)
+        
+    import hashlib
+    file_hash = hashlib.md5(content).hexdigest()
+    
+    # Check if this user has already uploaded this exact file hash
+    existing = db.query(Resume).filter(Resume.user_id == current_user.id, Resume.file_hash == file_hash).first()
+    if existing:
+        try:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+        except:
+            pass
+        return {
+            "status": "duplicate",
+            "message": "You have already uploaded this resume.",
+            "file_id": existing.id,
+            "filename": existing.filename,
+            "title": existing.title,
+            "data": get_resume_json(existing)
+        }
         
     active_count = db.query(QueueJob).filter(QueueJob.status == "processing").count()
     
@@ -386,11 +406,8 @@ async def get_queue_status(
             "detail": err_msg
         }
 
-def remove_file(path: str):
-    """
-    Utility task to remove a file from local disk. Used as a FastAPI Background Task
-    to delete temporary files immediately after they are sent to the client.
-    """
+def remove_file_and_job(path: str, job_id: Optional[str] = None, company: Optional[str] = None, filename: Optional[str] = None):
+    # 1. Delete local file
     try:
         if os.path.exists(path):
             os.remove(path)
@@ -404,6 +421,31 @@ def remove_file(path: str):
                     print(f"Zero-Storage: Removed empty company folder: {parent}")
     except Exception as e:
         print(f"Zero-Storage: Error auto-deleting temporary file {path}: {e}")
+
+    # 2. Delete R2 file if exists
+    from services.r2_service import r2_client, bucket_name
+    if r2_client and company and filename:
+        try:
+            r2_key = f"resumes/{company}/{filename}"
+            r2_client.delete_object(Bucket=bucket_name, Key=r2_key)
+            print(f"Zero-Storage: Deleted PDF from R2: {r2_key}")
+        except Exception as r2_err:
+            print(f"Zero-Storage: Failed to delete PDF from R2: {r2_err}")
+
+    # 3. Delete QueueJob from DB
+    if job_id:
+        db = SessionLocal()
+        try:
+            job = db.query(QueueJob).filter(QueueJob.id == job_id).first()
+            if job:
+                db.delete(job)
+                db.commit()
+                print(f"Zero-Storage: Deleted QueueJob {job_id} from DB after download.")
+        except Exception as db_err:
+            print(f"Zero-Storage: Failed to delete QueueJob {job_id} from DB: {db_err}")
+            db.rollback()
+        finally:
+            db.close()
 
 def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None) -> str:
     """
@@ -480,7 +522,7 @@ def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None)
     return file_path
 
 @router.get("/download/{filename}")
-async def download_file(filename: str, background_tasks: BackgroundTasks, download_name: Optional[str] = None, company: Optional[str] = None, db: Session = Depends(get_db)):
+async def download_file(filename: str, background_tasks: BackgroundTasks, download_name: Optional[str] = None, company: Optional[str] = None, job_id: Optional[str] = None, db: Session = Depends(get_db)):
     file_path = ensure_pdf_exists(filename, db, company)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
@@ -488,8 +530,8 @@ async def download_file(filename: str, background_tasks: BackgroundTasks, downlo
     media_type = "application/pdf" if filename.endswith('.pdf') else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     final_download_name = download_name if download_name else f"Optimized_{filename.split('_')[-1]}"
     
-    # Queue background task to delete the temporary file after the download completes
-    background_tasks.add_task(remove_file, file_path)
+    # Queue background task to delete the temporary file, R2 backup, and job from DB after the download completes
+    background_tasks.add_task(remove_file_and_job, file_path, job_id, company, filename)
     
     return FileResponse(
         path=file_path,
@@ -549,4 +591,35 @@ async def trigger_error():
     """
     division_by_zero = 1 / 0
     return {"message": "Will never return due to division by zero", "result": division_by_zero}
+
+@router.delete("/resumes/{file_id}")
+async def delete_resume(file_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == file_id).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+        
+    if resume.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this resume")
+        
+    # Delete from R2 if credentials are set
+    from services.r2_service import r2_client, bucket_name
+    if r2_client:
+        try:
+            r2_key = f"resumes/{file_id}.json"
+            r2_client.delete_object(Bucket=bucket_name, Key=r2_key)
+            print(f"Deleted JSON backup from R2: {r2_key}")
+        except Exception as r2_err:
+            print(f"Failed to delete JSON backup from R2: {r2_err}")
+            
+    # Delete from local file system if exists
+    json_path = os.path.join(settings.TEMP_DIR, f"{file_id}.json")
+    try:
+        if os.path.exists(json_path):
+            os.remove(json_path)
+    except:
+        pass
+        
+    db.delete(resume)
+    db.commit()
+    return {"status": "success", "message": "Resume deleted successfully"}
 

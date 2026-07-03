@@ -104,6 +104,9 @@ export default function FileUpload({ onUpload, isProcessing, setIsProcessing }) 
           setTimeout(poll, 1000);
         } else {
           setIsProcessing(false);
+          if (result.status === 'duplicate') {
+            alert("You have already uploaded this resume! Redirecting to JD optimization...");
+          }
           onUpload(result.file_id, result.data);
         }
       } else {

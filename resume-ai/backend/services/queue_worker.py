@@ -63,7 +63,7 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
         
         # Upload to R2 if credentials are set
         r2_key = f"resumes/{company_name}/{saved_pdf_filename}"
-        pdf_url = f"/api/download/{saved_pdf_filename}?company={urllib.parse.quote(company_name)}"
+        pdf_url = f"/api/download/{saved_pdf_filename}?company={urllib.parse.quote(company_name)}&job_id={job_id}"
         
         if settings.R2_ACCESS_KEY_ID and settings.R2_SECRET_ACCESS_KEY:
             try:
@@ -129,6 +129,13 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
 
 async def execute_upload_job_logic(db: Session, job_id: str, user_id: int, file_id: str, filename: str, temp_path: str, ext: str):
     try:
+        # Calculate file hash for duplicate detection
+        import hashlib
+        file_hash = None
+        if os.path.exists(temp_path):
+            with open(temp_path, "rb") as f:
+                file_hash = hashlib.md5(f.read()).hexdigest()
+
         # Extract text
         if ext == ".pdf":
             text = extract_text_from_pdf(temp_path)
@@ -184,7 +191,8 @@ async def execute_upload_job_logic(db: Session, job_id: str, user_id: int, file_
             user_id=user_id,
             filename=filename,
             title=title,
-            data="" if r2_uploaded else json_data_str
+            data="" if r2_uploaded else json_data_str,
+            file_hash=file_hash
         )
         db.add(new_resume)
         

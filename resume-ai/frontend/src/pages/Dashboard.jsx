@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, CreditCard, FileText, Settings, LogOut } from 'lucide-react';
+import { Zap, CreditCard, FileText, Settings, LogOut, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Scene3D from '../components/Scene3D';
 import '../index.css';
@@ -86,6 +86,28 @@ function Dashboard() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleDeleteResume = async (fileId) => {
+    if (!window.confirm("Are you sure you want to delete this base resume?")) return;
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/resumes/${fileId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        setResumes(resumes.filter(r => r.id !== fileId));
+      } else {
+        const data = await res.json();
+        alert(data.detail || "Failed to delete resume");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete resume due to connection error.");
     }
   };
 
@@ -250,9 +272,38 @@ function Dashboard() {
                         flexDirection: 'column',
                         gap: '1rem',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-                        backdropFilter: 'blur(10px)'
+                        backdropFilter: 'blur(10px)',
+                        position: 'relative'
                       }}
                     >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteResume(resume.id);
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '1rem',
+                          right: '1rem',
+                          background: 'rgba(255, 75, 75, 0.1)',
+                          border: '1px solid rgba(255, 75, 75, 0.3)',
+                          borderRadius: '8px',
+                          padding: '6px',
+                          cursor: 'pointer',
+                          color: '#ff4b4b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'background 0.2s',
+                          zIndex: 10
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 75, 75, 0.3)'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 75, 75, 0.1)'}
+                        title="Delete base resume"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
                       <div style={{ 
                         width: '40px', height: '40px', 
                         borderRadius: '10px', 
@@ -262,7 +313,7 @@ function Dashboard() {
                         <FileText color="#050508" size={20} />
                       </div>
                       <div>
-                        <h4 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <h4 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '2rem' }}>
                           {resume.title || resume.filename}
                         </h4>
                         <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
