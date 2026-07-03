@@ -21,12 +21,11 @@ function Landing() {
 
   const { user, loginWithGoogle, logout, isAuthenticated } = useAuthContext();
 
-  // Google Sign-In — initialize ONCE, never re-run on step/isLoaded changes
-  const googleInitialized = useRef(false);
+  const [googleReady, setGoogleReady] = useState(false);
 
   useEffect(() => {
-    // Only init Google if NOT authenticated and not already initialized
-    if (isAuthenticated || googleInitialized.current) return;
+    // Only init Google if NOT authenticated
+    if (isAuthenticated) return;
 
     const initGoogle = () => {
       if (!window.google) return false;
@@ -43,7 +42,7 @@ function Landing() {
       });
 
       // Render buttons into any existing containers
-      const containers = ['google-signin-button', 'google-signin-button-hero'];
+      const containers = ['google-signin-button', 'google-signin-button-hero', 'google-signin-button-mobile'];
       containers.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -53,7 +52,7 @@ function Landing() {
         }
       });
 
-      googleInitialized.current = true;
+      setGoogleReady(true);
       return true;
     };
 
@@ -68,22 +67,15 @@ function Landing() {
       }, 300);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated]); // ONLY depends on isAuthenticated — not step, isLoaded
-
-  // When user logs out, allow re-initialization on next render
-  useEffect(() => {
-    if (!isAuthenticated) {
-      googleInitialized.current = false;
-    }
   }, [isAuthenticated]);
 
   // Re-render Google buttons when containers appear (step changes)
   useEffect(() => {
-    if (isAuthenticated || !window.google || !googleInitialized.current) return;
+    if (isAuthenticated || !window.google || !googleReady) return;
 
     // Small delay to ensure DOM containers are mounted
     const timer = setTimeout(() => {
-      const containers = ['google-signin-button', 'google-signin-button-hero'];
+      const containers = ['google-signin-button', 'google-signin-button-hero', 'google-signin-button-mobile'];
       containers.forEach(id => {
         const el = document.getElementById(id);
         if (el && el.childElementCount === 0) {
@@ -94,7 +86,7 @@ function Landing() {
       });
     }, 100);
     return () => clearTimeout(timer);
-  }, [step, isLoaded, isAuthenticated]);
+  }, [step, isLoaded, isAuthenticated, googleReady]);
 
   const location = useLocation();
 
