@@ -1,4 +1,5 @@
 import os
+import sys
 import uuid
 import json
 import re
@@ -7,6 +8,9 @@ import asyncio
 import traceback
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+
+# Add the backend root directory to Python's search path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.config import settings
 from core.database import SessionLocal
