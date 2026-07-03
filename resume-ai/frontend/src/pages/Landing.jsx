@@ -226,9 +226,9 @@ function Landing() {
                   Add to Chrome
                 </button>
 
-                {!isAuthenticated ? (
-                  <div id="google-signin-button" style={{ minHeight: '40px' }}></div>
-                ) : (
+                <div id="google-signin-button" style={{ display: isAuthenticated ? 'none' : 'block', minHeight: '40px' }}></div>
+                
+                {isAuthenticated && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
                     <Link to="/dashboard" style={{ textDecoration: 'none' }}>
                       <button className="dashboard-btn">Dashboard</button>
@@ -290,9 +290,9 @@ function Landing() {
                   Add to Chrome
                 </button>
 
-                {!isAuthenticated ? (
-                  <div id="google-signin-button-mobile" style={{ minHeight: '40px' }}></div>
-                ) : (
+                <div id="google-signin-button-mobile" style={{ display: isAuthenticated ? 'none' : 'block', minHeight: '40px' }}></div>
+                
+                {isAuthenticated && (
                   <>
                     <Link to="/dashboard" style={{ textDecoration: 'none', width: '100%' }} onClick={() => setMobileMenuOpen(false)}>
                       <button className="dashboard-btn" style={{ width: '100%' }}>Dashboard</button>
@@ -354,13 +354,13 @@ function Landing() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1, duration: 0.8, type: "spring", bounce: 0.4 }}
                 >
-                  {isAuthenticated ? (
+                  <div style={{ display: isAuthenticated ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', textAlign: 'center' }}>Please sign in to upload and optimize your resume.</p>
+                    <div id="google-signin-button-hero" style={{ minHeight: '40px' }}></div>
+                  </div>
+                  
+                  {isAuthenticated && (
                     <FileUpload onUpload={handleUploadComplete} isProcessing={isProcessing} setIsProcessing={setIsProcessing} />
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', textAlign: 'center' }}>Please sign in to upload and optimize your resume.</p>
-                      <div id="google-signin-button-hero" style={{ minHeight: '40px' }}></div>
-                    </div>
                   )}
                 </motion.div>
               </motion.div>

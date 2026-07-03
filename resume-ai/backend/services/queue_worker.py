@@ -70,7 +70,6 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
                 from services.r2_service import upload_file_to_r2
                 r2_url = await asyncio.to_thread(upload_file_to_r2, saved_pdf_path, r2_key)
                 if r2_url:
-                    pdf_url = r2_url
                     print(f"Direct PDF: Tailored PDF uploaded to R2: {r2_key}")
             except Exception as r2_err:
                 print(f"Warning: Failed to upload tailored PDF to R2: {r2_err}")
