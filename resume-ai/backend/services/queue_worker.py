@@ -254,12 +254,50 @@ async def process_job(job_id: str):
     finally:
         db.close()
 
+def cleanup_old_resumes():
+    resumes_dir = os.path.join(settings.DATA_DIR, "resumes")
+    if not os.path.exists(resumes_dir):
+        return
+        
+    now = datetime.utcnow()
+    # Check all files recursively
+    for root, dirs, files in os.walk(resumes_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                # Get file modification time
+                mtime = datetime.utcfromtimestamp(os.path.getmtime(file_path))
+                # If older than 2 minutes, delete it
+                if now - mtime > timedelta(minutes=2):
+                    os.remove(file_path)
+                    print(f"Cleanup: Deleted old tailored resume {file_path}")
+            except Exception as e:
+                print(f"Error cleaning up old resume file {file_path}: {e}")
+                
+        # Remove empty directories
+        for dir in dirs:
+            dir_path = os.path.join(root, dir)
+            try:
+                if not os.listdir(dir_path):
+                    os.rmdir(dir_path)
+                    print(f"Cleanup: Removed empty company directory {dir_path}")
+            except Exception as e:
+                pass
+
 async def queue_worker_loop():
     print("Queue Worker Loop started...")
     from services.redis_service import redis_client, pop_job_from_redis
     
+    # We will run cleanup every 30 seconds
+    last_cleanup = datetime.utcnow()
+    
     while True:
         try:
+            # Run cleanup checks periodically
+            if (datetime.utcnow() - last_cleanup).total_seconds() > 30:
+                cleanup_old_resumes()
+                last_cleanup = datetime.utcnow()
+
             db = SessionLocal()
             try:
                 # 1. Clean up stale jobs (older than 2 minutes in processing status)

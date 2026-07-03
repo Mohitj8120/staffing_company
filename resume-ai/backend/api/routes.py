@@ -395,6 +395,13 @@ def remove_file(path: str):
         if os.path.exists(path):
             os.remove(path)
             print(f"Zero-Storage: Auto-deleted temporary file after download: {path}")
+            
+            # Also clean up parent directory if empty
+            parent = os.path.dirname(path)
+            if os.path.basename(parent) != "resumes" and os.path.exists(parent):
+                if not os.listdir(parent):
+                    os.rmdir(parent)
+                    print(f"Zero-Storage: Removed empty company folder: {parent}")
     except Exception as e:
         print(f"Zero-Storage: Error auto-deleting temporary file {path}: {e}")
 
@@ -481,8 +488,8 @@ async def download_file(filename: str, background_tasks: BackgroundTasks, downlo
     media_type = "application/pdf" if filename.endswith('.pdf') else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     final_download_name = download_name if download_name else f"Optimized_{filename.split('_')[-1]}"
     
-    # We do NOT run the background task to delete the file anymore,
-    # as we want to keep it on the server inside the company folder.
+    # Queue background task to delete the temporary file after the download completes
+    background_tasks.add_task(remove_file, file_path)
     
     return FileResponse(
         path=file_path,
