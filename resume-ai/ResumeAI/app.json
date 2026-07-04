@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Resume AI",
+    "slug": "ResumeAI",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#07070a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.averioncareers.resumeai"
+    },
+    "android": {
+      "package": "com.averioncareers.resumeai",
+      "adaptiveIcon": {
+        "backgroundColor": "#07070a",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      "expo-sharing",
+      "expo-status-bar"
+    ]
+  }
+}
