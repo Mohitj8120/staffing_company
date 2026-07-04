@@ -88,7 +88,7 @@ class GoogleLoginRequest(BaseModel):
 
 @router.get("/me")
 async def get_me(current_user: User = Depends(get_current_user)):
-    is_admin = current_user.email == "mohitjain1619@gmail.com"
+    is_admin = current_user.email.lower() == "mohitjain1619@gmail.com"
     return {
         "id": current_user.id,
         "clerk_id": current_user.clerk_id,
@@ -318,7 +318,7 @@ async def optimize(
     db: Session = Depends(get_db)
 ):
     background_tasks.add_task(cleanup_old_jobs, db)
-    is_admin = current_user.email == "mohitjain1619@gmail.com"
+    is_admin = current_user.email.lower() == "mohitjain1619@gmail.com"
     if current_user.credits <= 0 and current_user.subscription_status == "free" and not is_admin:
         raise HTTPException(status_code=402, detail="Insufficient credits. Please upgrade your plan.")
 
@@ -727,7 +727,7 @@ async def delete_resume(file_id: str, current_user: User = Depends(get_current_u
 
 @router.get("/admin/users")
 async def get_admin_users(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if current_user.email != "mohitjain1619@gmail.com":
+    if current_user.email.lower() != "mohitjain1619@gmail.com":
         raise HTTPException(status_code=403, detail="Unauthorized admin access")
         
     users = db.query(User).order_by(User.id.desc()).all()

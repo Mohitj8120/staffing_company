@@ -92,7 +92,7 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
         # Deduct credit if user is free and not admin
         user = db.query(User).filter(User.id == user_id).first()
         if user:
-            is_admin = user.email == "mohitjain1619@gmail.com"
+            is_admin = user.email.lower() == "mohitjain1619@gmail.com"
             if user.subscription_status == "free" and not is_admin:
                 user.credits -= 1
             
@@ -171,10 +171,10 @@ async def execute_upload_job_logic(db: Session, job_id: str, user_id: int, file_
         
         # Save parsed data to DB
         title = filename
-        if parsed_data.get("personal", {}).get("title"):
-            person_name = parsed_data.get("personal", {}).get("name", "")
-            job_title = parsed_data.get("personal", {}).get("title", "")
-            title = f"{person_name} - {job_title}" if person_name else job_title
+        for ext_to_strip in ['.pdf', '.docx', '.docx', '.PDF', '.DOCX']:
+            if title.endswith(ext_to_strip):
+                title = title[:-len(ext_to_strip)]
+                break
 
         # Save parsed data (offload compressed to R2 in production, fall back to DB column in dev)
         r2_uploaded = False
