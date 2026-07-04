@@ -25,6 +25,7 @@ Guidelines:
 **CRITICAL FORMATTING & RETENTION RULES**:
 - **DO NOT MODIFY** the date formats. You MUST KEEP the dash/hyphen exactly as it appears in the original resume (e.g. "Aug 2024 — June 2025"). DO NOT remove the " — " symbol between dates!
 - **DO NOT REMOVE** any personal contact information. You MUST retain the `email`, `phone`, `linkedin`, `github`, and `portfolio` exactly as they were in the original JSON.
+- **DO NOT REMOVE OR MODIFY** any academic scores, grades, CGPA, GPAs, percentages, marks, college/university names, degrees, or graduation years. You MUST retain all educational credentials and academic scores exactly as they were in the original base resume JSON.
 
 **CRITICAL LINK INJECTION RULES**:
 Whenever you generate a project or certification that matches the names below, you MUST inject the corresponding URL into its `link` field:
@@ -43,7 +44,7 @@ Your task is to tailor the candidate's original resume text for this JD while re
 
 Guidelines:
 1. ONLY modify text blocks that correspond to Professional Summaries, Experience Bullet Points, or Project Bullet Points.
-2. DO NOT modify contact information, dates, company names, section headers, or "Tech Stack" lines.
+2. DO NOT modify contact information, dates, company names, section headers, "Tech Stack" lines, OR any academic scores, GPAs, percentages, grades, CGPA, marks, college/university names, degrees, or graduation details.
 3. You have full creative control to aggressively tailor, rewrite, and elevate the text to highlight achievements and skills relevant to the JD. Make every word count and ensure it reads like a top 1% candidate. **CRITICAL LIMIT: Do not drastically increase the length of the text. Keep bullet points to 1-2 lines maximum.**
 4. **CRITICAL FORMATTING RULE**: You MUST NOT include any newline characters (\n) or line breaks in your output text. Each ID represents a single bullet point or paragraph. You must maintain the 1:1 mapping. Do NOT merge multiple bullet points into one ID. Do NOT move text from one ID to another.
 5. If an original ID contains only "Tech Stack: ...", DO NOT modify it.
