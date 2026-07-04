@@ -508,7 +508,7 @@ def remove_file_and_job(path: str, job_id: Optional[str] = None, company: Option
         finally:
             db.close()
 
-def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None) -> str:
+def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None, job_id: Optional[str] = None) -> str:
     """
     Checks if a PDF/DOCX file exists locally. If not, attempts to download it from R2.
     If R2 lookup fails, compiles and renders the PDF/DOCX dynamically on-the-fly from optimization history.
@@ -535,7 +535,48 @@ def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None)
         if os.path.exists(file_path):
             return file_path
             
-    # 2. Compile and render PDF/DOCX dynamically on-the-fly if it is a tailored file
+    # 2. Compile and render PDF/DOCX dynamically on-the-fly using job_id if provided
+    if job_id:
+        job = db.query(QueueJob).filter(QueueJob.id == job_id).first()
+        if job and job.status == "completed":
+            try:
+                payload = json.loads(job.payload)
+                result = json.loads(job.result)
+                file_id = payload.get("file_id")
+                
+                # Fetch base resume data
+                resume = db.query(Resume).filter(Resume.id == file_id).first()
+                if resume:
+                    base_json = get_resume_json(resume)
+                    from core.json_diff import apply_dict_patch
+                    optimized_data = apply_dict_patch(base_json, result["optimized_delta"])
+                    
+                    if optimized_data:
+                        is_docx = filename.endswith(".docx")
+                        # Target local save path:
+                        target_path = os.path.join(settings.DATA_DIR, "resumes", company, filename) if company else os.path.join(settings.TEMP_DIR, filename)
+                        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                        
+                        if is_docx:
+                            from services.doc_processor import generate_tailored_docx
+                            generate_tailored_docx(optimized_data, target_path)
+                            print(f"Zero-Storage: Dynamically compiled DOCX file on-the-fly using job_id: {filename}")
+                        else:
+                            from services.doc_processor import generate_stunning_pdf
+                            from services.doc_processor import start_pdf_render_process
+                            mode = payload.get("mode", "standard")
+                            page_count = payload.get("page_count", "auto")
+                            # Start render process dynamically
+                            render_process = start_pdf_render_process(target_path)
+                            generate_stunning_pdf(optimized_data, target_path, mode, page_count, render_process)
+                            print(f"Zero-Storage: Dynamically compiled PDF file on-the-fly using job_id: {filename}")
+                        
+                        if os.path.exists(target_path):
+                            return target_path
+            except Exception as err:
+                print(f"Dynamic on-the-fly generation using job_id failed: {err}")
+
+    # 3. Fallback: Compile and render PDF/DOCX dynamically on-the-fly using filename if it is a tailored file
     if filename.endswith("_tailored.pdf") or filename.endswith("_tailored.docx"):
         is_docx = filename.endswith("_tailored.docx")
         suffix = "_tailored.docx" if is_docx else "_tailored.pdf"
@@ -566,7 +607,7 @@ def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None)
                 if optimized_data:
                     if is_docx:
                         from services.doc_processor import generate_tailored_docx
-                        generate_tailored_docx(optimized_data, filename)
+                        generate_tailored_docx(optimized_data, file_path)
                         print(f"Zero-Storage: Dynamically compiled DOCX file on-the-fly: {filename}")
                     else:
                         from services.doc_processor import generate_stunning_pdf
@@ -574,8 +615,8 @@ def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None)
                         mode = payload.get("mode", "standard")
                         page_count = payload.get("page_count", "auto")
                         # Start render process dynamically
-                        render_process = start_pdf_render_process(filename)
-                        generate_stunning_pdf(optimized_data, filename, mode, page_count, render_process)
+                        render_process = start_pdf_render_process(file_path)
+                        generate_stunning_pdf(optimized_data, file_path, mode, page_count, render_process)
                         print(f"Zero-Storage: Dynamically compiled PDF file on-the-fly: {filename}")
             except Exception as err:
                 print(f"Dynamic on-the-fly { 'DOCX' if is_docx else 'PDF' } generation failed: {err}")
@@ -584,7 +625,7 @@ def ensure_pdf_exists(filename: str, db: Session, company: Optional[str] = None)
 
 @router.get("/download/{filename}")
 async def download_file(filename: str, background_tasks: BackgroundTasks, download_name: Optional[str] = None, company: Optional[str] = None, job_id: Optional[str] = None, db: Session = Depends(get_db)):
-    file_path = ensure_pdf_exists(filename, db, company)
+    file_path = ensure_pdf_exists(filename, db, company, job_id)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
         
