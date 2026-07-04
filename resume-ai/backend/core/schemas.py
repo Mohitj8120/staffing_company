@@ -27,6 +27,7 @@ class Education(BaseModel):
     degree: str = Field(description="Degree obtained")
     college: str = Field(description="University or college name")
     year: str = Field(description="Year of graduation or duration EXACTLY as in original")
+    gpa: str = Field(description="GPA, CGPA, grades, or percentage (e.g. '8.19 / 10' or '3.8/4.0' or '85%'). Leave empty if not present.", default="")
 
 class Certificate(BaseModel):
     name: str = Field(description="Name of the certification")

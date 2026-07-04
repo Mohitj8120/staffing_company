@@ -346,7 +346,7 @@
     {% for edu in data.education %}
     <div class="prevent-break item-block">
         <div class="item-header" style="margin-top: 0;">
-            <div class="item-title">{{ edu.degree }}</div>
+            <div class="item-title">{{ edu.degree }}{% if edu.gpa %} | {{ edu.gpa }}{% endif %}</div>
             {% if edu.year %}<div class="item-date">{{ edu.year }}</div>{% endif %}
         </div>
         <div class="item-subtitle" style="margin-bottom: 0;">{{ edu.college }}</div>

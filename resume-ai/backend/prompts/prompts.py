@@ -8,6 +8,7 @@ Ensure that:
 3. For skills, carefully organize them into the correct categories (e.g. Languages, Backend, Frontend) exactly as they appear in the original text.
 4. For projects, extract the tech stack and keep it separate. The bullet points MUST be extracted as an array of strings.
 5. For certifications, extract the name, issuer, date and any Markdown links if present.
+6. For education, accurately extract any GPA, CGPA, grades, marks, or percentages (e.g. "8.19 / 10" or "3.8/4.0" or "85%") and populate the `gpa` field. Do not include the GPA inside the `degree` field; keep it separate in the `gpa` field.
 """
 
 OPTIMIZER_PROMPT = """

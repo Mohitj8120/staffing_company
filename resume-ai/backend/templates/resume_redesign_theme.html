@@ -383,7 +383,7 @@
     {% for edu in data.education %}
     <div class="edu-item">
         <div class="edu-details">
-            <div class="edu-degree">{{ edu.degree }}</div>
+            <div class="edu-degree">{{ edu.degree }}{% if edu.gpa %} | {{ edu.gpa }}{% endif %}</div>
             <div class="edu-school">{{ edu.college }}</div>
         </div>
         {% if edu.year %}<div class="item-date">{{ edu.year }}</div>{% endif %}
