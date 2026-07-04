@@ -652,7 +652,7 @@ async def download_zip(
     job_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    file_path = ensure_pdf_exists(filename, db)
+    file_path = ensure_pdf_exists(filename, db, company)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
     
