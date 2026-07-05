@@ -41,6 +41,12 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+# Post-processing: clean up any surrounding quotes (double or single) from string variables
+# that might be introduced by environment configurations or CLI injectors
+for key, value in list(settings.__dict__.items()):
+    if isinstance(value, str):
+        setattr(settings, key, value.strip('\'"'))
+
 # Ensure directories exist
 os.makedirs(settings.TEMP_DIR, exist_ok=True)
 os.makedirs(settings.TEMPLATES_DIR, exist_ok=True)
