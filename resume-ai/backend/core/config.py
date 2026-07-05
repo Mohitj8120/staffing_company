@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     JWT_SECRET: str = "averion-super-secret-jwt-key-2026"
     GOOGLE_CLIENT_ID: str = ""
     
+    # Razorpay Configuration (Affiliate Tracking)
+    RAZORPAY_WEBHOOK_SECRET: str = ""
+    RAZORPAY_KEY_ID: str = ""
+    
     # Sentry Configuration
     SENTRY_DSN: str = ""
     ENV: str = "development"

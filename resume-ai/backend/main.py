@@ -28,7 +28,7 @@ if settings.SENTRY_DSN:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import engine
-from models import base, user, resume, queue_job
+from models import base, user, resume, queue_job, affiliate
 
 # Create tables
 base.Base.metadata.create_all(bind=engine)
@@ -93,6 +93,100 @@ try:
 except Exception as e:
     print(f"Self-healing users error: {e}")
 
+# Self-healing database migration: create affiliate tables if missing
+try:
+    with engine.connect() as conn:
+        affiliate_tables = [
+            """CREATE TABLE IF NOT EXISTS affiliates (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                code VARCHAR(50) UNIQUE NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                status VARCHAR(20) DEFAULT 'pending',
+                commission_rate FLOAT DEFAULT 0.25,
+                upi_id VARCHAR(255),
+                bank_account VARCHAR(255),
+                bank_ifsc VARCHAR(20),
+                bank_name VARCHAR(255),
+                social_url VARCHAR(500),
+                admin_notes TEXT,
+                min_payout INTEGER DEFAULT 1000,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE,
+                approved_at TIMESTAMP WITH TIME ZONE
+            )""",
+            """CREATE TABLE IF NOT EXISTS affiliate_clicks (
+                id SERIAL PRIMARY KEY,
+                affiliate_id INTEGER REFERENCES affiliates(id),
+                ip_hash VARCHAR(64),
+                user_agent VARCHAR(500),
+                referrer VARCHAR(500),
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )""",
+            """CREATE TABLE IF NOT EXISTS affiliate_signups (
+                id SERIAL PRIMARY KEY,
+                affiliate_id INTEGER REFERENCES affiliates(id),
+                referred_user_id INTEGER REFERENCES users(id),
+                ref_code_used VARCHAR(50) NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )""",
+            """CREATE TABLE IF NOT EXISTS affiliate_payouts (
+                id SERIAL PRIMARY KEY,
+                affiliate_id INTEGER REFERENCES affiliates(id),
+                amount FLOAT NOT NULL,
+                method VARCHAR(50) NOT NULL,
+                status VARCHAR(20) DEFAULT 'completed',
+                transaction_ref VARCHAR(255),
+                admin_notes TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )""",
+            """CREATE TABLE IF NOT EXISTS affiliate_sales (
+                id SERIAL PRIMARY KEY,
+                affiliate_id INTEGER REFERENCES affiliates(id),
+                referred_user_id INTEGER REFERENCES users(id),
+                razorpay_payment_id VARCHAR(255) UNIQUE,
+                razorpay_order_id VARCHAR(255),
+                plan_purchased VARCHAR(50),
+                amount_paid FLOAT DEFAULT 0,
+                commission_amount FLOAT DEFAULT 0,
+                commission_rate FLOAT DEFAULT 0.25,
+                cookie_ref VARCHAR(50),
+                status VARCHAR(20) DEFAULT 'confirmed',
+                payout_id INTEGER REFERENCES affiliate_payouts(id),
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )"""
+        ]
+        for table_sql in affiliate_tables:
+            try:
+                conn.execute(text(table_sql))
+                try:
+                    conn.commit()
+                except:
+                    pass
+            except Exception as inner_e:
+                pass
+        # Create indexes
+        indexes = [
+            "CREATE INDEX IF NOT EXISTS idx_affiliates_user_id ON affiliates(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_affiliates_code ON affiliates(code)",
+            "CREATE INDEX IF NOT EXISTS idx_affiliate_clicks_affiliate_id ON affiliate_clicks(affiliate_id)",
+            "CREATE INDEX IF NOT EXISTS idx_affiliate_signups_affiliate_id ON affiliate_signups(affiliate_id)",
+            "CREATE INDEX IF NOT EXISTS idx_affiliate_sales_affiliate_id ON affiliate_sales(affiliate_id)",
+            "CREATE INDEX IF NOT EXISTS idx_affiliate_payouts_affiliate_id ON affiliate_payouts(affiliate_id)"
+        ]
+        for idx_sql in indexes:
+            try:
+                conn.execute(text(idx_sql))
+                try:
+                    conn.commit()
+                except:
+                    pass
+            except:
+                pass
+        print("Self-healing: Checked/created affiliate system tables and indexes.")
+except Exception as e:
+    print(f"Self-healing affiliate tables error: {e}")
+
 app = FastAPI(title=settings.PROJECT_NAME)
 
 # Setup GZip Response Compression
@@ -114,6 +208,9 @@ def read_root():
 
 from api.routes import router as api_router
 app.include_router(api_router, prefix="/api")
+
+from api.affiliate_routes import router as affiliate_router
+app.include_router(affiliate_router, prefix="/api/affiliate")
 
 @app.on_event("startup")
 async def startup_event():

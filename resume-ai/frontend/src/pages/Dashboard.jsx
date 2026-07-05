@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, CreditCard, FileText, Settings, LogOut, Trash2 } from 'lucide-react';
+import { Zap, CreditCard, FileText, Settings, LogOut, Trash2, Users, Copy, CheckCircle, ExternalLink, TrendingUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Scene3D from '../components/Scene3D';
 import '../index.css';
@@ -17,6 +17,13 @@ function Dashboard() {
   const [adminUsers, setAdminUsers] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
+
+  // Affiliate state
+  const [affiliateData, setAffiliateData] = useState(null);
+  const [affiliateLoading, setAffiliateLoading] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [adminAffiliates, setAdminAffiliates] = useState([]);
+  const [adminAffSales, setAdminAffSales] = useState([]);
 
   const [optStrategy, setOptStrategy] = useState("Advanced ATS tailoring (STAR Achievement focus)");
   const [defaultTone, setDefaultTone] = useState("Professional Executive (Standard Silicon Valley SDE/PM)");
@@ -320,6 +327,12 @@ function Dashboard() {
                 <CreditCard size={20} /> Billing & Plan
               </button>
               <button 
+                onClick={() => { setActiveTab('affiliate'); fetchAffiliateData(); }}
+                className={`sidebar-btn ${activeTab === 'affiliate' ? 'active' : ''}`}
+              >
+                <Users size={20} /> Affiliate
+              </button>
+              <button 
                 onClick={() => setActiveTab('preferences')}
                 className={`sidebar-btn ${activeTab === 'preferences' ? 'active' : ''}`}
               >
@@ -344,6 +357,19 @@ function Dashboard() {
             {activeTab === 'admin' && (
               <div className="glass-panel" style={{ padding: '3rem', minHeight: '400px' }}>
                 <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Admin Control Center</h2>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => { setActiveTab('admin'); fetchAdminUsers(); }}
+                    className="dashboard-btn"
+                    style={{ fontSize: '0.85rem', padding: '8px 16px' }}
+                  >Users</button>
+                  <button
+                    onClick={() => { setActiveTab('admin_affiliates'); fetchAdminAffiliates(); }}
+                    className="dashboard-btn"
+                    style={{ fontSize: '0.85rem', padding: '8px 16px', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: '#050508' }}
+                  >Affiliates</button>
+                </div>
+                
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Registered Users and Platform Usage Metrics</p>
                 
                 {adminLoading ? (
@@ -383,6 +409,104 @@ function Dashboard() {
                     </table>
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === 'admin_affiliates' && (
+              <div className="glass-panel" style={{ padding: '3rem', minHeight: '400px' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Affiliate Management</h2>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => { setActiveTab('admin'); fetchAdminUsers(); }}
+                    className="dashboard-btn"
+                    style={{ fontSize: '0.85rem', padding: '8px 16px' }}
+                  >Users</button>
+                  <button
+                    className="dashboard-btn"
+                    style={{ fontSize: '0.85rem', padding: '8px 16px', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: '#050508' }}
+                  >Affiliates</button>
+                </div>
+                
+                <h3 style={{ color: 'white', fontSize: '1.3rem', marginBottom: '1rem' }}>All Affiliates</h3>
+                <div style={{ overflowX: 'auto', marginBottom: '3rem' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', minWidth: '800px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Code</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Name</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Email</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Status</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Clicks</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Sales</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Earnings</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Pending</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adminAffiliates.length === 0 ? (
+                        <tr><td colSpan="9" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No affiliates yet.</td></tr>
+                      ) : adminAffiliates.map((a) => (
+                        <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td style={{ padding: '10px', fontWeight: 700, color: '#00f2fe' }}>{a.code}</td>
+                          <td style={{ padding: '10px' }}>{a.name}</td>
+                          <td style={{ padding: '10px', fontSize: '0.85rem' }}>{a.email}</td>
+                          <td style={{ padding: '10px' }}>
+                            <span style={{
+                              background: a.status === 'approved' ? 'rgba(16,185,129,0.15)' : a.status === 'pending' ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
+                              color: a.status === 'approved' ? '#10b981' : a.status === 'pending' ? '#eab308' : '#ef4444',
+                              padding: '3px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase'
+                            }}>{a.status}</span>
+                          </td>
+                          <td style={{ padding: '10px', textAlign: 'center' }}>{a.clicks}</td>
+                          <td style={{ padding: '10px', textAlign: 'center' }}>{a.sales}</td>
+                          <td style={{ padding: '10px', color: '#10b981', fontWeight: 700 }}>₹{a.total_earnings}</td>
+                          <td style={{ padding: '10px', color: '#f97316', fontWeight: 700 }}>₹{a.pending}</td>
+                          <td style={{ padding: '10px' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              {a.status === 'pending' && (
+                                <button onClick={() => handleApproveAffiliate(a.id)} style={{ background: '#10b981', border: 'none', color: 'white', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}>Approve</button>
+                              )}
+                              {a.status !== 'suspended' && (
+                                <button onClick={() => handleSuspendAffiliate(a.id)} style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}>Suspend</button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <h3 style={{ color: 'white', fontSize: '1.3rem', marginBottom: '1rem' }}>Affiliate Sales Log</h3>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', minWidth: '700px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Date</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Affiliate</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Customer</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Plan</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Amount</th>
+                        <th style={{ padding: '10px', color: '#10b981', fontSize: '0.85rem' }}>Commission</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adminAffSales.length === 0 ? (
+                        <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No affiliate sales yet.</td></tr>
+                      ) : adminAffSales.map((s) => (
+                        <tr key={s.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td style={{ padding: '10px', fontSize: '0.9rem' }}>{s.date}</td>
+                          <td style={{ padding: '10px', fontWeight: 700, color: '#00f2fe' }}>{s.affiliate_code}</td>
+                          <td style={{ padding: '10px', fontSize: '0.85rem' }}>{s.customer_email}</td>
+                          <td style={{ padding: '10px', textTransform: 'uppercase', fontSize: '0.85rem' }}>{s.plan}</td>
+                          <td style={{ padding: '10px' }}>₹{s.amount}</td>
+                          <td style={{ padding: '10px', color: '#10b981', fontWeight: 700 }}>₹{s.commission}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
@@ -559,6 +683,192 @@ function Dashboard() {
               </div>
             )}
 
+            {activeTab === 'affiliate' && (
+              <div className="glass-panel" style={{ padding: '3rem' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Affiliate Program</h2>
+                
+                {affiliateLoading ? (
+                  <div style={{ color: 'var(--accent-secondary)', padding: '2rem 0' }}>Loading affiliate data...</div>
+                ) : !affiliateData?.has_affiliate ? (
+                  /* No affiliate profile — invite them */
+                  <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+                    <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>💰</div>
+                    <h3 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1rem' }}>Earn 25% Commission</h3>
+                    <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto 2rem', lineHeight: 1.7 }}>
+                      Share Averion Careers with your LinkedIn audience and earn 25% on every purchase.
+                      Join our affiliate program today!
+                    </p>
+                    <a href="/affiliate" style={{ textDecoration: 'none' }}>
+                      <button className="primary-btn" style={{ padding: '14px 30px', fontSize: '1.05rem', background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                        Apply Now →
+                      </button>
+                    </a>
+                  </div>
+                ) : affiliateData.affiliate.status === 'pending' ? (
+                  /* Pending approval */
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(234,179,8,0.1), rgba(234,179,8,0.02))',
+                    border: '1px solid rgba(234,179,8,0.3)',
+                    borderRadius: '16px',
+                    padding: '2.5rem',
+                    textAlign: 'center',
+                    marginTop: '1rem'
+                  }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
+                    <h3 style={{ color: '#eab308', fontSize: '1.4rem', marginBottom: '0.5rem' }}>Application Under Review</h3>
+                    <p style={{ color: 'var(--text-muted)' }}>
+                      Your affiliate code <strong style={{ color: '#eab308' }}>{affiliateData.affiliate.code}</strong> is being reviewed.
+                      You'll get access once approved (usually within 24-48 hours).
+                    </p>
+                  </div>
+                ) : affiliateData.affiliate.status === 'approved' ? (
+                  /* Active affiliate dashboard */
+                  <>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Your referral performance at a glance.</p>
+                    
+                    {/* Referral Link */}
+                    <div style={{
+                      background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,242,254,0.05))',
+                      border: '1px solid rgba(16,185,129,0.2)',
+                      borderRadius: '16px',
+                      padding: '1.5rem',
+                      marginBottom: '2rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '1rem'
+                    }}>
+                      <div>
+                        <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '0.3rem' }}>Your Referral Link</div>
+                        <code style={{ color: 'white', fontSize: '0.95rem', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                          https://resume.averioncareers.com?ref={affiliateData.affiliate.code}
+                        </code>
+                      </div>
+                      <button
+                        onClick={copyReferralLink}
+                        style={{
+                          background: copiedLink ? '#10b981' : 'rgba(255,255,255,0.1)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          color: 'white',
+                          padding: '10px 20px',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          transition: 'all 0.3s',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {copiedLink ? <><CheckCircle size={16} /> Copied!</> : <><Copy size={16} /> Copy Link</>}
+                      </button>
+                    </div>
+                    
+                    {/* Stats Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+                      {[
+                        { label: 'Clicks', value: affiliateData.stats?.total_clicks || 0, color: '#8a2be2' },
+                        { label: 'Signups', value: affiliateData.stats?.total_signups || 0, color: '#00f2fe' },
+                        { label: 'Sales', value: affiliateData.stats?.total_sales || 0, color: '#10b981' },
+                        { label: 'Conversion', value: `${affiliateData.stats?.conversion_rate || 0}%`, color: '#eab308' },
+                        { label: 'Earnings', value: `₹${affiliateData.stats?.total_earnings || 0}`, color: '#10b981' },
+                        { label: 'Pending', value: `₹${affiliateData.stats?.pending_payout || 0}`, color: '#f97316' }
+                      ].map((s, i) => (
+                        <div key={i} style={{
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          borderRadius: '14px',
+                          padding: '1.2rem',
+                          textAlign: 'center'
+                        }}>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>{s.label}</div>
+                          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Recent Sales */}
+                    <h3 style={{ fontSize: '1.3rem', color: 'white', marginBottom: '1rem' }}>Recent Sales</h3>
+                    <div style={{ overflowX: 'auto', marginBottom: '2.5rem' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', minWidth: '500px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.08)', textAlign: 'left' }}>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Date</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Plan</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Amount</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Commission</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(affiliateData.recent_sales || []).length === 0 ? (
+                            <tr><td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No sales yet. Share your referral link to start earning!</td></tr>
+                          ) : affiliateData.recent_sales.map((s) => (
+                            <tr key={s.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                              <td style={{ padding: '10px', fontSize: '0.9rem' }}>{s.date}</td>
+                              <td style={{ padding: '10px', textTransform: 'uppercase', fontSize: '0.85rem' }}>{s.plan}</td>
+                              <td style={{ padding: '10px' }}>₹{s.amount}</td>
+                              <td style={{ padding: '10px', color: '#10b981', fontWeight: 700 }}>₹{s.commission}</td>
+                              <td style={{ padding: '10px' }}>
+                                <span style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '3px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>{s.status}</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* Payout History */}
+                    <h3 style={{ fontSize: '1.3rem', color: 'white', marginBottom: '1rem' }}>Payout History</h3>
+                    <div style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', minWidth: '500px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.08)', textAlign: 'left' }}>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Date</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Amount</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Method</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Ref</th>
+                            <th style={{ padding: '10px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(affiliateData.payouts || []).length === 0 ? (
+                            <tr><td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No payouts yet. Payouts are processed monthly when your balance reaches ₹1,000.</td></tr>
+                          ) : affiliateData.payouts.map((p) => (
+                            <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                              <td style={{ padding: '10px', fontSize: '0.9rem' }}>{p.date}</td>
+                              <td style={{ padding: '10px', color: '#10b981', fontWeight: 700 }}>₹{p.amount}</td>
+                              <td style={{ padding: '10px', textTransform: 'uppercase', fontSize: '0.85rem' }}>{p.method}</td>
+                              <td style={{ padding: '10px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{p.transaction_ref || '—'}</td>
+                              <td style={{ padding: '10px' }}>
+                                <span style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '3px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>{p.status}</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                ) : (
+                  /* Suspended */
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.02))',
+                    border: '1px solid rgba(239,68,68,0.3)',
+                    borderRadius: '16px',
+                    padding: '2.5rem',
+                    textAlign: 'center',
+                    marginTop: '1rem'
+                  }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+                    <h3 style={{ color: '#ef4444', fontSize: '1.4rem', marginBottom: '0.5rem' }}>Account Suspended</h3>
+                    <p style={{ color: 'var(--text-muted)' }}>Your affiliate account has been suspended. Please contact support.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {activeTab === 'resumes' && (
               <>
                 <div className="glass-panel" style={{ padding: '3rem' }}>
@@ -717,6 +1027,7 @@ function Dashboard() {
               <Link to="/privacy" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Privacy Policy</Link>
               <Link to="/refund" style={{ color: '#ef4444', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 600 }} onMouseEnter={(e) => e.target.style.color = '#ff6b6b'} onMouseLeave={(e) => e.target.style.color = '#ef4444'}>Refund Policy</Link>
               <Link to="/cookies" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Cookies Policy</Link>
+              <Link to="/affiliate" style={{ color: '#10b981', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 600 }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#10b981'}>Affiliate Program</Link>
             </div>
           </div>
           <div style={{ color: '#52526b', fontSize: '0.8rem', marginTop: '1rem' }}>

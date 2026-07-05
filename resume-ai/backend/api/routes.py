@@ -111,6 +111,7 @@ def cleanup_old_jobs(db: Session):
 
 class GoogleLoginRequest(BaseModel):
     credential: str
+    affiliate_ref: Optional[str] = None
 
 class PreferencesUpdateRequest(BaseModel):
     opt_strategy: str
@@ -201,11 +202,13 @@ async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
             
         # Find or create user (reuses clerk_id to store google sub string)
         user = db.query(User).filter(User.clerk_id == google_sub).first()
+        is_new_user = False
         if not user:
             user = User(clerk_id=google_sub, email=email)
             db.add(user)
             db.commit()
             db.refresh(user)
+            is_new_user = True
             
         # Generate custom session JWT token (valid for 7 days)
         payload = {
@@ -215,6 +218,31 @@ async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
         }
         token_encoded = jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
         token = token_encoded if isinstance(token_encoded, str) else token_encoded.decode('utf-8')
+        
+        # Track affiliate signup if new user has a referral code
+        if is_new_user and req.affiliate_ref:
+            try:
+                from models.affiliate import Affiliate, AffiliateSignup
+                ref_code = req.affiliate_ref.upper().strip()
+                aff = db.query(Affiliate).filter(
+                    Affiliate.code == ref_code,
+                    Affiliate.status == "approved"
+                ).first()
+                if aff:
+                    existing_signup = db.query(AffiliateSignup).filter(
+                        AffiliateSignup.referred_user_id == user.id
+                    ).first()
+                    if not existing_signup:
+                        signup = AffiliateSignup(
+                            affiliate_id=aff.id,
+                            referred_user_id=user.id,
+                            ref_code_used=ref_code
+                        )
+                        db.add(signup)
+                        db.commit()
+                        print(f"Affiliate Signup: {ref_code} referred {email}")
+            except Exception as aff_err:
+                print(f"Affiliate signup tracking error: {aff_err}")
         
         return {
             "token": token,

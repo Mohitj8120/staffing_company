@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../config';
+import { getReferral, clearReferral } from '../utils/affiliateTracker';
 
 const AuthContext = createContext(null);
 
@@ -104,7 +105,10 @@ export function AuthProvider({ children }) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ credential: googleCredential })
+        body: JSON.stringify({ 
+          credential: googleCredential,
+          affiliate_ref: getReferral() 
+        })
       });
       
       if (!response.ok) {

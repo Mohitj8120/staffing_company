@@ -9,6 +9,7 @@ import '../index.css';
 import { API_BASE_URL } from '../config';
 import { useAuthContext } from '../context/AuthContext';
 import PricingModal from '../components/PricingModal';
+import { captureFromURL, getReferral } from '../utils/affiliateTracker';
 
 function Landing() {
   const [step, setStep] = useState(1);
@@ -105,6 +106,23 @@ function Landing() {
       setStep(2);
     }
   }, [location.state]);
+
+  // Capture affiliate referral from URL on mount
+  useEffect(() => {
+    const ref = captureFromURL();
+    if (ref) {
+      // Track the click with the backend
+      fetch(`${API_BASE_URL}/api/affiliate/track-click`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: ref,
+          referrer: document.referrer || null,
+          user_agent: navigator.userAgent || null
+        })
+      }).catch(() => {});
+    }
+  }, []);
 
   const getDownloadUrl = (url) => {
     if (!url) return "";
@@ -363,6 +381,36 @@ function Landing() {
                   >
                     Upload your standard DOCX and watch our neural engine perfectly align it with your dream job. No effort, maximum impact.
                   </motion.p>
+
+                  {/* Affiliate CTA Banner */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                  >
+                    <Link to="/affiliate" style={{ textDecoration: 'none' }}>
+                      <div style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,242,254,0.06))',
+                        border: '1px solid rgba(16,185,129,0.25)',
+                        padding: '10px 22px',
+                        borderRadius: '50px',
+                        color: '#10b981',
+                        fontSize: '0.88rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        marginTop: '1rem'
+                      }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(0,242,254,0.12))'; e.currentTarget.style.transform = 'scale(1.03)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,242,254,0.06))'; e.currentTarget.style.transform = 'scale(1)'; }}
+                      >
+                        💰 Have an audience on LinkedIn? Earn 25% by referring job seekers. <span style={{ color: '#00f2fe', fontWeight: 800 }}>Become an Affiliate →</span>
+                      </div>
+                    </Link>
+                  </motion.div>
                 </div>
                 
                 <motion.div
@@ -517,6 +565,7 @@ function Landing() {
               <Link to="/privacy" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Privacy Policy</Link>
               <Link to="/refund" style={{ color: '#ef4444', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 600 }} onMouseEnter={(e) => e.target.style.color = '#ff6b6b'} onMouseLeave={(e) => e.target.style.color = '#ef4444'}>Refund Policy</Link>
               <Link to="/cookies" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Cookies Policy</Link>
+              <Link to="/affiliate" style={{ color: '#10b981', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 600 }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#10b981'}>Affiliate Program</Link>
             </div>
           </div>
           <div style={{ color: '#52526b', fontSize: '0.8rem', marginTop: '1rem' }}>
