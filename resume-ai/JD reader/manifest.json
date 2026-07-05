@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "JD Reader & Resume Generator",
+  "version": "1.0",
+  "description": "Automatically detects job descriptions and generates a tailored resume based on your base resumes.",
+  "permissions": [
+    "storage",
+    "downloads",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "JD Reader - Base Resumes"
+  }
+}

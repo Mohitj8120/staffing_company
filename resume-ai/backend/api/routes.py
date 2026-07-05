@@ -319,8 +319,43 @@ async def optimize(
 ):
     background_tasks.add_task(cleanup_old_jobs, db)
     is_admin = current_user.email.lower() == "mohitjain1619@gmail.com"
-    if current_user.credits <= 0 and current_user.subscription_status == "free" and not is_admin:
-        raise HTTPException(status_code=402, detail="Insufficient credits. Please upgrade your plan.")
+    if not is_admin:
+        sub_status = (current_user.subscription_status or "free").lower()
+        if sub_status == "free":
+            # 3 resumes total limit
+            total_optimized = db.query(QueueJob).filter(
+                QueueJob.user_id == current_user.id,
+                QueueJob.type == "optimize",
+                QueueJob.status == "completed"
+            ).count()
+            if total_optimized >= 3:
+                raise HTTPException(
+                    status_code=402, 
+                    detail="Free limit reached (3 resumes total). Please upgrade to continue."
+                )
+        else:
+            # Daily limits
+            limit_map = {
+                "starter": 5,
+                "pro": 12,
+                "ultimate": 25
+            }
+            daily_limit = limit_map.get(sub_status, 3) # default fallback to 3
+            
+            # Count optimizations in the last 24 hours
+            one_day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            daily_count = db.query(QueueJob).filter(
+                QueueJob.user_id == current_user.id,
+                QueueJob.type == "optimize",
+                QueueJob.status == "completed",
+                QueueJob.created_at >= one_day_ago
+            ).count()
+            
+            if daily_count >= daily_limit:
+                raise HTTPException(
+                    status_code=402, 
+                    detail=f"Daily limit reached ({daily_limit} resumes daily for {sub_status.upper()} plan). Please upgrade to a higher plan."
+                )
 
     import hashlib
     # Compute SHA256 hash of the optimize inputs for duplicate detection caching

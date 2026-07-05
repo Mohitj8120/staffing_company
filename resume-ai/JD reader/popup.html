@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Reader - Base Resumes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Animated Background -->
+        <div class="bg-orb orb-1"></div>
+        <div class="bg-orb orb-2"></div>
+        
+        <header>
+            <div class="logo">
+                <div class="logo-icon">JD</div>
+                <h1>Resume AI</h1>
+            </div>
+            <div id="auth-status" class="auth-badge">Checking Auth...</div>
+        </header>
+
+        <main id="auth-screen" class="screen hidden">
+            <div class="auth-container">
+                <div class="auth-icon">🔒</div>
+                <h2>Authentication Required</h2>
+                <p>Please log in to your dashboard to sync your profiles and credits.</p>
+                <button id="login-btn" class="primary-btn" style="width: 100%; margin-top: 20px;">Open Dashboard</button>
+            </div>
+        </main>
+
+        <main id="main-screen" class="screen hidden">
+            <div class="credit-banner">
+                <span id="credit-count">--</span> Credits Remaining
+                <a href="#" id="buy-credits-link">Get More</a>
+            </div>
+            <div class="tabs">
+                <button class="tab-btn active" data-target="tab-resumes">Profiles</button>
+                <button class="tab-btn" data-target="tab-jd">JD & Generate</button>
+                <button class="tab-btn" data-target="tab-pricing">Pricing</button>
+            </div>
+
+            <section id="tab-resumes" class="tab-content active">
+                <div class="upload-area" id="drop-zone">
+                    <input type="file" id="resume-upload" accept=".docx,.pdf" hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span class="upload-text">Upload Base Resume</span>
+                        <span class="upload-sub">.DOCX or .PDF format</span>
+                    </div>
+                    <div class="loader-overlay hidden" id="upload-loader">
+                        <div class="spinner"></div>
+                        <span>Uploading & Processing...</span>
+                    </div>
+                </div>
+
+                <div class="resumes-section">
+                    <h2>Your Profiles</h2>
+                    <div class="resume-list" id="resume-list">
+                        <!-- Cards will be injected here via JS -->
+                    </div>
+                    <div class="empty-state" id="empty-state">
+                        No base resumes found. Upload one to get started.
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-jd" class="tab-content">
+                <div class="jd-section">
+                    <label for="jd-textarea">Job Description</label>
+                    <textarea id="jd-textarea" placeholder="Paste or let the extension auto-copy the JD here..."></textarea>
+                    
+                    <label for="jd-resume-select" style="margin-top: 16px;">Select Base Resume</label>
+                    <div class="jd-select-wrapper">
+                        <select class="jd-select" id="jd-resume-select">
+                            <option value="" disabled selected>Select Base Resume</option>
+                        </select>
+                    </div>
+
+                    <div class="generation-modes" style="margin-top: 24px;">
+                        <label class="mode-option">
+                            <input type="radio" name="gen-mode" value="standard" checked>
+                            <div class="mode-card">
+                                <div class="mode-icon">📄</div>
+                                <div class="mode-text">
+                                    <div class="mode-title">Standard Tailor</div>
+                                    <div class="mode-desc">Uses standard ATS-friendly layout</div>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="gen-mode" value="redesign">
+                            <div class="mode-card premium">
+                                <div class="mode-icon">🪄</div>
+                                <div class="mode-text">
+                                    <div class="mode-title">Magic Redesign</div>
+                                    <div class="mode-desc">Premium styling customized for your role</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="length-selector" id="length-selector-container" style="margin-top: 20px;">
+                        <label style="display: block; margin-bottom: 8px;">Resume Length</label>
+                        <div class="pill-toggle">
+                            <label class="pill-option">
+                                <input type="radio" name="page-count" value="1" checked>
+                                <span class="pill-btn">1 Page (Punchy)</span>
+                            </label>
+                            <label class="pill-option">
+                                <input type="radio" name="page-count" value="2">
+                                <span class="pill-btn">2 Pages (Detailed)</span>
+                            </label>
+                            <label class="pill-option">
+                                <input type="radio" name="page-count" value="auto">
+                                <span class="pill-btn">Auto</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="generate-btn" id="generate-btn" disabled>Generate Resume ✨</button>
+                </div>
+                
+                <div class="loader-overlay hidden" id="generate-loader">
+                    <div class="spinner"></div>
+                    <span>Crafting perfect resume...</span>
+                </div>
+            </section>
+
+            <section id="tab-pricing" class="tab-content">
+                <div class="pricing-container">
+                    <div class="pricing-card">
+                        <div class="pricing-badge">Free</div>
+                        <h3>Free Starter</h3>
+                        <p class="pricing-desc">Perfect for testing out our AI neural parser.</p>
+                        <div class="pricing-price">₹0<span>/forever</span></div>
+                        <div class="pricing-resumes">⚡ 3 Resumes Total</div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features">
+                            <li>✓ 3 Tailored Resumes total</li>
+                            <li>✓ ATS score check</li>
+                            <li>✓ Standard templates</li>
+                            <li>✓ Direct downloads</li>
+                        </ul>
+                        <button class="pricing-btn" id="btn-free">Get Started</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <div class="pricing-badge" style="color: var(--secondary); border-color: rgba(0, 229, 255, 0.3);">Starter</div>
+                        <h3>Starter Pro</h3>
+                        <p class="pricing-desc">Designed for active job seekers targeting multiple fields.</p>
+                        <div class="pricing-price">₹449<span>/month</span></div>
+                        <div class="pricing-resumes" style="color: var(--secondary);">⚡ 5 Resumes Daily</div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features">
+                            <li>✓ 5 Resumes daily</li>
+                            <li>✓ Custom PDF filenames</li>
+                            <li>✓ STAR optimization</li>
+                            <li>✓ Chrome extension priority</li>
+                        </ul>
+                        <button class="pricing-btn" id="btn-starter">Upgrade Plan</button>
+                    </div>
+
+                    <div class="pricing-card popular">
+                        <div class="popular-ribbon">Best Value</div>
+                        <div class="pricing-badge" style="color: var(--primary); border-color: rgba(138, 43, 226, 0.3);">Pro</div>
+                        <h3>Elite Executive</h3>
+                        <p class="pricing-desc">Our most popular plan for power users and competitive roles.</p>
+                        <div class="pricing-price">₹849<span>/month</span></div>
+                        <div class="pricing-resumes" style="color: var(--primary);">⚡ 12 Resumes Daily</div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features">
+                            <li>✓ 12 Resumes daily</li>
+                            <li>✓ Magic templates 🪄</li>
+                            <li>✓ Full ATS keyword matches</li>
+                            <li>✓ Highest server priority</li>
+                        </ul>
+                        <button class="pricing-btn active" id="btn-pro">Upgrade Plan</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <div class="pricing-badge" style="color: #ffaa00; border-color: rgba(255, 170, 0, 0.3);">Apex</div>
+                        <h3>Infinite Apex</h3>
+                        <p class="pricing-desc">Ultimate power plan for high-volume applications.</p>
+                        <div class="pricing-price">₹1149<span>/month</span></div>
+                        <div class="pricing-resumes" style="color: #ffaa00;">⚡ 25 Resumes Daily</div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features">
+                            <li>✓ 25 Resumes daily</li>
+                            <li>✓ Elite features included</li>
+                            <li>✓ Multiple base profiles</li>
+                            <li>✓ Priority customer support</li>
+                        </ul>
+                        <button class="pricing-btn" id="btn-apex">Upgrade Plan</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <div class="notification-toast" id="toast"></div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
