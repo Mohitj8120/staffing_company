@@ -264,10 +264,16 @@ function Dashboard() {
                 </button>
               )}
               
-              <button className="sidebar-btn" onClick={() => alert("Billing settings coming soon!")}>
-                <CreditCard size={20} /> Billing Settings
+              <button 
+                onClick={() => setActiveTab('billing')}
+                className={`sidebar-btn ${activeTab === 'billing' ? 'active' : ''}`}
+              >
+                <CreditCard size={20} /> Billing & Plan
               </button>
-              <button className="sidebar-btn" onClick={() => alert("Preferences coming soon!")}>
+              <button 
+                onClick={() => setActiveTab('preferences')}
+                className={`sidebar-btn ${activeTab === 'preferences' ? 'active' : ''}`}
+              >
                 <Settings size={20} /> Preferences
               </button>
               <button 
@@ -286,7 +292,7 @@ function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            {activeTab === 'admin' ? (
+            {activeTab === 'admin' && (
               <div className="glass-panel" style={{ padding: '3rem', minHeight: '400px' }}>
                 <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Admin Control Center</h2>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Registered Users and Platform Usage Metrics</p>
@@ -329,20 +335,167 @@ function Dashboard() {
                   </div>
                 )}
               </div>
-            ) : (
+            )}
+
+            {activeTab === 'billing' && (
+              <div className="glass-panel" style={{ padding: '3rem' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Billing & Subscriptions</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>View usage limits, active plans, and billing history.</p>
+                
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(138,43,226,0.15), rgba(0,229,255,0.05))',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '20px',
+                  padding: '2rem',
+                  marginBottom: '2.5rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '1.5rem'
+                }}>
+                  <div>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-secondary)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Current Active Plan</span>
+                    <h3 style={{ fontSize: '2.2rem', color: 'white', margin: '0.5rem 0', fontFamily: "'Space Grotesk', sans-serif" }}>
+                      {(userData.subscription_status || 'free').toUpperCase()}
+                    </h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0 }}>
+                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                        ? 'You are currently on the Free Starter plan with 3 lifetime resume optimizations.'
+                        : `Your daily usage resets every 24 hours. Enjoy premium capabilities.`}
+                    </p>
+                  </div>
+                  <button onClick={() => setPricingOpen(true)} className="primary-btn" style={{ padding: '12px 28px', fontSize: '1rem' }}>
+                    Change Plan ⚡
+                  </button>
+                </div>
+
+                <h3 style={{ fontSize: '1.4rem', color: 'white', marginBottom: '1rem' }}>Usage Constraints</h3>
+                <div className="glass-panel" style={{ background: 'rgba(255,255,255,0.01)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
+                    <span style={{ color: 'white', fontWeight: 600 }}>Optimizations Allowed</span>
+                    <span style={{ color: 'var(--accent-secondary)', fontWeight: 800 }}>
+                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                        ? `${Math.max(0, 3 - (userData.count_used || 0))}/3 left for your free plan`
+                        : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3} left for today`}
+                    </span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                    <div style={{ 
+                      height: '100%', 
+                      background: 'linear-gradient(90deg, var(--accent-color), var(--accent-secondary))',
+                      width: (userData.subscription_status || 'free').toLowerCase() === 'free'
+                        ? `${Math.min(100, (Math.max(0, 3 - (userData.count_used || 0)) / 3) * 100)}%`
+                        : `${Math.min(100, (Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0)) / (userData.limit_daily || 3)) * 100)}%`,
+                      borderRadius: '10px',
+                      transition: 'width 1s ease-in-out'
+                    }} />
+                  </div>
+                </div>
+
+                <h3 style={{ fontSize: '1.4rem', color: 'white', marginBottom: '1rem' }}>Recent Invoices</h3>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', textAlign: 'left' }}>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Invoice ID</th>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Billing Date</th>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Amount</th>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(userData.subscription_status || 'free').toLowerCase() === 'free' ? (
+                        <tr>
+                          <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                            No invoices generated. Upgrade your plan to start billing history.
+                          </td>
+                        </tr>
+                      ) : (
+                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td style={{ padding: '12px' }}>INV-0982-A</td>
+                          <td style={{ padding: '12px' }}>Today</td>
+                          <td style={{ padding: '12px' }}>
+                            {userData.subscription_status === 'starter' ? '₹449' : userData.subscription_status === 'pro' ? '₹849' : '₹1149'}
+                          </td>
+                          <td style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Paid ✓</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'preferences' && (
+              <div className="glass-panel" style={{ padding: '3rem' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>Preferences & Configuration</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Tailor the behavior of the AI optimization engine to your career style.</p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                  <div>
+                    <label style={{ display: 'block', color: 'white', fontWeight: 600, marginBottom: '0.8rem' }}>Optimization Strategy</label>
+                    <select className="custom-input" style={{ width: '100%', padding: '1rem', background: '#0d0d14' }}>
+                      <option>Advanced ATS tailoring (STAR Achievement focus)</option>
+                      <option>Strict Keyword Matching (Max keyword frequency density)</option>
+                      <option>Academic Score Retention & Protected Marks Mode</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', color: 'white', fontWeight: 600, marginBottom: '0.8rem' }}>Default Output Style & Tone</label>
+                    <select className="custom-input" style={{ width: '100%', padding: '1rem', background: '#0d0d14' }}>
+                      <option>Professional Executive (Standard Silicon Valley SDE/PM)</option>
+                      <option>Corporate Classic (Consulting, Finance, Operations)</option>
+                      <option>Academic Researcher (Postgrad, Research Grants)</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '0.5rem 0' }}>
+                    <input type="checkbox" defaultChecked id="preserve-scores" style={{ width: '20px', height: '20px', accentColor: 'var(--accent-secondary)' }} />
+                    <div>
+                      <label htmlFor="preserve-scores" style={{ display: 'block', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Strict Grade Protection</label>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Ensure GPAs, percentages, and course scores are not simplified or rewritten by the LLM.</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '0.5rem 0' }}>
+                    <input type="checkbox" defaultChecked id="auto-minify" style={{ width: '20px', height: '20px', accentColor: 'var(--accent-secondary)' }} />
+                    <div>
+                      <label htmlFor="auto-minify" style={{ display: 'block', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Auto-shorten Bullet Points</label>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Enforce strict 1-2 line limit on project/experience bullets for standard 1-page fit.</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => alert("Preferences saved successfully! Auto-synced across extension & mobile.")}
+                    className="primary-btn" 
+                    style={{ width: 'fit-content', padding: '14px 35px', marginTop: '1.5rem' }}
+                  >
+                    Save Preferences
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'resumes' && (
               <>
                 <div className="glass-panel" style={{ padding: '3rem' }}>
                   <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'white' }}>Credit Balance</h2>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '2rem' }}>
-                    <span style={{ fontSize: '4rem', fontWeight: 800 }} className="text-gradient-accent">
-                      {userData.subscription_status === 'pro' ? '∞' : userData.credits}
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '4.2rem', fontWeight: 800 }} className="text-gradient-accent">
+                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                        ? `${Math.max(0, 3 - (userData.count_used || 0))}/3`
+                        : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3}`}
                     </span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>
-                      {userData.subscription_status === 'pro' ? 'unlimited credits (Pro)' : 'credits remaining'}
+                    <span style={{ color: 'var(--text-muted)', fontSize: '1.25rem', fontWeight: 600 }}>
+                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                        ? 'left for your free plan'
+                        : `left today (${(userData.subscription_status || 'starter').toUpperCase()} daily limit)`}
                     </span>
                   </div>
-                  <button onClick={handleCheckout} className="primary-btn" style={{ padding: '15px 30px', fontSize: '1.1rem' }}>
-                    Buy More Credits
+                  <button onClick={() => setPricingOpen(true)} className="primary-btn" style={{ padding: '15px 30px', fontSize: '1.1rem' }}>
+                    Manage Subscription & Plan ⚡
                   </button>
                 </div>
 

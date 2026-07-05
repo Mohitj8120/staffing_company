@@ -87,14 +87,47 @@ class GoogleLoginRequest(BaseModel):
     credential: str
 
 @router.get("/me")
-async def get_me(current_user: User = Depends(get_current_user)):
+async def get_me(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     is_admin = current_user.email.lower() == "mohitjain1619@gmail.com"
+    sub_status = (current_user.subscription_status or "free").lower()
+    
+    limit_total = 0
+    limit_daily = 0
+    count_used = 0
+    
+    if not is_admin:
+        if sub_status == "free":
+            limit_total = 3
+            count_used = db.query(QueueJob).filter(
+                QueueJob.user_id == current_user.id,
+                QueueJob.type == "optimize",
+                QueueJob.status == "completed"
+            ).count()
+        else:
+            limit_map = {
+                "starter": 5,
+                "pro": 12,
+                "ultimate": 25
+            }
+            limit_daily = limit_map.get(sub_status, 3)
+            one_day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            count_used = db.query(QueueJob).filter(
+                QueueJob.user_id == current_user.id,
+                QueueJob.type == "optimize",
+                QueueJob.status == "completed",
+                QueueJob.created_at >= one_day_ago
+            ).count()
+            
     return {
         "id": current_user.id,
         "clerk_id": current_user.clerk_id,
         "email": current_user.email,
         "credits": current_user.credits,
-        "subscription_status": "pro" if is_admin else current_user.subscription_status
+        "subscription_status": "pro" if is_admin else current_user.subscription_status,
+        "limit_total": limit_total,
+        "limit_daily": limit_daily,
+        "count_used": count_used,
+        "is_admin": is_admin
     }
 
 @router.post("/auth/google")
