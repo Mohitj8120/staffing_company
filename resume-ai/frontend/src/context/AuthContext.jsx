@@ -28,12 +28,33 @@ export function AuthProvider({ children }) {
     return stored;
   });
   const [loading, setLoading] = useState(true);
-  const syncAttempted = useRef(false);
+  const syncedTokenRef = useRef(null);
+
+  // Sync token changes across multiple open tabs in the same browser session
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'jwt_token') {
+        const newToken = e.newValue;
+        if (newToken && isTokenExpired(newToken)) {
+          localStorage.removeItem('jwt_token');
+          setToken(null);
+        } else {
+          setToken(newToken);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   useEffect(() => {
-    // Prevent double-sync in StrictMode
-    if (syncAttempted.current) return;
-    syncAttempted.current = true;
+    // Prevent double-sync in StrictMode for same token
+    if (syncedTokenRef.current === token) {
+      // If we already synced the token, make sure we aren't stuck in a loading state
+      setLoading(false);
+      return;
+    }
+    syncedTokenRef.current = token;
 
     async function syncUser() {
       if (!token) {

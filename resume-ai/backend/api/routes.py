@@ -22,7 +22,33 @@ from datetime import datetime, timedelta
 import jwt
 from pydantic import BaseModel
 from google.oauth2 import id_token
-from google.auth.transport import requests
+from google.auth.transport import requests, Response
+import time
+
+class MemoryCachedRequest(requests.Request):
+    def __init__(self, cache_duration=86400, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cache = {}
+        self.cache_duration = cache_duration
+
+    def __call__(self, url, method="GET", body=None, headers=None, timeout=None, **kwargs):
+        if method == "GET":
+            now = time.time()
+            if url in self.cache:
+                resp_data, expiry = self.cache[url]
+                if now < expiry:
+                    return Response(
+                        status=200,
+                        headers={"content-type": "application/json"},
+                        data=resp_data
+                    )
+            resp = super().__call__(url, method, body, headers, timeout, **kwargs)
+            if resp.status == 200:
+                self.cache[url] = (resp.data, now + self.cache_duration)
+            return resp
+        return super().__call__(url, method, body, headers, timeout, **kwargs)
+
+google_cached_request = MemoryCachedRequest()
 
 router = APIRouter()
 
@@ -159,7 +185,7 @@ async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
         # Verify the Google ID token
         id_info = id_token.verify_oauth2_token(
             req.credential, 
-            requests.Request(), 
+            google_cached_request, 
             settings.GOOGLE_CLIENT_ID if settings.GOOGLE_CLIENT_ID else None
         )
         
