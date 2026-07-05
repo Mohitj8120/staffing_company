@@ -59,6 +59,83 @@ function Dashboard() {
     }
   };
 
+  const fetchAffiliateData = async () => {
+    setAffiliateLoading(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/affiliate/me`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAffiliateData(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAffiliateLoading(false);
+    }
+  };
+
+  const fetchAdminAffiliates = async () => {
+    try {
+      const token = await getToken();
+      const [affRes, salesRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/affiliate/admin/list`, { headers: { "Authorization": `Bearer ${token}` } }),
+        fetch(`${API_BASE_URL}/api/affiliate/admin/sales`, { headers: { "Authorization": `Bearer ${token}` } })
+      ]);
+      if (affRes.ok) setAdminAffiliates(await affRes.json());
+      if (salesRes.ok) setAdminAffSales(await salesRes.json());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleApproveAffiliate = async (affiliateId) => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/affiliate/admin/${affiliateId}/approve`, {
+        method: 'PUT',
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchAdminAffiliates();
+      } else {
+        const errData = await res.json();
+        alert("Approval failed: " + (errData.detail || "Server error"));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSuspendAffiliate = async (affiliateId) => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/affiliate/admin/${affiliateId}/update`, {
+        method: 'PUT',
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status: 'suspended' })
+      });
+      if (res.ok) {
+        fetchAdminAffiliates();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const copyReferralLink = () => {
+    if (!affiliateData?.affiliate?.code) return;
+    const link = `https://resume.averioncareers.com?ref=${affiliateData.affiliate.code}`;
+    navigator.clipboard.writeText(link);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
+  };
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate('/');
