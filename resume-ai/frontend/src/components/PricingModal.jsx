@@ -40,7 +40,8 @@ const PLANS = [
     gradient: 'linear-gradient(135deg, rgba(0, 242, 254, 0.15) 0%, rgba(79, 172, 254, 0.05) 100%)',
     borderGlow: 'rgba(0, 242, 254, 0.3)',
     badgeIcon: Zap,
-    popular: false
+    popular: false,
+    buttonId: 'pl_T9vLKHdlNPrIjy'
   },
   {
     name: 'Elite Executive',
@@ -60,7 +61,8 @@ const PLANS = [
     gradient: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2) 0%, rgba(99, 29, 194, 0.05) 100%)',
     borderGlow: 'rgba(138, 43, 226, 0.5)',
     badgeIcon: Sparkles,
-    popular: true
+    popular: true,
+    buttonId: 'pl_T9vNdCidB5goIU'
   },
   {
     name: 'Infinite Apex',
@@ -80,9 +82,41 @@ const PLANS = [
     gradient: 'linear-gradient(135deg, rgba(255, 170, 0, 0.2) 0%, rgba(255, 100, 0, 0.05) 100%)',
     borderGlow: 'rgba(255, 170, 0, 0.5)',
     badgeIcon: Award,
-    popular: false
+    popular: false,
+    buttonId: 'pl_T9vPEEoTvv2QRI'
   }
 ];
+
+function RazorpayButton({ buttonId }) {
+  const containerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!buttonId) return;
+    
+    if (containerRef.current) {
+      containerRef.current.innerHTML = '';
+    }
+
+    const form = document.createElement('form');
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/payment-button.js';
+    script.setAttribute('data-payment_button_id', buttonId);
+    script.async = true;
+
+    form.appendChild(script);
+    if (containerRef.current) {
+      containerRef.current.appendChild(form);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+    };
+  }, [buttonId]);
+
+  return <div ref={containerRef} style={{ width: '100%', display: 'flex', justifyContent: 'center' }} />;
+}
 
 export default function PricingModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -343,44 +377,30 @@ export default function PricingModal({ isOpen, onClose }) {
                 </div>
 
                 {/* Action button */}
-                <button
-                  style={{
-                    width: '100%',
-                    padding: '12px 24px',
-                    borderRadius: '12px',
-                    background: plan.popular 
-                      ? `linear-gradient(135deg, ${plan.color} 0%, #631dc2 100%)` 
-                      : 'rgba(255,255,255,0.03)',
-                    border: plan.popular ? 'none' : `1px solid ${plan.borderGlow}`,
-                    color: 'white',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                    boxShadow: plan.popular ? `0 10px 25px -5px ${plan.borderGlow}` : 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (plan.popular) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = `0 15px 30px -5px ${plan.color}`;
-                    } else {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                      e.currentTarget.style.borderColor = plan.color;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (plan.popular) {
-                      e.currentTarget.style.transform = 'none';
-                      e.currentTarget.style.boxShadow = `0 10px 25px -5px ${plan.borderGlow}`;
-                    } else {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                      e.currentTarget.style.borderColor = plan.borderGlow;
-                    }
-                  }}
-                  onClick={() => alert(`Starting setup for plan: ${plan.name}. Payment integration coming soon!`)}
-                >
-                  {plan.price === '₹0' ? 'Get Started' : 'Subscribe Now'}
-                </button>
+                {/* Action button */}
+                {plan.price === '₹0' ? (
+                  <button
+                    style={{
+                      width: '100%',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${plan.borderGlow}`,
+                      color: 'white',
+                      fontWeight: 700,
+                      fontSize: '0.95rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s'
+                    }}
+                    onClick={onClose}
+                  >
+                    Get Started
+                  </button>
+                ) : (
+                  <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '0.5rem' }}>
+                    <RazorpayButton buttonId={plan.buttonId} />
+                  </div>
+                )}
               </motion.div>
             );
           })}
