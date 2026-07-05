@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
   Info, HelpCircle, FileText, Shield, DollarSign, Cookie, 
   ArrowLeft, ExternalLink, ShieldCheck, Mail, CheckCircle2, AlertTriangle
@@ -141,7 +140,8 @@ export default function InfoPage() {
           display: 'grid',
           gridTemplateColumns: '280px 1fr',
           gap: '2.5rem',
-          alignItems: 'flex-start'
+          alignItems: 'flex-start',
+          marginBottom: '4rem'
         }}>
           {/* Left Navigation Bar */}
           <nav style={{
@@ -240,15 +240,58 @@ export default function InfoPage() {
 
         {/* Footer */}
         <footer style={{
-          marginTop: '6rem',
-          textAlign: 'center',
-          color: '#52526b',
-          fontSize: '0.85rem',
-          paddingBottom: '2rem',
-          borderTop: '1px solid rgba(255, 255, 255, 0.03)',
-          paddingTop: '2rem'
+          marginTop: '4rem',
+          padding: '4rem 2rem 2rem 2rem',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          background: 'rgba(5, 5, 10, 0.4)',
+          backdropFilter: 'blur(20px)',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '2rem'
         }}>
-          &copy; {new Date().getFullYear()} Averion Careers. All rights reserved. Built with Neural Optimization technology.
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '1200px',
+            flexWrap: 'wrap',
+            gap: '2rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #00f2fe 0%, #8a2be2 100%)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <span style={{ fontWeight: 900, fontSize: '1rem', color: '#030306' }}>A</span>
+              </div>
+              <span style={{ fontWeight: 800, letterSpacing: '0.5px', color: 'white' }}>AVERION CAREERS</span>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              gap: '1.5rem',
+              flexWrap: 'wrap'
+            }}>
+              <Link to="/about" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>About Us</Link>
+              <Link to="/faq" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>FAQ</Link>
+              <Link to="/terms" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Terms & Conditions</Link>
+              <Link to="/privacy" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Privacy Policy</Link>
+              <Link to="/refund" style={{ color: '#ef4444', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 600 }} onMouseEnter={(e) => e.target.style.color = '#ff6b6b'} onMouseLeave={(e) => e.target.style.color = '#ef4444'}>Refund Policy</Link>
+              <Link to="/cookies" style={{ color: '#9494a8', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#9494a8'}>Cookies Policy</Link>
+              <Link to="/affiliate" style={{ color: '#10b981', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 600 }} onMouseEnter={(e) => e.target.style.color = '#00f2fe'} onMouseLeave={(e) => e.target.style.color = '#10b981'}>Affiliate Program</Link>
+            </div>
+          </div>
+          <div style={{ color: '#52526b', fontSize: '0.8rem', marginTop: '1rem' }}>
+            &copy; {new Date().getFullYear()} Averion Careers. All rights reserved.
+          </div>
         </footer>
       </div>
     </div>
