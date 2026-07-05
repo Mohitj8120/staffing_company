@@ -18,6 +18,20 @@ function Dashboard() {
   const [adminLoading, setAdminLoading] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
 
+  const [optStrategy, setOptStrategy] = useState("Advanced ATS tailoring (STAR Achievement focus)");
+  const [defaultTone, setDefaultTone] = useState("Professional Executive (Standard Silicon Valley SDE/PM)");
+  const [preserveGrades, setPreserveGrades] = useState(true);
+  const [autoShorten, setAutoShorten] = useState(true);
+
+  useEffect(() => {
+    if (userData) {
+      if (userData.opt_strategy) setOptStrategy(userData.opt_strategy);
+      if (userData.default_tone) setDefaultTone(userData.default_tone);
+      if (userData.preserve_grades !== undefined) setPreserveGrades(userData.preserve_grades);
+      if (userData.auto_shorten !== undefined) setAutoShorten(userData.auto_shorten);
+    }
+  }, [userData]);
+
   const fetchAdminUsers = async () => {
     setAdminLoading(true);
     try {
@@ -133,6 +147,41 @@ function Dashboard() {
     } catch (err) {
       console.error(err);
       alert("Failed to delete resume due to connection error.");
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/me/preferences`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          opt_strategy: optStrategy,
+          default_tone: defaultTone,
+          preserve_grades: preserveGrades,
+          auto_shorten: autoShorten
+        })
+      });
+      if (res.ok) {
+        alert("Preferences saved successfully!");
+        // Sync user state
+        const userRes = await fetch(`${API_BASE_URL}/api/me`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (userRes.ok) {
+          const data = await userRes.json();
+          setUserData(data);
+        }
+      } else {
+        alert("Failed to save preferences.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error saving preferences.");
     }
   };
 
@@ -357,10 +406,12 @@ function Dashboard() {
                   <div>
                     <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-secondary)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Current Active Plan</span>
                     <h3 style={{ fontSize: '2.2rem', color: 'white', margin: '0.5rem 0', fontFamily: "'Space Grotesk', sans-serif" }}>
-                      {(userData.subscription_status || 'free').toUpperCase()}
+                      {userData.is_admin ? 'ADMIN (PRO)' : (userData.subscription_status || 'free').toUpperCase()}
                     </h3>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0 }}>
-                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                      {userData.is_admin
+                        ? 'Unlimited Admin optimization privileges activated.'
+                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
                         ? 'You are currently on the Free Starter plan with 3 lifetime resume optimizations.'
                         : `Your daily usage resets every 24 hours. Enjoy premium capabilities.`}
                     </p>
@@ -375,16 +426,20 @@ function Dashboard() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
                     <span style={{ color: 'white', fontWeight: 600 }}>Optimizations Allowed</span>
                     <span style={{ color: 'var(--accent-secondary)', fontWeight: 800 }}>
-                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                      {userData.is_admin
+                        ? '∞/∞ left (Unlimited Admin Access)'
+                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
                         ? `${Math.max(0, 3 - (userData.count_used || 0))}/3 left for your free plan`
-                        : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3} left for today`}
+                        : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3} left today`}
                     </span>
                   </div>
                   <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
                     <div style={{ 
                       height: '100%', 
                       background: 'linear-gradient(90deg, var(--accent-color), var(--accent-secondary))',
-                      width: (userData.subscription_status || 'free').toLowerCase() === 'free'
+                      width: userData.is_admin
+                        ? '100%'
+                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
                         ? `${Math.min(100, (Math.max(0, 3 - (userData.count_used || 0)) / 3) * 100)}%`
                         : `${Math.min(100, (Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0)) / (userData.limit_daily || 3)) * 100)}%`,
                       borderRadius: '10px',
@@ -405,7 +460,7 @@ function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {(userData.subscription_status || 'free').toLowerCase() === 'free' ? (
+                      {(userData.subscription_status || 'free').toLowerCase() === 'free' && !userData.is_admin ? (
                         <tr>
                           <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                             No invoices generated. Upgrade your plan to start billing history.
@@ -413,10 +468,14 @@ function Dashboard() {
                         </tr>
                       ) : (
                         <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                          <td style={{ padding: '12px' }}>INV-0982-A</td>
+                          <td style={{ padding: '12px' }}>INV-0982-P</td>
                           <td style={{ padding: '12px' }}>Today</td>
                           <td style={{ padding: '12px' }}>
-                            {userData.subscription_status === 'starter' ? '₹449' : userData.subscription_status === 'pro' ? '₹849' : '₹1149'}
+                            {userData.is_admin || userData.subscription_status === 'pro' 
+                              ? '₹849' 
+                              : userData.subscription_status === 'starter' 
+                              ? '₹449' 
+                              : '₹1149'}
                           </td>
                           <td style={{ padding: '12px', color: 'var(--accent-secondary)' }}>Paid ✓</td>
                         </tr>
@@ -435,24 +494,40 @@ function Dashboard() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                   <div>
                     <label style={{ display: 'block', color: 'white', fontWeight: 600, marginBottom: '0.8rem' }}>Optimization Strategy</label>
-                    <select className="custom-input" style={{ width: '100%', padding: '1rem', background: '#0d0d14' }}>
-                      <option>Advanced ATS tailoring (STAR Achievement focus)</option>
-                      <option>Strict Keyword Matching (Max keyword frequency density)</option>
-                      <option>Academic Score Retention & Protected Marks Mode</option>
+                    <select 
+                      className="custom-input" 
+                      style={{ width: '100%', padding: '1rem', background: '#0d0d14' }}
+                      value={optStrategy}
+                      onChange={(e) => setOptStrategy(e.target.value)}
+                    >
+                      <option value="Advanced ATS tailoring (STAR Achievement focus)">Advanced ATS tailoring (STAR Achievement focus)</option>
+                      <option value="Strict Keyword Matching (Max keyword frequency density)">Strict Keyword Matching (Max keyword frequency density)</option>
+                      <option value="Academic Score Retention & Protected Marks Mode">Academic Score Retention & Protected Marks Mode</option>
                     </select>
                   </div>
 
                   <div>
                     <label style={{ display: 'block', color: 'white', fontWeight: 600, marginBottom: '0.8rem' }}>Default Output Style & Tone</label>
-                    <select className="custom-input" style={{ width: '100%', padding: '1rem', background: '#0d0d14' }}>
-                      <option>Professional Executive (Standard Silicon Valley SDE/PM)</option>
-                      <option>Corporate Classic (Consulting, Finance, Operations)</option>
-                      <option>Academic Researcher (Postgrad, Research Grants)</option>
+                    <select 
+                      className="custom-input" 
+                      style={{ width: '100%', padding: '1rem', background: '#0d0d14' }}
+                      value={defaultTone}
+                      onChange={(e) => setDefaultTone(e.target.value)}
+                    >
+                      <option value="Professional Executive (Standard Silicon Valley SDE/PM)">Professional Executive (Standard Silicon Valley SDE/PM)</option>
+                      <option value="Corporate Classic (Consulting, Finance, Operations)">Corporate Classic (Consulting, Finance, Operations)</option>
+                      <option value="Academic Researcher (Postgrad, Research Grants)">Academic Researcher (Postgrad, Research Grants)</option>
                     </select>
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '0.5rem 0' }}>
-                    <input type="checkbox" defaultChecked id="preserve-scores" style={{ width: '20px', height: '20px', accentColor: 'var(--accent-secondary)' }} />
+                    <input 
+                      type="checkbox" 
+                      id="preserve-scores" 
+                      style={{ width: '20px', height: '20px', accentColor: 'var(--accent-secondary)' }} 
+                      checked={preserveGrades}
+                      onChange={(e) => setPreserveGrades(e.target.checked)}
+                    />
                     <div>
                       <label htmlFor="preserve-scores" style={{ display: 'block', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Strict Grade Protection</label>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Ensure GPAs, percentages, and course scores are not simplified or rewritten by the LLM.</span>
@@ -460,7 +535,13 @@ function Dashboard() {
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '0.5rem 0' }}>
-                    <input type="checkbox" defaultChecked id="auto-minify" style={{ width: '20px', height: '20px', accentColor: 'var(--accent-secondary)' }} />
+                    <input 
+                      type="checkbox" 
+                      id="auto-minify" 
+                      style={{ width: '20px', height: '20px', accentColor: 'var(--accent-secondary)' }} 
+                      checked={autoShorten}
+                      onChange={(e) => setAutoShorten(e.target.checked)}
+                    />
                     <div>
                       <label htmlFor="auto-minify" style={{ display: 'block', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Auto-shorten Bullet Points</label>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Enforce strict 1-2 line limit on project/experience bullets for standard 1-page fit.</span>
@@ -468,7 +549,7 @@ function Dashboard() {
                   </div>
 
                   <button 
-                    onClick={() => alert("Preferences saved successfully! Auto-synced across extension & mobile.")}
+                    onClick={handleSavePreferences}
                     className="primary-btn" 
                     style={{ width: 'fit-content', padding: '14px 35px', marginTop: '1.5rem' }}
                   >
@@ -484,12 +565,16 @@ function Dashboard() {
                   <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'white' }}>Credit Balance</h2>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '2rem', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '4.2rem', fontWeight: 800 }} className="text-gradient-accent">
-                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                      {userData.is_admin
+                        ? '∞/∞'
+                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
                         ? `${Math.max(0, 3 - (userData.count_used || 0))}/3`
                         : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3}`}
                     </span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '1.25rem', fontWeight: 600 }}>
-                      {(userData.subscription_status || 'free').toLowerCase() === 'free'
+                      {userData.is_admin
+                        ? 'left today (Unlimited Admin Access)'
+                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
                         ? 'left for your free plan'
                         : `left today (${(userData.subscription_status || 'starter').toUpperCase()} daily limit)`}
                     </span>

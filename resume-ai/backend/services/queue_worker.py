@@ -24,8 +24,25 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
     try:
         data = json.loads(resume_data)
         
+        # Fetch user preferences from database
+        user = db.query(User).filter(User.id == user_id).first()
+        opt_strategy = user.opt_strategy if user else None
+        default_tone = user.default_tone if user else None
+        preserve_grades = user.preserve_grades if user else True
+        auto_shorten = user.auto_shorten if user else True
+        
         # Optimize with Gemini (offload to thread since it's a synchronous blocking operation)
-        optimized_data = await asyncio.to_thread(optimize_resume, data, jd, mode, page_count)
+        optimized_data = await asyncio.to_thread(
+            optimize_resume, 
+            data, 
+            jd, 
+            mode, 
+            page_count,
+            opt_strategy,
+            default_tone,
+            preserve_grades,
+            auto_shorten
+        )
         
         # Carry over original page count to optimized data
         if "original_page_count" in data:

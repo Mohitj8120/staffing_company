@@ -149,9 +149,18 @@ def parse_resume(resume_text: str) -> dict:
         print(f"Error parsing resume: {e}")
         raise
 
-def optimize_resume(resume_data: dict, jd_text: str, mode: str = "standard", page_count: str = "auto") -> dict:
+def optimize_resume(
+    resume_data: dict, 
+    jd_text: str, 
+    mode: str = "standard", 
+    page_count: str = "auto",
+    opt_strategy: str = None,
+    default_tone: str = None,
+    preserve_grades: bool = True,
+    auto_shorten: bool = True
+) -> dict:
     """
-    Tailors the resume data based on the provided Job Description.
+    Tailors the resume data based on the provided Job Description and user preferences.
     """
     try:
         resume_json_str = json.dumps(resume_data)
@@ -189,6 +198,32 @@ def optimize_resume(resume_data: dict, jd_text: str, mode: str = "standard", pag
             mode_instructions += (
                 "Use high-impact action verbs, emphasize metrics, and rewrite summaries to sound incredibly professional and tailored. "
                 "Make it highly professional and ats friendly not very fancy but simple."
+            )
+
+        # Add user preferences custom directives
+        if opt_strategy:
+            mode_instructions += f"\n- **OPTIMIZATION STRATEGY**: You MUST apply the strategy: '{opt_strategy}'."
+            if "star" in opt_strategy.lower():
+                mode_instructions += " Focus heavily on describing bullet points with clear Situation, Task, Action, and Result (quantifiable metrics)."
+            elif "keyword" in opt_strategy.lower():
+                mode_instructions += " Inject high-density exact match keywords from the Job Description into the skills, experience, and project descriptions."
+            elif "academic" in opt_strategy.lower():
+                mode_instructions += " Prioritize academic history alignment and match formatting precisely."
+                
+        if default_tone:
+            mode_instructions += f"\n- **OUTPUT STYLE & TONE**: You MUST write using a style matching: '{default_tone}'."
+            
+        if preserve_grades:
+            mode_instructions += (
+                "\n- **CRITICAL CONSTRAINT (GRADE PROTECTION)**: You MUST preserve all GPA scores, academic percentages, grades, and marks EXACTLY as they appear in the base resume. "
+                "Do NOT simplify, modify, scale, remove, or alter them under any circumstances."
+            )
+            
+        if auto_shorten:
+            mode_instructions += (
+                "\n- **CRITICAL CONSTRAINT (SHORT BULLETS)**: Enforce strict conciseness. "
+                "Every experience or project bullet point MUST be strictly limited to 1-2 lines maximum. "
+                "Do NOT write long paragraphs or blocky text blocks."
             )
             
         prompt_content = (

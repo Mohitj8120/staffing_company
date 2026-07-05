@@ -86,6 +86,12 @@ def cleanup_old_jobs(db: Session):
 class GoogleLoginRequest(BaseModel):
     credential: str
 
+class PreferencesUpdateRequest(BaseModel):
+    opt_strategy: str
+    default_tone: str
+    preserve_grades: bool
+    auto_shorten: bool
+
 @router.get("/me")
 async def get_me(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     is_admin = current_user.email.lower() == "mohitjain1619@gmail.com"
@@ -127,8 +133,25 @@ async def get_me(current_user: User = Depends(get_current_user), db: Session = D
         "limit_total": limit_total,
         "limit_daily": limit_daily,
         "count_used": count_used,
-        "is_admin": is_admin
+        "is_admin": is_admin,
+        "opt_strategy": current_user.opt_strategy,
+        "default_tone": current_user.default_tone,
+        "preserve_grades": current_user.preserve_grades,
+        "auto_shorten": current_user.auto_shorten
     }
+
+@router.put("/me/preferences")
+async def update_preferences(
+    req: PreferencesUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    current_user.opt_strategy = req.opt_strategy
+    current_user.default_tone = req.default_tone
+    current_user.preserve_grades = req.preserve_grades
+    current_user.auto_shorten = req.auto_shorten
+    db.commit()
+    return {"status": "success", "message": "Preferences updated successfully."}
 
 @router.post("/auth/google")
 async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
