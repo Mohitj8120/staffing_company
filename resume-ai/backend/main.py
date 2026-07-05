@@ -71,6 +71,28 @@ try:
 except Exception as e:
     pass
 
+# Self-healing database migration: add preference columns if missing to users
+try:
+    with engine.connect() as conn:
+        columns_to_add = [
+            ("opt_strategy", "VARCHAR(255) DEFAULT 'Advanced ATS tailoring (STAR Achievement focus)'"),
+            ("default_tone", "VARCHAR(255) DEFAULT 'Professional Executive (Standard Silicon Valley SDE/PM)'"),
+            ("preserve_grades", "BOOLEAN DEFAULT TRUE"),
+            ("auto_shorten", "BOOLEAN DEFAULT TRUE")
+        ]
+        for col_name, col_type in columns_to_add:
+            try:
+                conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+                try:
+                    conn.commit()
+                except:
+                    pass
+                print(f"Self-healing: Added {col_name} column to users table.")
+            except Exception as inner_e:
+                pass
+except Exception as e:
+    print(f"Self-healing users error: {e}")
+
 app = FastAPI(title=settings.PROJECT_NAME)
 
 # Setup GZip Response Compression
