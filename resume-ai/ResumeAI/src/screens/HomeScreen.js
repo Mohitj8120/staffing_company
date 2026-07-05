@@ -6,6 +6,7 @@ import { useAuthContext } from '../context/AuthContext';
 import { theme } from '../theme';
 import ProfilesTab from './ProfilesTab';
 import BrowserTab from './BrowserTab';
+import PricingTab from './PricingTab';
 
 const Tab = createBottomTabNavigator();
 
@@ -21,6 +22,14 @@ function BrowserIcon({ focused }) {
   return (
     <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
       <Text style={{ fontSize: 18 }}>🌐</Text>
+    </View>
+  );
+}
+
+function PricingIcon({ focused }) {
+  return (
+    <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
+      <Text style={{ fontSize: 18 }}>💎</Text>
     </View>
   );
 }
@@ -90,6 +99,14 @@ export default function HomeScreen() {
           tabBarIcon: ({ focused }) => <BrowserIcon focused={focused} />,
           tabBarLabel: 'JD Browser',
           headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Pricing"
+        component={PricingTab}
+        options={{
+          tabBarIcon: ({ focused }) => <PricingIcon focused={focused} />,
+          tabBarLabel: 'Pricing',
         }}
       />
     </Tab.Navigator>
