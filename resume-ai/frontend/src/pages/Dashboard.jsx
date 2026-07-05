@@ -6,6 +6,7 @@ import Scene3D from '../components/Scene3D';
 import '../index.css';
 import { API_BASE_URL } from '../config';
 import { useAuthContext } from '../context/AuthContext';
+import PricingModal from '../components/PricingModal';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('resumes');
   const [adminUsers, setAdminUsers] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   const fetchAdminUsers = async () => {
     setAdminLoading(true);
@@ -183,6 +185,21 @@ function Dashboard() {
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
               Add to Chrome
+            </button>
+            <button 
+              onClick={() => setPricingOpen(true)}
+              style={{ 
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                marginRight: '0.2rem'
+              }}
+            >
+              Pricing
             </button>
             <Link to="/">
               <button 
@@ -414,6 +431,8 @@ function Dashboard() {
           </motion.div>
         </div>
       </div>
+
+      <PricingModal isOpen={pricingOpen} onClose={() => setPricingOpen(false)} />
     </div>
   );
 }

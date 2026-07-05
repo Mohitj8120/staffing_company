@@ -8,6 +8,7 @@ import Editor from '../components/Editor';
 import '../index.css';
 import { API_BASE_URL } from '../config';
 import { useAuthContext } from '../context/AuthContext';
+import PricingModal from '../components/PricingModal';
 
 function Landing() {
   const [step, setStep] = useState(1);
@@ -18,6 +19,7 @@ function Landing() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   const { user, loginWithGoogle, logout, isAuthenticated } = useAuthContext();
 
@@ -220,6 +222,13 @@ function Landing() {
               {/* Auth Section — Desktop */}
               <div className="landing-auth-desktop">
                 <button 
+                  onClick={() => setPricingOpen(true)}
+                  className="dashboard-btn"
+                  style={{ marginRight: '0.2rem' }}
+                >
+                  Pricing
+                </button>
+                <button 
                   onClick={() => alert("Coming soon to the Chrome Web Store! For now, please load the 'JD reader' folder unpacked via chrome://extensions/")}
                   className="chrome-btn"
                 >
@@ -282,6 +291,13 @@ function Landing() {
 
               {/* Auth buttons */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', alignItems: 'center' }}>
+                <button 
+                  onClick={() => { setPricingOpen(true); setMobileMenuOpen(false); }}
+                  className="dashboard-btn"
+                  style={{ width: '100%' }}
+                >
+                  Pricing
+                </button>
                 <button 
                   onClick={() => { alert("Coming soon to the Chrome Web Store!"); setMobileMenuOpen(false); }}
                   className="chrome-btn"
@@ -453,6 +469,8 @@ function Landing() {
           </AnimatePresence>
         </main>
       </div>
+
+      <PricingModal isOpen={pricingOpen} onClose={() => setPricingOpen(false)} />
     </div>
   );
 }
