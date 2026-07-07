@@ -306,108 +306,123 @@ function AffiliatePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="glass-panel"
-            style={{ padding: '3rem', marginBottom: '5rem', position: 'relative', overflow: 'hidden' }}
+            style={{ padding: '3.5rem', marginBottom: '5rem', position: 'relative', overflow: 'hidden' }}
           >
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
               background: 'linear-gradient(90deg, #10b981, #00f2fe, #8a2be2)'
             }} />
             
-            <h2 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '0.5rem', fontWeight: 800 }}>
-              <TrendingUp size={24} style={{ verticalAlign: 'middle', marginRight: '10px', color: '#10b981' }} />
-              Earn Lakhs Monthly
-            </h2>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>
-              We pay out 25% commission on every sale. See how sharing with your audience can scale to massive monthly returns.
-            </p>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h2 style={{ fontSize: '2rem', color: 'white', marginBottom: '0.8rem', fontWeight: 800 }}>
+                <TrendingUp size={28} style={{ verticalAlign: 'middle', marginRight: '12px', color: '#10b981' }} />
+                Uncapped Passive Income
+              </h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto' }}>
+                Join active creators and recruiters earning massive monthly payouts. Simple setup, zero limits.
+              </p>
+            </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
-              {[
-                {
-                  tier: "LinkedIn Creator (Micro)",
-                  reach: "~5,000 Impressions",
-                  shares: "2 posts per month",
-                  sales: "15 sales",
-                  income: "₹3,180 / mo",
-                  color: "#00f2fe"
-                },
-                {
-                  tier: "LinkedIn Professional",
-                  reach: "~15,000 Impressions",
-                  shares: "Weekly job updates",
-                  sales: "50 sales",
-                  income: "₹10,612 / mo",
-                  color: "#3b82f6"
-                },
-                {
-                  tier: "Job Board / Newsletter",
-                  reach: "~5,000 Subscribers",
-                  shares: "1 email banner mention",
-                  sales: "150 sales",
-                  income: "₹35,000+ / mo",
-                  color: "#8a2be2"
-                },
-                {
-                  tier: "Community Leader (Mega)",
-                  reach: "Active job seeker group",
-                  shares: "Automated link sharing",
-                  sales: "500+ sales",
-                  income: "₹1,06,000+ / mo",
-                  color: "#10b981",
-                  highlight: true
-                }
-              ].map((item, idx) => (
-                <div key={idx} style={{
-                  background: item.highlight ? 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03))' : 'rgba(255,255,255,0.02)',
-                  border: item.highlight ? '1px solid rgba(16,185,129,0.35)' : '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: '16px',
-                  padding: '1.8rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  position: 'relative'
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+              {/* Card 1: 25% Commission */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02))',
+                border: '1px solid rgba(16,185,129,0.2)',
+                borderRadius: '20px',
+                padding: '2.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: '1rem'
+              }}>
+                <div style={{
+                  fontSize: '3.5rem',
+                  fontWeight: 950,
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  lineHeight: 1
                 }}>
-                  {item.highlight && (
-                    <span style={{
-                      position: 'absolute', top: '-12px', right: '15px',
-                      background: '#10b981', color: '#030306', fontWeight: 800,
-                      fontSize: '0.7rem', padding: '3px 10px', borderRadius: '20px',
-                      textTransform: 'uppercase', letterSpacing: '0.5px'
-                    }}>Best Scale</span>
-                  )}
-                  
-                  <div style={{ color: 'white', fontWeight: 700, fontSize: '1.1rem' }}>{item.tier}</div>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.85rem' }}>
-                    <div style={{ color: 'var(--text-muted)' }}>Audience: <strong style={{ color: '#ffffff' }}>{item.reach}</strong></div>
-                    <div style={{ color: 'var(--text-muted)' }}>Activity: <strong style={{ color: '#ffffff' }}>{item.shares}</strong></div>
-                    <div style={{ color: 'var(--text-muted)' }}>Est. Conversions: <strong style={{ color: '#ffffff' }}>{item.sales}</strong></div>
-                  </div>
-                  
-                  <div style={{
-                    marginTop: 'auto', paddingTop: '1rem',
-                    borderTop: '1px solid rgba(255,255,255,0.05)',
-                    fontSize: '1.4rem', fontWeight: 900,
-                    color: item.color
-                  }}>
-                    {item.income}
-                  </div>
+                  25%
                 </div>
-              ))}
+                <h3 style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>Flat Commission</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                  Earn a massive 25% cut on every single purchase made through your link. No complex tiers, no minimum limits—just pure, high-percentage payouts.
+                </p>
+              </div>
+
+              {/* Card 2: Uncapped Earnings */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(0,242,254,0.08), rgba(0,242,254,0.02))',
+                border: '1px solid rgba(0,242,254,0.2)',
+                borderRadius: '20px',
+                padding: '2.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: '1rem'
+              }}>
+                <div style={{
+                  fontSize: '3.5rem',
+                  fontWeight: 950,
+                  background: 'linear-gradient(135deg, #00f2fe, #00b8d4)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  lineHeight: 1
+                }}>
+                  ∞
+                </div>
+                <h3 style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>Uncapped Potential</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                  Your earning potential is completely unlimited. Refer as many job seekers as you like—many creators easily scale this to lakhs of recurring monthly income.
+                </p>
+              </div>
+
+              {/* Card 3: 30-Day Window */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(138,43,226,0.08), rgba(138,43,226,0.02))',
+                border: '1px solid rgba(138,43,226,0.2)',
+                borderRadius: '20px',
+                padding: '2.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: '1rem'
+              }}>
+                <div style={{
+                  fontSize: '3.5rem',
+                  fontWeight: 950,
+                  background: 'linear-gradient(135deg, #8a2be2, #6a1b9a)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  lineHeight: 1
+                }}>
+                  30D
+                </div>
+                <h3 style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>Golden Cookie Window</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                  Our smart system tracks visitors for 30 days. If they visit today and purchase anytime within a month, you get 100% of the commission credit.
+                </p>
+              </div>
             </div>
             
             <div style={{ 
-              marginTop: '2.5rem', 
-              padding: '1.5rem', 
-              borderRadius: '12px', 
-              background: 'rgba(255,255,255,0.01)', 
-              border: '1px solid rgba(255,255,255,0.04)',
+              marginTop: '3rem', 
+              padding: '1.8rem', 
+              borderRadius: '16px', 
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', 
+              border: '1px solid rgba(255,255,255,0.05)',
               textAlign: 'center',
               color: 'var(--text-muted)',
-              fontSize: '0.9rem',
-              lineHeight: 1.5
+              fontSize: '0.95rem',
+              lineHeight: 1.6,
+              maxWidth: '800px',
+              margin: '3rem auto 0 auto'
             }}>
-              💡 <strong>Pro Tip</strong>: Including your referral link in the description of high-volume LinkedIn job posts is the easiest way to generate <strong>Lakhs of Rupees</strong> in monthly recurring commissions.
+              🚀 <strong>Easiest Earning Loop</strong>: Just place your referral link in high-volume LinkedIn job posts, resource sheets, or email newsletters. It converts seamlessly and creates a consistent flow of automated monthly payouts.
             </div>
           </motion.section>
           
