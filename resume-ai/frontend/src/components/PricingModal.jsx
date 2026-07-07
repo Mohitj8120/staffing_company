@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Check, Zap, Sparkles, Star, Award } from 'lucide-react';
+import { useAuthContext } from '../context/AuthContext';
 
 const PLANS = [
   {
+    planId: 'free',
     name: 'Free Starter',
     price: '₹0',
     period: 'forever',
@@ -23,6 +25,7 @@ const PLANS = [
     popular: false
   },
   {
+    planId: 'starter',
     name: 'Starter Pro',
     price: '₹449',
     period: 'month',
@@ -44,6 +47,7 @@ const PLANS = [
     buttonId: 'pl_T9vLKHdlNPrIjy'
   },
   {
+    planId: 'pro',
     name: 'Elite Executive',
     price: '₹849',
     period: 'month',
@@ -65,6 +69,7 @@ const PLANS = [
     buttonId: 'pl_T9vNdCidB5goIU'
   },
   {
+    planId: 'ultimate',
     name: 'Infinite Apex',
     price: '₹1149',
     period: 'month',
@@ -120,6 +125,9 @@ function RazorpayButton({ buttonId }) {
 
 export default function PricingModal({ isOpen, onClose }) {
   if (!isOpen) return null;
+
+  const { user } = useAuthContext();
+  const currentPlan = (user?.subscription_status || 'free').toLowerCase();
 
   return (
     <div 
@@ -377,8 +385,25 @@ export default function PricingModal({ isOpen, onClose }) {
                 </div>
 
                 {/* Action button */}
-                {/* Action button */}
-                {plan.price === '₹0' ? (
+                {plan.planId === currentPlan ? (
+                  <button
+                    disabled
+                    style={{
+                      width: '100%',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      color: '#10b981',
+                      fontWeight: 700,
+                      fontSize: '0.95rem',
+                      cursor: 'not-allowed',
+                      textAlign: 'center'
+                    }}
+                  >
+                    Current Plan
+                  </button>
+                ) : plan.price === '₹0' ? (
                   <button
                     style={{
                       width: '100%',

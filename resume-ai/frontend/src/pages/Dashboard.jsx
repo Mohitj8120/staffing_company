@@ -269,6 +269,11 @@ function Dashboard() {
     }
   };
 
+  const isFree = (userData.subscription_status || 'free').toLowerCase() === 'free';
+  const limitTotal = isFree ? 3 : (userData.limit_daily || 3);
+  const creditsRemaining = Math.max(0, limitTotal - (userData.count_used || 0));
+  const isLimitOver = creditsRemaining <= 0;
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       {/* Immersive 3D Background */}
@@ -624,30 +629,32 @@ function Dashboard() {
 
                 <h3 style={{ fontSize: '1.4rem', color: 'white', marginBottom: '1rem' }}>Usage Constraints</h3>
                 <div className="glass-panel" style={{ background: 'rgba(255,255,255,0.01)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
-                    <span style={{ color: 'white', fontWeight: 600 }}>Optimizations Allowed</span>
-                    <span style={{ color: 'var(--accent-secondary)', fontWeight: 800 }}>
-                      {userData.is_admin
-                        ? '∞/∞ left (Unlimited Admin Access)'
-                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
-                        ? `${Math.max(0, 3 - (userData.count_used || 0))}/3 left for your free plan`
-                        : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3} left today`}
-                    </span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
+                      <span style={{ color: 'white', fontWeight: 600 }}>Optimizations Allowed</span>
+                      <span style={{ color: isLimitOver ? '#ff4b4b' : 'var(--accent-secondary)', fontWeight: 800 }}>
+                        {userData.is_admin
+                          ? '∞/∞ left (Unlimited Admin Access)'
+                          : isLimitOver
+                          ? `Limit Over (0/${limitTotal} remaining)`
+                          : isFree
+                          ? `${creditsRemaining}/3 left for your free plan`
+                          : `${creditsRemaining}/${limitTotal} left today`}
+                      </span>
+                    </div>
+                    <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ 
+                        height: '100%', 
+                        background: isLimitOver 
+                          ? 'linear-gradient(90deg, #ef4444, #ff4b4b)' 
+                          : 'linear-gradient(90deg, var(--accent-color), var(--accent-secondary))',
+                        width: userData.is_admin
+                          ? '100%'
+                          : `${Math.min(100, (creditsRemaining / limitTotal) * 100)}%`,
+                        borderRadius: '10px',
+                        transition: 'width 1s ease-in-out'
+                      }} />
+                    </div>
                   </div>
-                  <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
-                    <div style={{ 
-                      height: '100%', 
-                      background: 'linear-gradient(90deg, var(--accent-color), var(--accent-secondary))',
-                      width: userData.is_admin
-                        ? '100%'
-                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
-                        ? `${Math.min(100, (Math.max(0, 3 - (userData.count_used || 0)) / 3) * 100)}%`
-                        : `${Math.min(100, (Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0)) / (userData.limit_daily || 3)) * 100)}%`,
-                      borderRadius: '10px',
-                      transition: 'width 1s ease-in-out'
-                    }} />
-                  </div>
-                </div>
 
                 <h3 style={{ fontSize: '1.4rem', color: 'white', marginBottom: '1rem' }}>Recent Invoices</h3>
                 <div style={{ overflowX: 'auto' }}>
@@ -951,17 +958,21 @@ function Dashboard() {
                 <div className="glass-panel" style={{ padding: '3rem' }}>
                   <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'white' }}>Credit Balance</h2>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '2rem', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '4.2rem', fontWeight: 800 }} className="text-gradient-accent">
+                    <span style={{ fontSize: '4.2rem', fontWeight: 800, color: isLimitOver ? '#ff4b4b' : '' }} className={isLimitOver ? '' : 'text-gradient-accent'}>
                       {userData.is_admin
                         ? '∞/∞'
-                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
-                        ? `${Math.max(0, 3 - (userData.count_used || 0))}/3`
-                        : `${Math.max(0, (userData.limit_daily || 3) - (userData.count_used || 0))}/${userData.limit_daily || 3}`}
+                        : isLimitOver
+                        ? 'Limit Over'
+                        : `${creditsRemaining}/${limitTotal}`}
                     </span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '1.25rem', fontWeight: 600 }}>
                       {userData.is_admin
                         ? 'left today (Unlimited Admin Access)'
-                        : (userData.subscription_status || 'free').toLowerCase() === 'free'
+                        : isLimitOver
+                        ? isFree
+                          ? 'left. Please upgrade your plan to continue.'
+                          : `left. (${(userData.subscription_status || 'starter').toUpperCase()} daily limit reached)`
+                        : isFree
                         ? 'left for your free plan'
                         : `left today (${(userData.subscription_status || 'starter').toUpperCase()} daily limit)`}
                     </span>

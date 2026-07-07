@@ -135,6 +135,9 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     setLoading(false);
+    try {
+      window.postMessage({ type: "SYNC_CLERK_TOKEN", token: null }, "*");
+    } catch (e) {}
   };
 
   const getToken = async () => {
