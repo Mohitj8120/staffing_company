@@ -80,7 +80,11 @@ function AffiliatePage() {
         setSubmitResult({ type: 'success', message: data.message });
         setAffiliateStatus({ has_affiliate: true, affiliate: data.affiliate });
       } else {
-        setSubmitResult({ type: 'error', message: data.detail || 'Application failed' });
+        const errMsg = data.detail || 'Application failed';
+        if (errMsg.toLowerCase().includes("already registered this linkedin")) {
+          alert("You have already registered this LinkedIn/social account with another user account. Please login with that account.");
+        }
+        setSubmitResult({ type: 'error', message: errMsg });
       }
     } catch (err) {
       setSubmitResult({ type: 'error', message: 'Network error. Please try again.' });

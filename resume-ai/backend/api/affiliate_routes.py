@@ -7,6 +7,20 @@ from datetime import datetime, timedelta
 import hashlib
 import hmac
 import json
+import re
+
+def normalize_social_url(url: str) -> str:
+    if not url:
+        return ""
+    url = url.strip().lower()
+    # Remove protocols
+    url = re.sub(r'^https?://', '', url)
+    # Remove www.
+    url = re.sub(r'^www\.', '', url)
+    # Remove trailing slash
+    if url.endswith('/'):
+        url = url[:-1]
+    return url
 
 from core.config import settings
 from core.database import get_db
@@ -249,6 +263,21 @@ async def apply_affiliate(
     existing = db.query(Affiliate).filter(Affiliate.user_id == current_user.id).first()
     if existing:
         raise HTTPException(status_code=400, detail=f"You already have an affiliate profile (code: {existing.code}, status: {existing.status})")
+    
+    # Check if LinkedIn/social URL is already registered under another affiliate account
+    if req.social_url:
+        normalized_new = normalize_social_url(req.social_url)
+        if normalized_new:
+            # Query all existing affiliates
+            all_affiliates = db.query(Affiliate).all()
+            for aff in all_affiliates:
+                if aff.social_url:
+                    normalized_existing = normalize_social_url(aff.social_url)
+                    if normalized_new == normalized_existing:
+                        raise HTTPException(
+                            status_code=400,
+                            detail="You have already registered this LinkedIn/social account with another user account. Please login with that account."
+                        )
     
     # Sanitize and validate code
     code = req.preferred_code.upper().strip().replace(" ", "")
