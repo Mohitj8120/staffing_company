@@ -19,9 +19,7 @@ function AffiliatePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
   
-  // Earnings calculator
-  const [referrals, setReferrals] = useState(10);
-  const [selectedPlan, setSelectedPlan] = useState(849);
+
   
   // FAQ accordion
   const [openFaq, setOpenFaq] = useState(null);
@@ -91,7 +89,7 @@ function AffiliatePage() {
     }
   };
   
-  const commissionAmount = Math.round(referrals * selectedPlan * 0.25);
+
   
   const faqs = [
     {
@@ -300,7 +298,7 @@ function AffiliatePage() {
           </motion.section>
           
           {/* ═══════════════════════════════════════════════════════════ */}
-          {/* EARNINGS CALCULATOR */}
+          {/* EARNING POTENTIAL */}
           {/* ═══════════════════════════════════════════════════════════ */}
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -316,87 +314,100 @@ function AffiliatePage() {
             }} />
             
             <h2 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '0.5rem', fontWeight: 800 }}>
-              <BarChart3 size={24} style={{ verticalAlign: 'middle', marginRight: '10px', color: '#10b981' }} />
-              Earnings Calculator
+              <TrendingUp size={24} style={{ verticalAlign: 'middle', marginRight: '10px', color: '#10b981' }} />
+              Earn Lakhs Monthly
             </h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>
-              See how much you could earn by referring job seekers to Averion Careers.
+              We pay out 25% commission on every sale. See how sharing with your audience can scale to massive monthly returns.
             </p>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', alignItems: 'center' }}>
-              <div>
-                <label style={{ display: 'block', color: 'white', fontWeight: 600, marginBottom: '0.8rem' }}>
-                  Monthly Referrals: <span style={{ color: '#10b981', fontWeight: 800, fontSize: '1.3rem' }}>{referrals}</span>
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={referrals}
-                  onChange={(e) => setReferrals(parseInt(e.target.value))}
-                  style={{
-                    width: '100%', height: '8px', borderRadius: '10px',
-                    background: 'rgba(255,255,255,0.1)',
-                    outline: 'none', cursor: 'pointer',
-                    accentColor: '#10b981'
-                  }}
-                />
-                
-                <label style={{ display: 'block', color: 'white', fontWeight: 600, marginBottom: '0.8rem', marginTop: '1.5rem' }}>
-                  Average Plan
-                </label>
-                <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
-                  {[{ price: 449, name: 'Starter' }, { price: 849, name: 'Pro' }, { price: 1149, name: 'Ultimate' }].map(p => (
-                    <button
-                      key={p.price}
-                      onClick={() => setSelectedPlan(p.price)}
-                      style={{
-                        background: selectedPlan === p.price ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(255,255,255,0.05)',
-                        border: selectedPlan === p.price ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                        color: 'white',
-                        padding: '10px 18px',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        fontWeight: 700,
-                        fontSize: '0.9rem',
-                        transition: 'all 0.3s'
-                      }}
-                    >
-                      ₹{p.price} ({p.name})
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              <motion.div
-                key={commissionAmount}
-                initial={{ scale: 0.95, opacity: 0.5 }}
-                animate={{ scale: 1, opacity: 1 }}
-                style={{
-                  background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,242,254,0.05))',
-                  border: '1px solid rgba(16,185,129,0.2)',
-                  borderRadius: '20px',
-                  padding: '2.5rem',
-                  textAlign: 'center'
-                }}
-              >
-                <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>
-                  Your Monthly Earnings
-                </div>
-                <div style={{
-                  fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                  fontWeight: 900,
-                  background: 'linear-gradient(135deg, #10b981, #00f2fe)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  lineHeight: 1.2
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+              {[
+                {
+                  tier: "LinkedIn Creator (Micro)",
+                  reach: "~5,000 Impressions",
+                  shares: "2 posts per month",
+                  sales: "15 sales",
+                  income: "₹3,180 / mo",
+                  color: "#00f2fe"
+                },
+                {
+                  tier: "LinkedIn Professional",
+                  reach: "~15,000 Impressions",
+                  shares: "Weekly job updates",
+                  sales: "50 sales",
+                  income: "₹10,612 / mo",
+                  color: "#3b82f6"
+                },
+                {
+                  tier: "Job Board / Newsletter",
+                  reach: "~5,000 Subscribers",
+                  shares: "1 email banner mention",
+                  sales: "150 sales",
+                  income: "₹35,000+ / mo",
+                  color: "#8a2be2"
+                },
+                {
+                  tier: "Community Leader (Mega)",
+                  reach: "Active job seeker group",
+                  shares: "Automated link sharing",
+                  sales: "500+ sales",
+                  income: "₹1,06,000+ / mo",
+                  color: "#10b981",
+                  highlight: true
+                }
+              ].map((item, idx) => (
+                <div key={idx} style={{
+                  background: item.highlight ? 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03))' : 'rgba(255,255,255,0.02)',
+                  border: item.highlight ? '1px solid rgba(16,185,129,0.35)' : '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '16px',
+                  padding: '1.8rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  position: 'relative'
                 }}>
-                  ₹{commissionAmount.toLocaleString('en-IN')}
+                  {item.highlight && (
+                    <span style={{
+                      position: 'absolute', top: '-12px', right: '15px',
+                      background: '#10b981', color: '#030306', fontWeight: 800,
+                      fontSize: '0.7rem', padding: '3px 10px', borderRadius: '20px',
+                      textTransform: 'uppercase', letterSpacing: '0.5px'
+                    }}>Best Scale</span>
+                  )}
+                  
+                  <div style={{ color: 'white', fontWeight: 700, fontSize: '1.1rem' }}>{item.tier}</div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.85rem' }}>
+                    <div style={{ color: 'var(--text-muted)' }}>Audience: <strong style={{ color: '#ffffff' }}>{item.reach}</strong></div>
+                    <div style={{ color: 'var(--text-muted)' }}>Activity: <strong style={{ color: '#ffffff' }}>{item.shares}</strong></div>
+                    <div style={{ color: 'var(--text-muted)' }}>Est. Conversions: <strong style={{ color: '#ffffff' }}>{item.sales}</strong></div>
+                  </div>
+                  
+                  <div style={{
+                    marginTop: 'auto', paddingTop: '1rem',
+                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                    fontSize: '1.4rem', fontWeight: 900,
+                    color: item.color
+                  }}>
+                    {item.income}
+                  </div>
                 </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                  {referrals} referrals × ₹{selectedPlan} × 25%
-                </div>
-              </motion.div>
+              ))}
+            </div>
+            
+            <div style={{ 
+              marginTop: '2.5rem', 
+              padding: '1.5rem', 
+              borderRadius: '12px', 
+              background: 'rgba(255,255,255,0.01)', 
+              border: '1px solid rgba(255,255,255,0.04)',
+              textAlign: 'center',
+              color: 'var(--text-muted)',
+              fontSize: '0.9rem',
+              lineHeight: 1.5
+            }}>
+              💡 <strong>Pro Tip</strong>: Including your referral link in the description of high-volume LinkedIn job posts is the easiest way to generate <strong>Lakhs of Rupees</strong> in monthly recurring commissions.
             </div>
           </motion.section>
           
