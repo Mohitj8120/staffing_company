@@ -402,7 +402,7 @@ function AffiliatePage() {
                 }}>
                   30D
                 </div>
-                <h3 style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>Golden Cookie Window</h3>
+                <h3 style={{ color: 'white', fontSize: '1.25rem', fontWeight: 700 }}>30-Day Cookie Window</h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.6 }}>
                   Our smart system tracks visitors for 30 days. If they visit today and purchase anytime within a month, you get 100% of the commission credit.
                 </p>
