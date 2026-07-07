@@ -25,6 +25,24 @@ from google.oauth2 import id_token
 from google.auth.transport import requests, Response
 import time
 
+class MockResponse(Response):
+    def __init__(self, status, headers, data):
+        self._status = status
+        self._headers = headers
+        self._data = data
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def headers(self):
+        return self._headers
+
+    @property
+    def data(self):
+        return self._data
+
 class MemoryCachedRequest(requests.Request):
     def __init__(self, cache_duration=86400, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,7 +55,7 @@ class MemoryCachedRequest(requests.Request):
             if url in self.cache:
                 resp_data, expiry = self.cache[url]
                 if now < expiry:
-                    return Response(
+                    return MockResponse(
                         status=200,
                         headers={"content-type": "application/json"},
                         data=resp_data
