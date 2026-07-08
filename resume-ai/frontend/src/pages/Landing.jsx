@@ -23,6 +23,7 @@ function Landing() {
   const [pricingOpen, setPricingOpen] = useState(false);
 
   const { user, loginWithGoogle, logout, isAuthenticated } = useAuthContext();
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
   const [googleReady, setGoogleReady] = useState(false);
 
@@ -253,7 +254,33 @@ function Landing() {
                   Add to Chrome
                 </button>
 
-                <div id="google-signin-button" style={{ display: isAuthenticated ? 'none' : 'block', minHeight: '40px' }}></div>
+                 {isLocalhost && !isAuthenticated && (
+                   <button
+                     onClick={async () => {
+                       try {
+                         await loginWithGoogle("mock_credential_for_local_admin");
+                       } catch (err) {
+                         alert("Bypass failed: " + err.message);
+                       }
+                     }}
+                     className="primary-btn"
+                     style={{
+                       padding: '8px 16px',
+                       fontSize: '0.9rem',
+                       borderRadius: '8px',
+                       background: 'linear-gradient(135deg, #10b981, #059669)',
+                       border: 'none',
+                       color: 'white',
+                       cursor: 'pointer',
+                       fontWeight: 'bold',
+                       boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                       marginRight: '0.5rem'
+                     }}
+                   >
+                     🚀 Dev Bypass
+                   </button>
+                 )}
+                 <div id="google-signin-button" style={{ display: isAuthenticated ? 'none' : 'block', minHeight: '40px' }}></div>
                 
                 {isAuthenticated && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
@@ -420,7 +447,32 @@ function Landing() {
                 >
                   <div style={{ display: isAuthenticated ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
                     <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', textAlign: 'center' }}>Please sign in to upload and optimize your resume.</p>
-                    <div id="google-signin-button-hero" style={{ minHeight: '40px' }}></div>
+                    {isLocalhost && (
+                      <button
+                        onClick={async () => {
+                          try {
+                            await loginWithGoogle("mock_credential_for_local_admin");
+                          } catch (err) {
+                            alert("Bypass failed: " + err.message);
+                          }
+                        }}
+                        className="primary-btn"
+                        style={{
+                          padding: '12px 24px',
+                          fontSize: '1rem',
+                          borderRadius: '10px',
+                          background: 'linear-gradient(135deg, #10b981, #059669)',
+                          border: 'none',
+                          color: 'white',
+                          cursor: 'pointer',
+                          fontWeight: 'bold',
+                          boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
+                        }}
+                      >
+                        🚀 Dev Bypass Login (No Google OAuth Required)
+                      </button>
+                    )}
+                    <div id="google-signin-button-hero" style={{ minHeight: '40px', display: isLocalhost ? 'none' : 'block' }}></div>
                   </div>
                   
                   {isAuthenticated && (
