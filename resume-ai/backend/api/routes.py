@@ -537,7 +537,9 @@ async def optimize(
                 **result
             }
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error optimizing resume: {str(e)}")
+            import traceback
+            tb = traceback.format_exc()
+            raise HTTPException(status_code=500, detail=f"Error optimizing resume: {str(e)}\nTraceback: {tb}")
     else:
         # SERVER IS OVERLOADED - Queue it
         job_id = str(uuid.uuid4())
