@@ -201,19 +201,12 @@ async def update_preferences(
 @router.post("/auth/google")
 async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
     try:
-        if req.credential == "mock_credential_for_local_admin":
-            id_info = {
-                "iss": "accounts.google.com",
-                "sub": "local-dev-admin-sub-12345",
-                "email": "mohitjain1619@gmail.com"
-            }
-        else:
-            # Verify the Google ID token
-            id_info = id_token.verify_oauth2_token(
-                req.credential, 
-                google_cached_request, 
-                settings.GOOGLE_CLIENT_ID if settings.GOOGLE_CLIENT_ID else None
-            )
+        # Verify the Google ID token
+        id_info = id_token.verify_oauth2_token(
+            req.credential, 
+            google_cached_request, 
+            settings.GOOGLE_CLIENT_ID if settings.GOOGLE_CLIENT_ID else None
+        )
         
         # Verify issuer
         if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
@@ -225,23 +218,15 @@ async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
         if not google_sub or not email:
             raise HTTPException(status_code=400, detail="Invalid Google token claims")
             
-        # Find or create user by email first to prevent UNIQUE constraint failure
-        user = db.query(User).filter(User.email == email).first()
+        # Find or create user (reuses clerk_id to store google sub string)
+        user = db.query(User).filter(User.clerk_id == google_sub).first()
         is_new_user = False
-        if not user:
-            user = db.query(User).filter(User.clerk_id == google_sub).first()
-            
         if not user:
             user = User(clerk_id=google_sub, email=email)
             db.add(user)
             db.commit()
             db.refresh(user)
             is_new_user = True
-        elif user.clerk_id != google_sub:
-            # Sync clerk_id if it differs (e.g. switching mock/google login)
-            user.clerk_id = google_sub
-            db.commit()
-            db.refresh(user)
             
         # Generate custom session JWT token (valid for 7 days)
         payload = {
@@ -963,4 +948,3 @@ async def get_admin_users(current_user: User = Depends(get_current_user), db: Se
             "created_at": u.created_at.strftime("%Y-%m-%d %H:%M:%S") if u.created_at else "N/A"
         })
     return results
-
