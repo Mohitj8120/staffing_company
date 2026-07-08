@@ -17,32 +17,15 @@ from core.database import SessionLocal
 from models.queue_job import QueueJob
 from models.user import User
 from models.resume import Resume
-from services.doc_processor import extract_text_from_docx, extract_text_from_pdf, generate_stunning_pdf, start_pdf_render_process
+from services.doc_processor import extract_text_from_docx, extract_text_from_pdf, generate_tailored_docx, convert_docx_to_pdf
 from services.llm_service import parse_resume, optimize_resume
 
 async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, file_id: str, jd: str, resume_data: str, mode: str, page_count: str):
     try:
         data = json.loads(resume_data)
         
-        # Fetch user preferences from database
-        user = db.query(User).filter(User.id == user_id).first()
-        opt_strategy = user.opt_strategy if user else None
-        default_tone = user.default_tone if user else None
-        preserve_grades = user.preserve_grades if user else True
-        auto_shorten = user.auto_shorten if user else True
-        
         # Optimize with Gemini (offload to thread since it's a synchronous blocking operation)
-        optimized_data = await asyncio.to_thread(
-            optimize_resume, 
-            data, 
-            jd, 
-            mode, 
-            page_count,
-            opt_strategy,
-            default_tone,
-            preserve_grades,
-            auto_shorten
-        )
+        optimized_data = await asyncio.to_thread(optimize_resume, data, jd, mode, page_count)
         
         # Carry over original page count to optimized data
         if "original_page_count" in data:
@@ -59,17 +42,21 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
             company_name = "Company"
         company_name = re.sub(r'[^a-zA-Z0-9\s-]', '', company_name).strip()
         
-        # Pre-generate the PDF immediately using Playwright
+        # Pre-generate the DOCX and convert to PDF
+        docx_filename = f"{file_id}_tailored.docx"
         pdf_filename = f"{file_id}_tailored.pdf"
-        local_pdf_path = os.path.join(settings.TEMP_DIR, pdf_filename)
         
-        print(f"Direct PDF: Compiling optimized PDF for {person_name} ({company_name})...")
-        await asyncio.to_thread(
-            generate_stunning_pdf,
+        print(f"Direct PDF: Compiling optimized DOCX and PDF for {person_name} ({company_name})...")
+        local_docx_path = await asyncio.to_thread(
+            generate_tailored_docx,
             optimized_data,
-            pdf_filename,
-            mode,
-            page_count
+            docx_filename
+        )
+        
+        local_pdf_path = await asyncio.to_thread(
+            convert_docx_to_pdf,
+            local_docx_path,
+            pdf_filename
         )
         
         # Save locally in company folder structure permanently
@@ -80,20 +67,28 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
         saved_pdf_filename = f"{person_name}_Resume.pdf"
         saved_pdf_path = os.path.join(company_dir, saved_pdf_filename)
         shutil.copy(local_pdf_path, saved_pdf_path)
-        print(f"Direct PDF: Saved tailored PDF locally to {saved_pdf_path}")
+        
+        saved_docx_filename = f"{person_name}_Resume.docx"
+        saved_docx_path = os.path.join(company_dir, saved_docx_filename)
+        shutil.copy(local_docx_path, saved_docx_path)
+        
+        print(f"Direct PDF: Saved tailored PDF and DOCX locally to {company_dir}")
         
         # Upload to R2 if credentials are set
-        r2_key = f"resumes/{company_name}/{saved_pdf_filename}"
+        r2_key_pdf = f"resumes/{company_name}/{saved_pdf_filename}"
+        r2_key_docx = f"resumes/{company_name}/{saved_docx_filename}"
+        
         pdf_url = f"/api/download/{saved_pdf_filename}?company={urllib.parse.quote(company_name)}&job_id={job_id}"
+        docx_url = f"/api/download/{saved_docx_filename}?company={urllib.parse.quote(company_name)}&job_id={job_id}"
         
         if settings.R2_ACCESS_KEY_ID and settings.R2_SECRET_ACCESS_KEY:
             try:
                 from services.r2_service import upload_file_to_r2
-                r2_url = await asyncio.to_thread(upload_file_to_r2, saved_pdf_path, r2_key)
-                if r2_url:
-                    print(f"Direct PDF: Tailored PDF uploaded to R2: {r2_key}")
+                await asyncio.to_thread(upload_file_to_r2, saved_pdf_path, r2_key_pdf)
+                await asyncio.to_thread(upload_file_to_r2, saved_docx_path, r2_key_docx)
+                print(f"Direct PDF: Tailored PDF and DOCX uploaded to R2")
             except Exception as r2_err:
-                print(f"Warning: Failed to upload tailored PDF to R2: {r2_err}")
+                print(f"Warning: Failed to upload tailored files to R2: {r2_err}")
         
         from core.json_diff import compute_dict_diff
         optimized_delta = compute_dict_diff(data, optimized_data)
@@ -103,13 +98,13 @@ async def execute_optimize_job_logic(db: Session, job_id: str, user_id: int, fil
             "company_name": company_name,
             "pdf_url": pdf_url,
             "zip_url": f"/api/download_zip/{saved_pdf_filename}?company={urllib.parse.quote(company_name)}&candidate={urllib.parse.quote(person_name)}&job_id={job_id}",
-            "docx_url": None
+            "docx_url": docx_url
         }
         
         # Deduct credit if user is free and not admin
         user = db.query(User).filter(User.id == user_id).first()
         if user:
-            is_admin = user.email.lower() == "mohitjain1619@gmail.com"
+            is_admin = user.email == "mohitjain1619@gmail.com"
             if user.subscription_status == "free" and not is_admin:
                 user.credits -= 1
             
@@ -188,10 +183,10 @@ async def execute_upload_job_logic(db: Session, job_id: str, user_id: int, file_
         
         # Save parsed data to DB
         title = filename
-        for ext_to_strip in ['.pdf', '.docx', '.docx', '.PDF', '.DOCX']:
-            if title.endswith(ext_to_strip):
-                title = title[:-len(ext_to_strip)]
-                break
+        if parsed_data.get("personal", {}).get("title"):
+            person_name = parsed_data.get("personal", {}).get("name", "")
+            job_title = parsed_data.get("personal", {}).get("title", "")
+            title = f"{person_name} - {job_title}" if person_name else job_title
 
         # Save parsed data (offload compressed to R2 in production, fall back to DB column in dev)
         r2_uploaded = False
