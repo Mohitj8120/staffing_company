@@ -351,11 +351,39 @@ def generate_tailored_docx(data: dict, output_filename: str = "tailored_resume.d
 
 def convert_docx_to_pdf(docx_path: str, output_filename: str = "tailored_resume.pdf") -> str:
     """
-    Converts a DOCX file to PDF using docx2pdf.
-    Note: Requires Microsoft Word to be installed on Windows.
+    Converts a DOCX file to PDF using docx2pdf on Windows, or LibreOffice on Linux.
     """
+    import os
+    import platform
+    import subprocess
+    
     pdf_path = os.path.join(settings.TEMP_DIR, output_filename)
-    convert(docx_path, pdf_path)
+    
+    if platform.system() == "Windows":
+        from docx2pdf import convert
+        convert(docx_path, pdf_path)
+    else:
+        # On Linux (Production server), docx2pdf does not work. We must use LibreOffice.
+        try:
+            # We specify --outdir since libreoffice doesn't allow specific output filenames easily
+            process = subprocess.run([
+                "libreoffice", "--headless", "--convert-to", "pdf", 
+                docx_path, "--outdir", settings.TEMP_DIR
+            ], check=True, capture_output=True, text=True)
+            
+            base_name = os.path.splitext(os.path.basename(docx_path))[0]
+            generated_pdf = os.path.join(settings.TEMP_DIR, base_name + ".pdf")
+            
+            # Rename it to the desired output filename
+            if os.path.abspath(generated_pdf) != os.path.abspath(pdf_path):
+                if os.path.exists(pdf_path):
+                    os.remove(pdf_path)
+                os.rename(generated_pdf, pdf_path)
+        except FileNotFoundError:
+            raise Exception("LibreOffice is not installed on the Linux server. Please run 'sudo apt-get install libreoffice' to enable DOCX to PDF conversion.")
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"LibreOffice conversion failed: {e.stderr}")
+            
     return pdf_path
 
 def get_docx_text_map(file_path: str):
