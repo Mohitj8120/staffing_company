@@ -225,15 +225,23 @@ async def auth_google(req: GoogleLoginRequest, db: Session = Depends(get_db)):
         if not google_sub or not email:
             raise HTTPException(status_code=400, detail="Invalid Google token claims")
             
-        # Find or create user (reuses clerk_id to store google sub string)
-        user = db.query(User).filter(User.clerk_id == google_sub).first()
+        # Find or create user by email first to prevent UNIQUE constraint failure
+        user = db.query(User).filter(User.email == email).first()
         is_new_user = False
+        if not user:
+            user = db.query(User).filter(User.clerk_id == google_sub).first()
+            
         if not user:
             user = User(clerk_id=google_sub, email=email)
             db.add(user)
             db.commit()
             db.refresh(user)
             is_new_user = True
+        elif user.clerk_id != google_sub:
+            # Sync clerk_id if it differs (e.g. switching mock/google login)
+            user.clerk_id = google_sub
+            db.commit()
+            db.refresh(user)
             
         # Generate custom session JWT token (valid for 7 days)
         payload = {
