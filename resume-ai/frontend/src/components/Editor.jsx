@@ -125,7 +125,7 @@ export default function Editor({ fileId, baseData, onOptimize, isProcessing, set
       {/* Left Pane: Job Description */}
       <motion.div 
         className="glass-panel" 
-        style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '2.5rem' }}
+        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
@@ -153,7 +153,7 @@ export default function Editor({ fileId, baseData, onOptimize, isProcessing, set
       {/* Right Pane: Extracted Data & Action */}
       <motion.div 
         className="glass-panel" 
-        style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '2.5rem', border: '1px solid rgba(138,43,226,0.3)', overflowY: 'auto' }}
+        style={{ display: 'flex', flexDirection: 'column', height: '100%', border: '1px solid rgba(138,43,226,0.3)', overflowY: 'auto' }}
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}

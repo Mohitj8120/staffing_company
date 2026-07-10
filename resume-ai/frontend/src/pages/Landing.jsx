@@ -607,23 +607,7 @@ function Landing() {
                   </div>
                   
                   {isAuthenticated && (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '12px',
-                      padding: '0.6rem 1.2rem',
-                      marginBottom: '1.5rem',
-                      fontSize: '0.85rem',
-                      color: 'white',
-                      width: '100%',
-                      maxWidth: '650px',
-                      margin: '0 auto 1.5rem auto',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-                    }}>
+                    <div className="auto-detector-bar">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ 
                           width: '8px', height: '8px', borderRadius: '50%', 
@@ -881,83 +865,90 @@ function Landing() {
       {/* Sleek Top Clipboard Notification Dropdown */}
       <AnimatePresence>
         {showDetectedModal && (
-          <motion.div 
-            initial={{ opacity: 0, y: -50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -30, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            style={{
-              position: 'fixed',
-              top: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '90%',
-              maxWidth: '430px',
-              zIndex: 1002,
-              background: 'rgba(10, 10, 18, 0.85)',
-              border: '1px solid rgba(0, 242, 254, 0.3)',
-              borderRadius: '16px',
-              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.15)',
-              backdropFilter: 'blur(20px)',
-              padding: '1.2rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              textAlign: 'left'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '36px', height: '36px', borderRadius: '50%',
-                background: 'rgba(0, 229, 255, 0.15)',
-                display: 'flex', justifyContent: 'center', alignItems: 'center',
-                fontSize: '1.2rem', color: '#00e5ff', flexShrink: 0
-              }}>
-                🎯
+          <div style={{
+            position: 'fixed',
+            top: '20px',
+            left: 0,
+            right: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 1002,
+            pointerEvents: 'none'
+          }}>
+            <motion.div 
+              initial={{ opacity: 0, y: -50, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -30, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              style={{
+                width: '90%',
+                maxWidth: '430px',
+                pointerEvents: 'auto',
+                background: 'rgba(10, 10, 18, 0.9)',
+                border: '1px solid rgba(0, 242, 254, 0.3)',
+                borderRadius: '16px',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.15)',
+                backdropFilter: 'blur(20px)',
+                padding: '1.2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                textAlign: 'left'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '50%',
+                  background: 'rgba(0, 229, 255, 0.15)',
+                  display: 'flex', justifyContent: 'center', alignItems: 'center',
+                  fontSize: '1.2rem', color: '#00e5ff', flexShrink: 0
+                }}>
+                  🎯
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: 0, color: 'white', fontSize: '0.95rem', fontWeight: 700 }}>
+                    {detectedTextType === 'url' ? 'Job Link Detected' : 'Job Text Detected'}
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', lineHeight: '1.4' }}>
+                    Auto-extract this job and redirect straight to the tailor screen?
+                  </p>
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ margin: 0, color: 'white', fontSize: '0.95rem', fontWeight: 700 }}>
-                  {detectedTextType === 'url' ? 'Job Link Detected' : 'Job Text Detected'}
-                </h4>
-                <p style={{ margin: '2px 0 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', lineHeight: '1.4' }}>
-                  Auto-extract this job and redirect straight to the tailor screen?
-                </p>
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button 
+                  onClick={() => setShowDetectedModal(false)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Dismiss
+                </button>
+                <button 
+                  onClick={handleAcceptClipboardJd}
+                  style={{
+                    background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
+                    border: 'none',
+                    color: '#050508',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 10px rgba(0, 242, 254, 0.3)'
+                  }}
+                >
+                  Auto-Tailor Now
+                </button>
               </div>
-            </div>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-              <button 
-                onClick={() => setShowDetectedModal(false)}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  color: 'white',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Dismiss
-              </button>
-              <button 
-                onClick={handleAcceptClipboardJd}
-                style={{
-                  background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
-                  border: 'none',
-                  color: '#050508',
-                  padding: '6px 14px',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 10px rgba(0, 242, 254, 0.3)'
-                }}
-              >
-                Auto-Tailor Now
-              </button>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
