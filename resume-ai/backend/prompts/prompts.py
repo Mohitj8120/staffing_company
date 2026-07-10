@@ -17,11 +17,13 @@ I will provide you with a candidate's base resume (in JSON format) and a Job Des
 Your task is to tailor the candidate's resume specifically for this JD to maximize ATS score and recruiter appeal.
 
 Guidelines:
-1. **Title**: Update the `title` field in PersonalInfo to a highly targeted, standard professional industry title determined by reading the JD.
-   - **DO NOT** copy raw titles, modifiers, or levels from the JD (e.g., do NOT write "Software Engineer Intern", "Junior Frontend Developer", "Associate SDE", "Graduate Analyst", "SDE-2", "MTS").
-   - **DO NOT** include qualifiers like "Intern", "Internship", "Junior", "Associate", "Entry-Level", "Graduate", "L1", "L2", "Senior", "Lead", or company-internal level acronyms.
-   - **DO** extract and use the core, standard professional role identity that matches the JD requirements (e.g., use "Software Engineer", "Full Stack Developer", "Frontend Engineer", "Backend Engineer", "Data Scientist", "DevOps Engineer").
-   - **ALWAYS** use proper Title Case (capitalize the first letter of each word, e.g., "Software Engineer" instead of lowercase "software engineer intern").
+0. **Smart Domain Adaptation**: This platform serves candidates across all professional disciplines (e.g., Technology, Finance, Chartered Accountancy (CA), HR, Legal, Marketing, Operations).
+   - You MUST analyze the target Job Description (JD) and rewrite the resume content (summary, experience points, projects, skills) using the precise terminology, industry jargon, and key performance indicators (KPIs) of that specific field.
+   - Tailor dynamically: for finance/accounting, emphasize audits, compliance, tax laws, budgets, and cost-reductions; for tech, emphasize system scale, technologies, performance, and architecture.
+1. **Title**: Do NOT just copy-paste the raw, wordy job title from the JD. Analyze the JD dynamically, assess the candidate's career level, and output the most professional, standard target industry title.
+   - **DO NOT** copy long, team-specific, or company-internal modifiers (e.g., do NOT write "Staff Software Engineer, Accelerator Platform Software" or "Senior Consultant - APAC Tax Division"). Clean it up and generalize it to a premium industry standard (e.g., "Staff Software Engineer" or "Tax Consultant").
+   - **DO NOT** include qualifiers like "Intern", "Internship", "Junior", "Associate", "L1/L2/L3", or "SDE-1/2" unless the candidate's base experience is extremely minimal. Elevate their title to represent a highly capable, standard industry practitioner (e.g., prefer "Software Engineer" or "Financial Analyst" over "Intern").
+   - **ALWAYS** use proper Title Case (e.g., "Chartered Accountant", "Frontend Engineer", "Finance Manager").
 2. **Company Name**: Accurately extract the target company name from the Job Description and populate the `target_company` field.
 3. **Summary**: Completely rewrite the professional summary to aggressively align with the core requirements of the JD. Make it a powerful, highly compelling narrative that showcases the candidate as a top-tier fit. **CRITICAL LIMIT: Keep the summary strictly to 3 to 4 powerful lines. Do not write long paragraphs.**
 4. **Skills**: Maintain the original categorizations (Languages, Backend, etc.). You must output a list of SkillCategory objects. For each category, populate the `skill_names` string with a comma-separated list of technologies. **CRITICAL: Keep category names strictly short (1-2 words max, e.g. "Languages", "Databases", "DevOps"). Do NOT use long phrases like "Operating Systems & Systems Programming".** You may aggressively reorder, add inferred skills, or tweak the items based heavily on the JD.
