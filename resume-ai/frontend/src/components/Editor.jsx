@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Code2, Briefcase, Zap } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
@@ -13,6 +13,13 @@ export default function Editor({ fileId, baseData, onOptimize, isProcessing, set
   const [queueStatus, setQueueStatus] = useState(null);
   const [queuePosition, setQueuePosition] = useState(0);
   const { getToken } = useAuthContext();
+
+  useEffect(() => {
+    const cachedJd = localStorage.getItem('active_job_description');
+    if (cachedJd) {
+      setJd(cachedJd);
+    }
+  }, []);
 
   const handleOptimize = async () => {
     if (!jd.trim()) {
@@ -83,6 +90,7 @@ export default function Editor({ fileId, baseData, onOptimize, isProcessing, set
                 setQueueStatus(null);
                 setIsProcessing(false);
                 onOptimize(pollResult.optimized_data, { docx: pollResult.docx_url, pdf: pollResult.pdf_url, zip: pollResult.zip_url });
+                localStorage.removeItem('active_job_description');
               } else if (pollResult.status === 'failed') {
                 setError(pollResult.detail || 'Optimization failed');
                 setIsProcessing(false);
@@ -99,6 +107,7 @@ export default function Editor({ fileId, baseData, onOptimize, isProcessing, set
         } else {
           setIsProcessing(false);
           onOptimize(result.optimized_data, { docx: result.docx_url, pdf: result.pdf_url, zip: result.zip_url });
+          localStorage.removeItem('active_job_description');
         }
       } else {
         setError(result.detail || 'Optimization failed');

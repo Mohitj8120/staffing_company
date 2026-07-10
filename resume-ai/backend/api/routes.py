@@ -950,3 +950,74 @@ async def get_admin_users(current_user: User = Depends(get_current_user), db: Se
             "created_at": u.created_at.strftime("%Y-%m-%d %H:%M:%S") if u.created_at else "N/A"
         })
     return results
+
+class ExtractJDRequest(BaseModel):
+    url: str
+
+@router.post("/extract-jd")
+async def extract_jd_from_url(req: ExtractJDRequest):
+    url = req.url
+    if not url.startswith("http://") and not url.startswith("https://"):
+        raise HTTPException(status_code=400, detail="Invalid URL protocol")
+        
+    try:
+        from playwright.sync_api import sync_playwright
+        import asyncio
+        
+        # Offload Playwright blocking operations to standard threads so we don't block the asyncio event loop
+        def run_playwright():
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                context = browser.new_context(
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                )
+                page = context.new_page()
+                # Use a reasonable timeout
+                page.goto(url, wait_until="domcontentloaded", timeout=12000)
+                
+                title = page.title()
+                
+                # Selection heuristics
+                selectors = [
+                    ".jobs-description__content",
+                    ".jobs-box__html-content",
+                    ".show-more-less-html__markup",
+                    "#jobDescriptionText",
+                    ".jobsearch-JobComponent-description",
+                    "article",
+                    "main",
+                    "[class*='description']",
+                    "[class*='job-details']"
+                ]
+                
+                text = ""
+                for selector in selectors:
+                    try:
+                        el = page.locator(selector).first
+                        if el and el.count() > 0:
+                            t = el.inner_text().strip()
+                            if len(t) > 200:
+                                text = t
+                                break
+                    except:
+                        continue
+                
+                if len(text) < 200:
+                    text = page.locator("body").inner_text()
+                    
+                browser.close()
+                return title, text
+                
+        title, extracted_text = await asyncio.to_thread(run_playwright)
+        
+        if len(extracted_text.strip()) < 100:
+            raise HTTPException(status_code=400, detail="Could not extract enough text from the job page. Please copy the job description text manually.")
+            
+        return {
+            "status": "success",
+            "title": title,
+            "text": extracted_text[:15000]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}. Please copy the text of the job description instead.")
+
