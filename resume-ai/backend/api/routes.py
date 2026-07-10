@@ -972,22 +972,31 @@ async def extract_jd_from_url(req: ExtractJDRequest):
                     user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                 )
                 page = context.new_page()
-                # Use a reasonable timeout
+                 # Use a reasonable timeout
                 page.goto(url, wait_until="domcontentloaded", timeout=12000)
+                # Wait 3.5 seconds to allow React/Vue/Angular dynamic client-side rendering to fetch and display the JD
+                page.wait_for_timeout(3500)
                 
                 title = page.title()
                 
-                # Selection heuristics
+                # Selection heuristics supporting LinkedIn, Indeed, Workday, Greenhouse, Lever, and general patterns
                 selectors = [
                     ".jobs-description__content",
                     ".jobs-box__html-content",
                     ".show-more-less-html__markup",
                     "#jobDescriptionText",
                     ".jobsearch-JobComponent-description",
+                    "[data-automation-id='jobPostingDescription']",
+                    ".posting-sections",
+                    ".section",
+                    "#content",
+                    ".job-body",
                     "article",
                     "main",
                     "[class*='description']",
-                    "[class*='job-details']"
+                    "[class*='job-details']",
+                    "[class*='job-description']",
+                    "[class*='jobDescription']"
                 ]
                 
                 text = ""
