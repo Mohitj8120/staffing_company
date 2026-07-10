@@ -57,11 +57,12 @@ function Landing() {
   };
 
   const handleAcceptClipboardJd = async () => {
+    let jdText = "";
     if (detectedTextType === 'text') {
+      jdText = clipboardContent;
       setActiveJd(clipboardContent);
       localStorage.setItem('active_job_description', clipboardContent);
       setShowDetectedModal(false);
-      alert("Job description successfully loaded! Please upload your base resume (DOCX) below.");
     } else {
       // It's a URL
       setScrapingLoader(true);
@@ -78,16 +79,53 @@ function Landing() {
         });
         const data = await res.json();
         if (res.ok && data.text) {
+          jdText = data.text;
           setActiveJd(data.text);
           localStorage.setItem('active_job_description', data.text);
-          alert(`Success: "${data.title || 'Job details'}" extracted! Please upload your base resume (DOCX) below.`);
         } else {
           alert(data.detail || "Failed to extract job description. Please copy the description text manually instead.");
+          setScrapingLoader(false);
+          return;
         }
       } catch (err) {
         alert("Scraping failed due to connection error. Please copy the job description text manually instead.");
+        setScrapingLoader(false);
+        return;
       } finally {
         setScrapingLoader(false);
+      }
+    }
+
+    if (jdText) {
+      // Check if we already have a base resume loaded in state
+      if (resumeData && fileId) {
+        setStep(2);
+      } else {
+        // Fetch the user's most recent base resume from the backend to auto-redirect
+        setScrapingLoader(true);
+        try {
+          const token = await getToken();
+          const resumesRes = await fetch(`${API_BASE_URL}/api/resumes`, {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (resumesRes.ok) {
+            const list = await resumesRes.json();
+            if (list && list.length > 0) {
+              const recentResume = list[0];
+              setFileId(recentResume.id);
+              setResumeData(recentResume.data);
+              setStep(2);
+            } else {
+              alert("Job details loaded! Now please upload your base resume (DOCX) below to begin.");
+            }
+          } else {
+            alert("Job details loaded! Now please upload your base resume (DOCX) below to begin.");
+          }
+        } catch (e) {
+          alert("Job details loaded! Now please upload your base resume (DOCX) below to begin.");
+        } finally {
+          setScrapingLoader(false);
+        }
       }
     }
   };
@@ -596,8 +634,8 @@ function Landing() {
                         <span style={{ fontWeight: 600 }}>Auto Job Detector:</span>
                         <span style={{ color: 'var(--text-muted)' }}>
                           {isListening 
-                            ? "Listening (Copy job URL or description text to auto-fill)" 
-                            : "Paused (Turn on to auto-detect copied job details)"}
+                            ? "Just copy any Job Link & return here to auto-tailor" 
+                            : "Monitoring paused. Turn on to enable auto-detect"}
                         </span>
                       </div>
                       <button
@@ -839,86 +877,85 @@ function Landing() {
         </footer>
       </div>
 
-      {/* Clipboard Detector Confirmation Modal */}
+      {/* Sleek Top Clipboard Notification Dropdown */}
       <AnimatePresence>
         {showDetectedModal && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: -50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             style={{
               position: 'fixed',
-              top: 0, left: 0, right: 0, bottom: 0,
-              background: 'rgba(5, 5, 8, 0.85)',
+              top: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '90%',
+              maxWidth: '430px',
+              zIndex: 1002,
+              background: 'rgba(10, 10, 18, 0.85)',
+              border: '1px solid rgba(0, 242, 254, 0.3)',
+              borderRadius: '16px',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.15)',
+              backdropFilter: 'blur(20px)',
+              padding: '1.2rem',
               display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: 1000,
-              backdropFilter: 'blur(8px)'
+              flexDirection: 'column',
+              gap: '12px',
+              textAlign: 'left'
             }}
           >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="glass-panel"
-              style={{
-                width: '90%',
-                maxWidth: '500px',
-                padding: '2.5rem',
-                border: '1px solid rgba(0, 242, 254, 0.3)',
-                boxShadow: '0 0 40px rgba(0, 242, 254, 0.25)',
-                textAlign: 'center',
-                background: 'rgba(10, 10, 15, 0.95)'
-              }}
-            >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
-                width: '60px', height: '60px', borderRadius: '50%',
+                width: '36px', height: '36px', borderRadius: '50%',
                 background: 'rgba(0, 229, 255, 0.15)',
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
-                margin: '0 auto 1.5rem auto',
-                fontSize: '1.8rem',
-                color: '#00e5ff'
+                fontSize: '1.2rem', color: '#00e5ff', flexShrink: 0
               }}>
                 🎯
               </div>
-              <h3 style={{ fontSize: '1.6rem', color: 'white', marginBottom: '1rem', fontWeight: 700 }}>
-                {detectedTextType === 'url' ? 'Job Link Detected' : 'Job Description Detected'}
-              </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-                We found a job {detectedTextType === 'url' ? 'link' : 'description'} in your clipboard. Do you want to extract and load this Job Description to start creating a tailored resume?
-              </p>
-              
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button 
-                  onClick={() => setShowDetectedModal(false)}
-                  style={{
-                    flex: 1,
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: 'white',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: 600
-                  }}
-                >
-                  No, Skip
-                </button>
-                <button 
-                  onClick={handleAcceptClipboardJd}
-                  className="primary-btn"
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    fontWeight: 700
-                  }}
-                >
-                  Yes, Extract
-                </button>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: 0, color: 'white', fontSize: '0.95rem', fontWeight: 700 }}>
+                  {detectedTextType === 'url' ? 'Job Link Detected' : 'Job Text Detected'}
+                </h4>
+                <p style={{ margin: '2px 0 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', lineHeight: '1.4' }}>
+                  Auto-extract this job and redirect straight to the tailor screen?
+                </p>
               </div>
-            </motion.div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => setShowDetectedModal(false)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  color: 'white',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Dismiss
+              </button>
+              <button 
+                onClick={handleAcceptClipboardJd}
+                style={{
+                  background: 'linear-gradient(135deg, #00f2fe, #4facfe)',
+                  border: 'none',
+                  color: '#050508',
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 10px rgba(0, 242, 254, 0.3)'
+                }}
+              >
+                Auto-Tailor Now
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
