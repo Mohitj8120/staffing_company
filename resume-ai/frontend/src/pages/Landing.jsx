@@ -567,6 +567,59 @@ function Landing() {
                     <div id="google-signin-button-hero" style={{ minHeight: '40px', display: isLocalhost ? 'none' : 'block' }}></div>
                   </div>
                   
+                  {isAuthenticated && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '12px',
+                      padding: '0.6rem 1.2rem',
+                      marginBottom: '1.5rem',
+                      fontSize: '0.85rem',
+                      color: 'white',
+                      width: '100%',
+                      maxWidth: '650px',
+                      margin: '0 auto 1.5rem auto',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ 
+                          width: '8px', height: '8px', borderRadius: '50%', 
+                          background: isListening ? '#00e5ff' : 'rgba(255,255,255,0.2)',
+                          boxShadow: isListening ? '0 0 10px #00e5ff' : 'none',
+                          display: 'inline-block',
+                          animation: isListening ? 'pulse 1.5s infinite' : 'none'
+                        }}></span>
+                        <span style={{ fontWeight: 600 }}>Auto Job Detector:</span>
+                        <span style={{ color: 'var(--text-muted)' }}>
+                          {isListening 
+                            ? "Listening (Copy job URL or description text to auto-fill)" 
+                            : "Paused (Turn on to auto-detect copied job details)"}
+                        </span>
+                      </div>
+                      <button
+                        onClick={toggleClipboardListening}
+                        style={{
+                          background: isListening ? 'rgba(239, 68, 68, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                          border: isListening ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                          padding: '5px 12px',
+                          borderRadius: '20px',
+                          color: isListening ? '#ef4444' : '#10b981',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          outline: 'none'
+                        }}
+                      >
+                        {isListening ? "Turn Off" : "Turn On"}
+                      </button>
+                    </div>
+                  )}
+
                   {activeJd && (
                     <motion.div 
                       initial={{ opacity: 0, y: -10 }}
@@ -637,49 +690,6 @@ function Landing() {
 
                   {isAuthenticated && (
                     <FileUpload onUpload={handleUploadComplete} isProcessing={isProcessing} setIsProcessing={setIsProcessing} />
-                  )}
-
-                  {isAuthenticated && (
-                    <div className="glass-panel" style={{ padding: '2.5rem', marginTop: '2.5rem', textAlign: 'left' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-                        <div>
-                          <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 700 }}>
-                            Auto Job Detector
-                            {isListening && (
-                              <span style={{ 
-                                width: '10px', height: '10px', borderRadius: '50%', 
-                                background: '#00e5ff', display: 'inline-block',
-                                boxShadow: '0 0 10px #00e5ff', animation: 'pulse 1.5s infinite' 
-                              }}></span>
-                            )}
-                          </h2>
-                          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', margin: 0 }}>
-                            {isListening 
-                              ? "Clipboard monitoring is active. Copy any LinkedIn job URL or Job Description text, then focus this page." 
-                              : "Clipboard monitoring is paused. Click Start to begin auto-detecting copied job descriptions."}
-                          </p>
-                        </div>
-                        <div>
-                          <button 
-                            onClick={toggleClipboardListening} 
-                            className="primary-btn" 
-                            style={{ 
-                              padding: '12px 24px', 
-                              fontSize: '1rem',
-                              background: isListening ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #10b981, #059669)',
-                              boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.4)' : '0 0 15px rgba(16, 185, 129, 0.4)',
-                              border: 'none',
-                              color: 'white',
-                              cursor: 'pointer',
-                              fontWeight: 'bold',
-                              borderRadius: '8px'
-                            }}
-                          >
-                            {isListening ? "Stop Monitoring" : "Start Monitoring"}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
                   )}
                 </motion.div>
               </motion.div>
