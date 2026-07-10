@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Wand2, DownloadCloud, ChevronRight, RefreshCw, Zap, Menu, X } from 'lucide-react';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Scene3D from '../components/Scene3D';
 import FileUpload from '../components/FileUpload';
 import Editor from '../components/Editor';
@@ -12,6 +12,7 @@ import PricingModal from '../components/PricingModal';
 import { captureFromURL, getReferral } from '../utils/affiliateTracker';
 
 function Landing() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [fileId, setFileId] = useState(null);
   const [resumeData, setResumeData] = useState(null);
@@ -266,7 +267,7 @@ function Landing() {
   const handleUploadComplete = (id, data) => {
     setFileId(id);
     setResumeData(data);
-    setStep(2);
+    navigate('/dashboard');
   };
 
   const handleOptimizeComplete = (optimized, links) => {
