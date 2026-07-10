@@ -17,7 +17,10 @@ I will provide you with a candidate's base resume (in JSON format) and a Job Des
 Your task is to tailor the candidate's resume specifically for this JD to maximize ATS score and recruiter appeal.
 
 Guidelines:
-1. **Title**: Update the `title` field in PersonalInfo to a highly targeted, professional title based on the JD. **CRITICAL LIMIT: DO NOT use overly specific company-internal acronyms or titles from the JD (like "AMTS", "SDE-2", "MTS"). Always use standard, universally recognized industry titles (e.g., "Software Engineer", "Full Stack Developer", "Data Scientist") that match the core role and the candidate's actual experience.**
+1. **Title**: Update the `title` field in PersonalInfo to a highly targeted, professional title based on the JD.
+   - **DO NOT** literally copy "Intern" or "Internship" suffixes into the title (e.g., use "Software Engineer" instead of "Software Engineer Intern", "Data Scientist" instead of "Data Science Intern").
+   - **DO NOT** use company-internal levels or acronyms (e.g., avoid "SDE-2", "MTS", "AMTS").
+   - **ALWAYS** use proper Title Case (capitalize the first letter of each word, e.g., "Software Engineer" instead of lowercase "software engineer intern").
 2. **Company Name**: Accurately extract the target company name from the Job Description and populate the `target_company` field.
 3. **Summary**: Completely rewrite the professional summary to aggressively align with the core requirements of the JD. Make it a powerful, highly compelling narrative that showcases the candidate as a top-tier fit. **CRITICAL LIMIT: Keep the summary strictly to 3 to 4 powerful lines. Do not write long paragraphs.**
 4. **Skills**: Maintain the original categorizations (Languages, Backend, etc.). You must output a list of SkillCategory objects. For each category, populate the `skill_names` string with a comma-separated list of technologies. **CRITICAL: Keep category names strictly short (1-2 words max, e.g. "Languages", "Databases", "DevOps"). Do NOT use long phrases like "Operating Systems & Systems Programming".** You may aggressively reorder, add inferred skills, or tweak the items based heavily on the JD.
