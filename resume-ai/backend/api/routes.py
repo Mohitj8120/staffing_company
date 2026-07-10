@@ -967,7 +967,7 @@ async def extract_jd_from_url(req: ExtractJDRequest):
         # Offload Playwright blocking operations to standard threads so we don't block the asyncio event loop
         def run_playwright():
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
+                browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
                 context = browser.new_context(
                     user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                 )
