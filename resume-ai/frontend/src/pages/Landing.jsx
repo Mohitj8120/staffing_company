@@ -22,10 +22,102 @@ function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
 
-  const { user, loginWithGoogle, logout, isAuthenticated } = useAuthContext();
+  const { user, loginWithGoogle, logout, isAuthenticated, getToken } = useAuthContext();
   const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
   const [googleReady, setGoogleReady] = useState(false);
+
+  // Clipboard Auto-Detect States
+  const [isListening, setIsListening] = useState(() => {
+    return localStorage.getItem('auto_jd_detector_active') === 'true';
+  });
+  const [lastClipboardText, setLastClipboardText] = useState('');
+  const [showDetectedModal, setShowDetectedModal] = useState(false);
+  const [detectedTextType, setDetectedTextType] = useState(''); // 'url' or 'text'
+  const [clipboardContent, setClipboardContent] = useState('');
+  const [scrapingLoader, setScrapingLoader] = useState(false);
+  const [activeJd, setActiveJd] = useState(() => {
+    return localStorage.getItem('active_job_description') || '';
+  });
+
+  const toggleClipboardListening = async () => {
+    if (!isListening) {
+      try {
+        const text = await navigator.clipboard.readText();
+        setLastClipboardText(text);
+        setIsListening(true);
+        localStorage.setItem('auto_jd_detector_active', 'true');
+      } catch (err) {
+        alert("Clipboard read permission denied. Please grant permission in browser settings.");
+      }
+    } else {
+      setIsListening(false);
+      localStorage.setItem('auto_jd_detector_active', 'false');
+    }
+  };
+
+  const handleAcceptClipboardJd = async () => {
+    if (detectedTextType === 'text') {
+      setActiveJd(clipboardContent);
+      localStorage.setItem('active_job_description', clipboardContent);
+      setShowDetectedModal(false);
+      alert("Job description successfully loaded! Please upload your base resume (DOCX) below.");
+    } else {
+      // It's a URL
+      setScrapingLoader(true);
+      setShowDetectedModal(false);
+      try {
+        const token = await getToken();
+        const res = await fetch(`${API_BASE_URL}/api/extract-jd`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ url: clipboardContent })
+        });
+        const data = await res.json();
+        if (res.ok && data.text) {
+          setActiveJd(data.text);
+          localStorage.setItem('active_job_description', data.text);
+          alert(`Success: "${data.title || 'Job details'}" extracted! Please upload your base resume (DOCX) below.`);
+        } else {
+          alert(data.detail || "Failed to extract job description. Please copy the description text manually instead.");
+        }
+      } catch (err) {
+        alert("Scraping failed due to connection error. Please copy the job description text manually instead.");
+      } finally {
+        setScrapingLoader(false);
+      }
+    }
+  };
+
+  const checkClipboard = async () => {
+    if (!isListening) return;
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      if (!text || text === lastClipboardText) return;
+      
+      const isUrl = text.startsWith('http://') || text.startsWith('https://');
+      const lowerText = text.toLowerCase();
+      const keywords = ['job description', 'responsibilities', 'qualifications', 'requirements', 'about the role', 'what you will do'];
+      const keywordMatch = keywords.filter(k => lowerText.includes(k)).length >= 2;
+      
+      if (isUrl || keywordMatch) {
+        setClipboardContent(text);
+        setDetectedTextType(isUrl ? 'url' : 'text');
+        setShowDetectedModal(true);
+        setLastClipboardText(text);
+      }
+    } catch (e) {
+      console.warn("Clipboard check failed:", e);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('focus', checkClipboard);
+    return () => window.removeEventListener('focus', checkClipboard);
+  }, [isListening, lastClipboardText]);
 
   useEffect(() => {
     // Only init Google if NOT authenticated
@@ -475,8 +567,119 @@ function Landing() {
                     <div id="google-signin-button-hero" style={{ minHeight: '40px', display: isLocalhost ? 'none' : 'block' }}></div>
                   </div>
                   
+                  {activeJd && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(138, 43, 226, 0.15))',
+                        border: '1px solid rgba(0, 242, 254, 0.3)',
+                        borderRadius: '16px',
+                        padding: '1.5rem',
+                        marginBottom: '1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        boxShadow: '0 0 25px rgba(0, 242, 254, 0.2)',
+                        backdropFilter: 'blur(10px)',
+                        flexWrap: 'wrap',
+                        gap: '1rem',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{
+                          width: '40px', height: '40px', borderRadius: '50%',
+                          background: 'rgba(0, 229, 255, 0.2)',
+                          display: 'flex', justifyContent: 'center', alignItems: 'center',
+                          color: '#00e5ff', fontSize: '1.2rem'
+                        }}>
+                          ✨
+                        </div>
+                        <div>
+                          <h4 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 600 }}>Active Job Description Loaded</h4>
+                          <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Please upload your base resume (DOCX) below to begin automatic tailoring.</p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => {
+                            localStorage.removeItem('active_job_description');
+                            setActiveJd('');
+                          }}
+                          style={{
+                            background: 'rgba(255, 75, 75, 0.15)',
+                            border: '1px solid rgba(255, 75, 75, 0.3)',
+                            padding: '6px 12px',
+                            borderRadius: '20px',
+                            color: '#ff4b4b',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Clear JD
+                        </button>
+                        <span style={{
+                          fontSize: '0.8rem',
+                          background: 'rgba(0, 229, 255, 0.1)',
+                          border: '1px solid rgba(0, 229, 255, 0.3)',
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          color: '#00e5ff',
+                          fontWeight: 600
+                        }}>
+                          Ready
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {isAuthenticated && (
                     <FileUpload onUpload={handleUploadComplete} isProcessing={isProcessing} setIsProcessing={setIsProcessing} />
+                  )}
+
+                  {isAuthenticated && (
+                    <div className="glass-panel" style={{ padding: '2.5rem', marginTop: '2.5rem', textAlign: 'left' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+                        <div>
+                          <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 700 }}>
+                            Auto Job Detector
+                            {isListening && (
+                              <span style={{ 
+                                width: '10px', height: '10px', borderRadius: '50%', 
+                                background: '#00e5ff', display: 'inline-block',
+                                boxShadow: '0 0 10px #00e5ff', animation: 'pulse 1.5s infinite' 
+                              }}></span>
+                            )}
+                          </h2>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', margin: 0 }}>
+                            {isListening 
+                              ? "Clipboard monitoring is active. Copy any LinkedIn job URL or Job Description text, then focus this page." 
+                              : "Clipboard monitoring is paused. Click Start to begin auto-detecting copied job descriptions."}
+                          </p>
+                        </div>
+                        <div>
+                          <button 
+                            onClick={toggleClipboardListening} 
+                            className="primary-btn" 
+                            style={{ 
+                              padding: '12px 24px', 
+                              fontSize: '1rem',
+                              background: isListening ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #10b981, #059669)',
+                              boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.4)' : '0 0 15px rgba(16, 185, 129, 0.4)',
+                              border: 'none',
+                              color: 'white',
+                              cursor: 'pointer',
+                              fontWeight: 'bold',
+                              borderRadius: '8px'
+                            }}
+                          >
+                            {isListening ? "Stop Monitoring" : "Start Monitoring"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </motion.div>
               </motion.div>
@@ -625,6 +828,117 @@ function Landing() {
           </div>
         </footer>
       </div>
+
+      {/* Clipboard Detector Confirmation Modal */}
+      <AnimatePresence>
+        {showDetectedModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(5, 5, 8, 0.85)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 1000,
+              backdropFilter: 'blur(8px)'
+            }}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="glass-panel"
+              style={{
+                width: '90%',
+                maxWidth: '500px',
+                padding: '2.5rem',
+                border: '1px solid rgba(0, 242, 254, 0.3)',
+                boxShadow: '0 0 40px rgba(0, 242, 254, 0.25)',
+                textAlign: 'center',
+                background: 'rgba(10, 10, 15, 0.95)'
+              }}
+            >
+              <div style={{
+                width: '60px', height: '60px', borderRadius: '50%',
+                background: 'rgba(0, 229, 255, 0.15)',
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+                margin: '0 auto 1.5rem auto',
+                fontSize: '1.8rem',
+                color: '#00e5ff'
+              }}>
+                🎯
+              </div>
+              <h3 style={{ fontSize: '1.6rem', color: 'white', marginBottom: '1rem', fontWeight: 700 }}>
+                {detectedTextType === 'url' ? 'Job Link Detected' : 'Job Description Detected'}
+              </h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+                We found a job {detectedTextType === 'url' ? 'link' : 'description'} in your clipboard. Do you want to extract and load this Job Description to start creating a tailored resume?
+              </p>
+              
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button 
+                  onClick={() => setShowDetectedModal(false)}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 600
+                  }}
+                >
+                  No, Skip
+                </button>
+                <button 
+                  onClick={handleAcceptClipboardJd}
+                  className="primary-btn"
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    fontWeight: 700
+                  }}
+                >
+                  Yes, Extract
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Scraping Loader Overlay */}
+      <AnimatePresence>
+        {scrapingLoader && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(5, 5, 8, 0.9)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 1001,
+              backdropFilter: 'blur(10px)',
+              gap: '20px'
+            }}
+          >
+            <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid rgba(255,255,255,0.1)', borderTopColor: '#00e5ff', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+            <div style={{ color: 'white', fontSize: '1.2rem', fontWeight: 600 }}>Extracting Job Details...</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Scraping page and parsing qualifications...</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <PricingModal isOpen={pricingOpen} onClose={() => setPricingOpen(false)} />
     </div>
