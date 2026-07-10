@@ -167,10 +167,26 @@ def generate_stunning_pdf(
         trim_resume_data(data, 1, severity=1)
 
     compactor_levels = ["", "compact-level-1", "compact-level-2", "compact-level-3"]
+    compactor_levels = ["", "compact-level-1", "compact-level-2", "compact-level-3"]
     current_prewarmed = prewarmed_process
     output_path = os.path.join(settings.TEMP_DIR, output_filename)
     success = False
     
+    # Start inline browser if no prewarmed process is provided to avoid subprocess overhead
+    browser = None
+    playwright_context = None
+    inline_page = None
+    
+    if current_prewarmed is None:
+        try:
+            from playwright.sync_api import sync_playwright
+            playwright_context = sync_playwright().start()
+            browser = playwright_context.chromium.launch(headless=True)
+            inline_page = browser.new_page()
+            print("PDF Page Fitting: Successfully pre-warmed inline browser for fitting loops.")
+        except Exception as e:
+            print(f"Warning: Failed to launch inline Playwright: {e}. Will fallback to slower subprocess method.")
+            
     # Try compaction and trimming iteratively
     for severity in [0, 1, 2]:
         if severity > 0:
@@ -210,16 +226,18 @@ def generate_stunning_pdf(
                     if current_prewarmed.returncode != 0:
                         print(f"Warning: Playwright pre-warmed PDF generation failed: {stderr}")
                         current_prewarmed = None
-                    else:
-                        # Success for this specific render
-                        pass
                 except Exception as e:
                     print(f"Warning: Exception using pre-warmed process: {e}")
                     current_prewarmed = None
                     
             if current_prewarmed is None:
-                # Direct execution fallback
-                script = """
+                if inline_page is not None:
+                    try:
+                        inline_page.set_content(html_content)
+                        inline_page.pdf(path=output_path, format="A4", margin={"top": "20px", "right": "20px", "bottom": "20px", "left": "20px"}, print_background=True)
+                    except Exception as inline_err:
+                        print(f"Inline PDF render failed: {inline_err}. Falling back to subprocess...")
+                        script = """
 import sys
 from playwright.sync_api import sync_playwright
 sys.stdin.reconfigure(encoding='utf-8')
@@ -230,15 +248,37 @@ with sync_playwright() as p:
     page.pdf(path=sys.argv[1], format="A4", margin={"top": "20px", "right": "20px", "bottom": "20px", "left": "20px"}, print_background=True)
     browser.close()
 """
-                process = subprocess.run(
-                    [sys.executable, "-c", script, output_path],
-                    input=html_content,
-                    text=True,
-                    encoding="utf-8",
-                    capture_output=True
-                )
-                if process.returncode != 0:
-                    raise Exception(f"Playwright PDF generation failed: {process.stderr}")
+                        process = subprocess.run(
+                            [sys.executable, "-c", script, output_path],
+                            input=html_content,
+                            text=True,
+                            encoding="utf-8",
+                            capture_output=True
+                        )
+                        if process.returncode != 0:
+                            raise Exception(f"Playwright PDF generation failed: {process.stderr}")
+                else:
+                    # Fallback to subprocess directly
+                    script = """
+import sys
+from playwright.sync_api import sync_playwright
+sys.stdin.reconfigure(encoding='utf-8')
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+    page.set_content(sys.stdin.read())
+    page.pdf(path=sys.argv[1], format="A4", margin={"top": "20px", "right": "20px", "bottom": "20px", "left": "20px"}, print_background=True)
+    browser.close()
+"""
+                    process = subprocess.run(
+                        [sys.executable, "-c", script, output_path],
+                        input=html_content,
+                        text=True,
+                        encoding="utf-8",
+                        capture_output=True
+                    )
+                    if process.returncode != 0:
+                        raise Exception(f"Playwright PDF generation failed: {process.stderr}")
             
             # Check how many pages the generated PDF actually has!
             try:
@@ -252,7 +292,6 @@ with sync_playwright() as p:
                     break
             except Exception as fitz_err:
                 print(f"Error checking PDF page count: {fitz_err}")
-                # If fitz fails, we just assume it's okay and break
                 success = True
                 break
                 
@@ -261,6 +300,18 @@ with sync_playwright() as p:
             
         if success:
             break
+            
+    # Cleanup pre-warmed inline browser resources
+    if browser is not None:
+        try:
+            browser.close()
+        except:
+            pass
+    if playwright_context is not None:
+        try:
+            playwright_context.stop()
+        except:
+            pass
             
     return output_path
 
