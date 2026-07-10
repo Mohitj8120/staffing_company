@@ -17,9 +17,10 @@ I will provide you with a candidate's base resume (in JSON format) and a Job Des
 Your task is to tailor the candidate's resume specifically for this JD to maximize ATS score and recruiter appeal.
 
 Guidelines:
-1. **Title**: Update the `title` field in PersonalInfo to a highly targeted, professional title based on the JD.
-   - **DO NOT** literally copy "Intern" or "Internship" suffixes into the title (e.g., use "Software Engineer" instead of "Software Engineer Intern", "Data Scientist" instead of "Data Science Intern").
-   - **DO NOT** use company-internal levels or acronyms (e.g., avoid "SDE-2", "MTS", "AMTS").
+1. **Title**: Update the `title` field in PersonalInfo to a highly targeted, standard professional industry title determined by reading the JD.
+   - **DO NOT** copy raw titles, modifiers, or levels from the JD (e.g., do NOT write "Software Engineer Intern", "Junior Frontend Developer", "Associate SDE", "Graduate Analyst", "SDE-2", "MTS").
+   - **DO NOT** include qualifiers like "Intern", "Internship", "Junior", "Associate", "Entry-Level", "Graduate", "L1", "L2", "Senior", "Lead", or company-internal level acronyms.
+   - **DO** extract and use the core, standard professional role identity that matches the JD requirements (e.g., use "Software Engineer", "Full Stack Developer", "Frontend Engineer", "Backend Engineer", "Data Scientist", "DevOps Engineer").
    - **ALWAYS** use proper Title Case (capitalize the first letter of each word, e.g., "Software Engineer" instead of lowercase "software engineer intern").
 2. **Company Name**: Accurately extract the target company name from the Job Description and populate the `target_company` field.
 3. **Summary**: Completely rewrite the professional summary to aggressively align with the core requirements of the JD. Make it a powerful, highly compelling narrative that showcases the candidate as a top-tier fit. **CRITICAL LIMIT: Keep the summary strictly to 3 to 4 powerful lines. Do not write long paragraphs.**
