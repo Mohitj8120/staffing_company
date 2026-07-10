@@ -117,18 +117,52 @@ function Landing() {
               setResumeData(recentResume.data);
               setStep(2);
             } else {
-              alert("Job details loaded! Now please upload your base resume (DOCX) below to begin.");
+            alert("Warning: No base resume found in your profile! Please upload your original/base resume (DOCX) first using the upload section below to start tailoring.");
             }
           } else {
-            alert("Job details loaded! Now please upload your base resume (DOCX) below to begin.");
+            alert("Warning: No base resume found in your profile! Please upload your original/base resume (DOCX) first using the upload section below to start tailoring.");
           }
         } catch (e) {
-          alert("Job details loaded! Now please upload your base resume (DOCX) below to begin.");
+          alert("Warning: No base resume found in your profile! Please upload your original/base resume (DOCX) first using the upload section below to start tailoring.");
         } finally {
           setScrapingLoader(false);
         }
       }
     }
+  };
+
+  const handleReadyClick = async () => {
+    // Check if we have a base resume loaded in state
+    if (resumeData && fileId) {
+      setStep(2);
+      return;
+    }
+    
+    // Otherwise try to fetch the most recent resume
+    setScrapingLoader(true);
+    try {
+      const token = await getToken();
+      const resumesRes = await fetch(`${API_BASE_URL}/api/resumes`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (resumesRes.ok) {
+        const list = await resumesRes.json();
+        if (list && list.length > 0) {
+          const recentResume = list[0];
+          setFileId(recentResume.id);
+          setResumeData(recentResume.data);
+          setStep(2);
+          setScrapingLoader(false);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch resumes", e);
+    }
+    setScrapingLoader(false);
+    
+    // If no resume found, show the warning popup
+    alert("Warning: No base resume found in your profile! Please upload your original/base resume (DOCX) first using the upload section below to start tailoring.");
   };
 
   const checkClipboard = async () => {
@@ -696,17 +730,30 @@ function Landing() {
                         >
                           Clear JD
                         </button>
-                        <span style={{
-                          fontSize: '0.8rem',
-                          background: 'rgba(0, 229, 255, 0.1)',
-                          border: '1px solid rgba(0, 229, 255, 0.3)',
-                          padding: '6px 12px',
-                          borderRadius: '20px',
-                          color: '#00e5ff',
-                          fontWeight: 600
-                        }}>
-                          Ready
-                        </span>
+                        <button
+                          onClick={handleReadyClick}
+                          style={{
+                            background: 'rgba(0, 229, 255, 0.15)',
+                            border: '1px solid rgba(0, 229, 255, 0.3)',
+                            padding: '6px 12px',
+                            borderRadius: '20px',
+                            color: '#00e5ff',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease-in-out'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.background = 'rgba(0, 229, 255, 0.25)';
+                            e.target.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.background = 'rgba(0, 229, 255, 0.15)';
+                            e.target.style.transform = 'scale(1)';
+                          }}
+                        >
+                          Ready 🚀
+                        </button>
                       </div>
                     </motion.div>
                   )}
